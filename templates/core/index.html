@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="bg-blue-50 py-20 px-6">
+    <div class="container mx-auto flex flex-col items-center text-center" data-aos="fade-up">
+        <h1 class="text-5xl font-extrabold text-blue-900 mb-6">Fastest Xerox Booking Online</h1>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl">High-quality printing, spiral binding, and custom services delivered to your doorstep. Upload, choose, and relax!</p>
+        <div class="flex gap-4">
+            <button class="bg-blue-600 text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-blue-700">Order Now</button>
+        </div>
+    </div>
+</section>
+
+<section class="bg-white py-16">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center mb-12">Our Services</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-6 border rounded-xl hover:shadow-xl transition-all text-center" data-aos="zoom-in">
+                <i class="fas fa-print text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-xl font-bold">Printing</h3>
+                <p class="text-gray-500 my-2">B&W and Color</p>
+                <button class="mt-4 text-blue-600 font-bold border border-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white">Order Now</button>
+            </div>
+            <div class="p-6 border rounded-xl hover:shadow-xl transition-all text-center" data-aos="zoom-in" data-aos-delay="100">
+                <i class="fas fa-book text-4xl text-purple-500 mb-4"></i>
+                <h3 class="text-xl font-bold">Spiral Binding</h3>
+                <p class="text-gray-500 my-2">Durable quality</p>
+                <button class="mt-4 text-blue-600 font-bold border border-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white">Order Now</button>
+            </div>
+            <div class="p-6 border rounded-xl hover:shadow-xl transition-all text-center" data-aos="zoom-in" data-aos-delay="200">
+                <i class="fas fa-image text-4xl text-green-500 mb-4"></i>
+                <h3 class="text-xl font-bold">Custom Printing</h3>
+                <p class="text-gray-500 my-2">Flexible options</p>
+                <button class="mt-4 text-blue-600 font-bold border border-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white">Order Now</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold mb-4">How It Works</h2>
+        <p class="text-gray-500 mb-12">Get your documents in 3 simple steps</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div data-aos="fade-right">
+                <i class="fas fa-file-upload text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-bold">1. Upload File</h4>
+                <p class="text-sm text-gray-500">Upload your PDF or Word document.</p>
+            </div>
+            <div data-aos="fade-up">
+                <i class="fas fa-tasks text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-bold">2. Choose Service</h4>
+                <p class="text-sm text-gray-500">Pick binding and color options.</p>
+            </div>
+            <div data-aos="fade-left">
+                <i class="fas fa-shopping-bag text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-bold">3. Place Order</h4>
+                <p class="text-sm text-gray-500">Pay and wait for delivery.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-white py-16">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold text-center mb-12">Why Choose Us</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="text-center" data-aos="fade-up">
+                <i class="fas fa-shield-alt text-2xl text-blue-500 mb-2"></i>
+                <h4 class="font-bold">Best Quality</h4>
+                <p class="text-xs text-gray-400">Premium paper & ink used.</p>
+            </div>
+            </div>
+    </div>
+</section>
+
+<section class="bg-blue-600 text-white py-16 text-center">
+    <div class="container mx-auto px-6" data-aos="zoom-in">
+        <h2 class="text-4xl font-bold mb-4">Ready to get started?</h2>
+        <p class="mb-8">Order your first print today and get 10% off!</p>
+        <button class="bg-white text-blue-600 px-10 py-3 rounded-full font-bold hover:scale-105 transition-all">Start Your Order</button>
+    </div>
+</section>
+
+{% endblock %}
