@@ -77,3 +77,29 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
     justify-content: center;
     font-size: 1.2rem;
 }
+
+/* --- Cart Page Specific --- */
+.cart-item-card {
+    transition: all 0.3s ease;
+    border: 1px solid #f1f5f9;
+}
+
+.cart-item-card:hover {
+    transform: translateX(10px);
+    border-color: #2563eb;
+}
+
+.empty-cart-icon {
+    font-size: 8rem;
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.action-bar {
+    position: sticky;
+    bottom: 2rem;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e2e8f0;
+}

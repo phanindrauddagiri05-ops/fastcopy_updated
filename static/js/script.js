@@ -58,3 +58,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const firstTab = document.querySelector('.service-tab');
     if(firstTab) firstTab.click();
 });
+
+/**
+ * Cart Calculation Logic
+ */
+function updateCartTotal() {
+    const prices = document.querySelectorAll('.cart-item-card h4');
+    let total = 0;
+    prices.forEach(p => {
+        total += parseFloat(p.innerText.replace('₹', ''));
+    });
+    
+    const totalDisplay = document.getElementById('cart-total-display');
+    if (totalDisplay) {
+        totalDisplay.innerText = total.toLocaleString('en-IN');
+    }
+}
+
+// Update DOMContentLoaded to include cart init
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing logic
+    updateCartTotal();
+});
