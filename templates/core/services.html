@@ -2,109 +2,85 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/services.css' %}">
-
-<section class="bg-white py-12 border-b">
-    <div class="container mx-auto px-6 text-center" data-aos="fade-down">
-        <h1 class="text-4xl font-black text-slate-900 mb-2 uppercase tracking-tight">Our Services</h1>
-        <p class="text-gray-500">Fast, Reliable, and High-Quality Xerox & Binding Solutions</p>
+<section class="bg-white py-12 px-6">
+    <div class="container mx-auto text-center" data-aos="fade-down">
+        <h1 class="text-4xl font-black uppercase tracking-tight">Configure Your Service</h1>
+        <p class="text-gray-500 mt-2">Select a service and customize your order details below.</p>
     </div>
 </section>
 
 <div class="container mx-auto px-6 py-10">
-    <div class="flex overflow-x-auto space-x-4 pb-4 mb-10 no-scrollbar">
-        {% for service in services %}
-        <button onclick="selectService('{{ service.name }}', '{{ forloop.counter }}')" 
+    <div class="flex overflow-x-auto space-x-6 pb-6 mb-12 no-scrollbar border-b">
+        {% for s in services %}
+        <button onclick="selectService('{{ s.name }}', '{{ forloop.counter }}')" 
                 id="btn-{{ forloop.counter }}"
-                class="service-tab flex items-center gap-3 px-8 py-4 rounded-2xl font-bold bg-white border shadow-sm whitespace-nowrap">
-            <i class="fas {{ service.icon_class }} text-xl"></i>
-            {{ service.name }}
+                class="service-tab whitespace-nowrap px-10 py-4 rounded-t-3xl border border-b-0 font-bold flex items-center gap-3">
+            <i class="fas {{ s.icon_class }} text-xl"></i> {{ s.name }}
         </button>
         {% endfor %}
     </div>
 
-    <div id="booking-card" class="max-w-4xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-gray-100" data-aos="zoom-in">
-        
-        <div id="form-header-bg" class="p-8 text-white">
-            <h2 id="display-service-name" class="text-3xl font-black uppercase tracking-widest">Printing</h2>
-            <p class="opacity-80 font-medium">Please fill in the details below to proceed with your order.</p>
+    <div id="service-card" class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100" data-aos="zoom-in">
+        <div id="form-header" class="p-8 text-white transition-all duration-500 bg-blue-600">
+            <h2 id="active-service-title" class="text-3xl font-black uppercase tracking-widest">Printing</h2>
         </div>
 
         <form class="p-8 md:p-12 space-y-10">
-            <div class="space-y-6">
-                <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm">1</span>
-                    Your Information
-                </h3>
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold">1. Your Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-gray-600 ml-1">Full Name</label>
-                        <input type="text" placeholder="Enter your name" class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-blue-500 outline-none transition-all">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-gray-600 ml-1">Phone Number</label>
-                        <input type="text" placeholder="Enter mobile number" class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl focus:border-blue-500 outline-none transition-all">
-                    </div>
+                    <input type="text" placeholder="Full Name" class="form-input">
+                    <input type="text" placeholder="Phone Number" class="form-input">
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm">2</span>
-                    Upload Your Document
-                </h3>
-                <div class="upload-box rounded-3xl p-12 text-center relative group">
-                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer z-10" id="docUpload">
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold">2. Upload Your Document</h3>
+                <div class="border-4 border-dashed border-gray-100 rounded-3xl p-12 text-center hover:bg-gray-50 transition-all cursor-pointer relative group">
+                    <input type="file" id="fileInput" class="absolute inset-0 opacity-0 cursor-pointer" onchange="calculatePrice()">
                     <div class="space-y-3">
-                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-file-upload text-2xl"></i>
-                        </div>
-                        <p class="text-lg font-bold text-gray-700">Click to upload a file</p>
-                        <p class="text-sm text-gray-400 font-bold uppercase tracking-tighter">S.No: 001 | PDF, DOCX, PNG, JPG</p>
+                        <i class="fas fa-cloud-arrow-up text-5xl text-blue-500 group-hover:scale-110 transition-transform"></i>
+                        <p class="font-bold text-gray-700">Click to upload a file</p>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">S.No: 001 | PDF, DOCX, JPG, PNG Supported</p>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-3">
-                    <span class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm">3</span>
-                    Choose Options
-                </h3>
+            <div class="space-y-4">
+                <h3 class="text-xl font-bold">3. Choose Options</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-gray-600 ml-1">Printing Type</label>
-                        <select id="printType" class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl outline-none focus:border-blue-500 appearance-none cursor-pointer" onchange="calculatePrice(2)">
-                            <option value="bw">Black & White</option>
-                            <option value="color">Color</option>
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Printing Type</label>
+                        <select id="pType" class="form-input bg-white" onchange="calculatePrice()">
+                            <option value="bw">Black & White (₹2)</option>
+                            <option value="color">Color (₹10)</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-gray-600 ml-1">Side Type</label>
-                        <select id="sideType" class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl outline-none focus:border-blue-500 appearance-none cursor-pointer">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Side Type</label>
+                        <select id="sType" class="form-input bg-white" onchange="calculatePrice()">
                             <option value="1">One Side</option>
                             <option value="2">Two Sides</option>
                             <option value="0.5">1/2 Page</option>
                             <option value="0.25">1/4 Page</option>
+                            <option value="0.125">1/8 Page</option>
                         </select>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-bold text-gray-600 ml-1">Number of Copies</label>
-                        <input type="number" id="copiesCount" value="1" min="1" class="w-full bg-gray-50 border-2 border-gray-100 p-4 rounded-2xl outline-none focus:border-blue-500" oninput="calculatePrice(2)">
+                    <div>
+                        <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Copies</label>
+                        <input type="number" id="pCopies" value="1" min="1" class="form-input" oninput="calculatePrice()">
                     </div>
                 </div>
             </div>
 
-            <div class="bg-slate-900 rounded-[2rem] p-8 flex justify-between items-center shadow-xl">
-                <div>
-                    <p class="text-blue-400 text-xs font-black uppercase tracking-widest">Total Estimated Cost</p>
-                    <h4 class="text-white text-4xl font-black">₹<span id="total-amount">0</span></h4>
-                </div>
-                <i class="fas fa-receipt text-blue-500 text-4xl opacity-20"></i>
+            <div class="bg-gray-50 p-8 rounded-3xl flex justify-between items-center border">
+                <span class="text-gray-400 font-black uppercase tracking-widest">Total Price:</span>
+                <span class="text-5xl font-black text-slate-900">₹<span id="final-price">2</span></span>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-4 pt-4">
-                <button type="submit" class="flex-1 bg-green-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-green-700 shadow-lg hover:-translate-y-1 transition-all uppercase">Order Now</button>
-                <button type="button" class="flex-1 bg-slate-100 text-slate-800 py-5 rounded-2xl font-black text-xl hover:bg-slate-200 transition-all uppercase border-2 border-slate-200">Add to Cart</button>
+            <div class="flex flex-col md:flex-row gap-4 pt-6">
+                <button type="submit" class="flex-1 bg-green-600 text-white font-black py-5 rounded-2xl hover:bg-green-700 shadow-xl transition-all">ORDER NOW</button>
+                <button type="button" class="flex-1 bg-gray-100 text-slate-800 font-black py-5 rounded-2xl border hover:bg-gray-200">ADD TO CART</button>
             </div>
         </form>
     </div>

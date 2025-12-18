@@ -1,0 +1,18 @@
+/* Highlight Sections */
+.highlight-bg { background-color: #f0f7ff; } /* Light Blue */
+
+/* Service Tabs */
+.service-tab {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.active-tab {
+    border-bottom: 4px solid;
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styles */
+.form-input {
+    @apply w-full border-2 border-gray-100 p-4 rounded-2xl outline-none focus:border-blue-500 transition-all bg-gray-50;
+}

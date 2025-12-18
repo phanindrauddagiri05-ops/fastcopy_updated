@@ -1,0 +1,41 @@
+/* Service Selection Tabs */
+.service-tab {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 4px solid transparent;
+    cursor: pointer;
+}
+
+.service-tab:hover {
+    background-color: #f8fafc;
+    transform: translateY(-2px);
+}
+
+/* Active Tab State (Applied via JS) */
+.active-tab {
+    background-color: #ffffff !important;
+    border-bottom: 4px solid var(--primary-blue) !important;
+    color: var(--primary-blue) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Document Upload Box */
+.upload-area {
+    border: 3px dashed #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-blue);
+    background-color: #f8fafc;
+    transform: scale(1.01);
+}
+
+/* Dynamic Form Header Transition */
+#form-header {
+    transition: background-color 0.5s ease-in-out;
+}
+
+/* Form Input Focus */
+.form-input-custom {
+    @apply w-full border-2 border-gray-100 p-4 rounded-2xl outline-none transition-all bg-gray-50 focus:border-blue-500 focus:bg-white;
+}

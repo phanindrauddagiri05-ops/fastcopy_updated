@@ -1,66 +1,52 @@
-/* Custom Styles for Fast Copy */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-.active-service-tab {
-    border-bottom: 4px solid #2563eb !important;
-    background-color: #eff6ff !important;
-    color: #2563eb !important;
+/* Custom Global Styles for Fast Copy */
+:root {
+    --primary-blue: #2563eb;
+    --dark-slate: #0f172a;
+    --highlight-light: #f0f7ff;
 }
 
-.service-tab {
+body {
+    font-family: 'Inter', sans-serif;
+    scroll-behavior: smooth;
+}
+
+/* Navigation Bar Styles */
+.nav-link {
+    font-weight: 700;
+    color: #4b5563;
     transition: all 0.3s ease;
 }
 
-@keyframes bounce-slow {
-    0%, 100% { transform: translateY(-5%); }
-    50% { transform: translateY(5%); }
+.nav-link:hover {
+    color: var(--primary-blue);
 }
 
-.animate-bounce-slow {
-    animation: bounce-slow 4s infinite ease-in-out;
+/* Highlight Section Background (Hero & CTA) */
+.highlight-bg {
+    background-color: var(--highlight-light);
 }
 
-/* Service Header Transition */
-#form-header {
-    transition: background-color 0.7s ease;
+/* Footer Styling */
+footer {
+    background-color: var(--dark-slate);
 }
 
-/* Custom Scrollbar for Service Tabs */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Service Tab Styling */
-.service-tab {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: 4px solid transparent;
+/* 3D Floating Animation for Hero Images */
+.floating-3d {
+    animation: floating 4s ease-in-out infinite;
 }
 
-.service-tab:hover {
-    transform: translateY(-3px);
-    background-color: #f8fafc;
+@keyframes floating {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
 }
 
-/* Active State - Managed by JS */
-.active-tab {
-    background-color: #f0f7ff !important;
-    border-bottom: 4px solid #2563eb !important;
-    color: #2563eb !important;
+/* Helper to hide scrollbars on horizontal tab row */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
-
-/* 3D Upload Box Effect */
-.upload-box {
-    transition: all 0.3s ease;
-    border: 3px dashed #e2e8f0;
-}
-
-.upload-box:hover {
-    border-color: #3b82f6;
-    background-color: #f1f5f9;
-    transform: scale(1.01);
-}
-
-/* Form Header Animation */
-#form-header-bg {
-    transition: background-color 0.6s ease-in-out;
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
