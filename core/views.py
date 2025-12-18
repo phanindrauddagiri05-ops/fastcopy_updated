@@ -10,3 +10,5 @@ def services_page(request):
     return render(request, 'core/services.html', {'services': services})
 def about(request):
     return render(request, 'core/about.html')
+def contact(request):
+    return render(request, 'core/contact.html')

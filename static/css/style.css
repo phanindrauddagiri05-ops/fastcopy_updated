@@ -1,136 +1,79 @@
-{% extends 'base.html' %}
-{% load static %}
+/* --- Global Styles --- */
+:root {
+    --primary: #2563eb;
+    --dark: #0f172a;
+    --highlight: #f0f7ff;
+}
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'css/about.css' %}">
+body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
-<section class="bg-white py-20 px-6">
-    <div class="container mx-auto text-center" data-aos="fade-down">
-        <h1 class="text-4xl md:text-5xl font-black text-slate-900 mb-4 uppercase">About Fast Copy</h1>
-        <p class="text-gray-500 max-w-2xl mx-auto text-lg">We combine traditional printing values with modern technology to deliver excellence at your doorstep.</p>
-    </div>
-</section>
+/* --- 3D Animations --- */
+[data-aos] { pointer-events: none; }
+.aos-animate { pointer-events: auto; }
 
-<section class="bg-white pb-20 px-6">
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div class="quality-card p-10 rounded-3xl border border-gray-100 text-center" data-aos="zoom-in">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-blue">
-                <i class="fas fa-users text-2xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Happy Customers</h3>
-            <p class="text-sm text-gray-500">Over 5,000 satisfied users daily.</p>
-        </div>
-        <div class="quality-card p-10 rounded-3xl border border-gray-100 text-center" data-aos="zoom-in" data-aos-delay="100">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-green">
-                <i class="fas fa-file-invoice text-2xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Documents Printed</h3>
-            <p class="text-sm text-gray-500">1 Million+ pages printed this year.</p>
-        </div>
-        <div class="quality-card p-10 rounded-3xl border border-gray-100 text-center" data-aos="zoom-in" data-aos-delay="200">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-red">
-                <i class="fas fa-hand-holding-heart text-2xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Reasonable Care</h3>
-            <p class="text-sm text-gray-500">Privacy and security guaranteed.</p>
-        </div>
-        <div class="quality-card p-10 rounded-3xl border border-gray-100 text-center" data-aos="zoom-in" data-aos-delay="300">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 icon-yellow">
-                <i class="fas fa-award text-2xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2">Certified Quality</h3>
-            <p class="text-sm text-gray-500">Standard ISO print materials.</p>
-        </div>
-    </div>
-</section>
+.floating-3d {
+    animation: floating 4s ease-in-out infinite;
+}
+@keyframes floating {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+}
 
-<section class="bg-gray-50 py-24 px-6">
-    <div class="container mx-auto grid md:grid-cols-2 gap-16">
-        <div data-aos="fade-right">
-            <h2 class="text-3xl font-black text-slate-900 uppercase">Our Story</h2>
-            <div class="story-underline mb-6"></div>
-            <p class="text-gray-600 leading-relaxed mb-6">
-                Fast Copy was founded with a single goal: to solve the hassle of traditional xerox shops. We realized that students and professionals waste hours waiting in queues.
-            </p>
-            <p class="text-gray-600 leading-relaxed">
-                By integrating a smart booking system with ultra-fast delivery, we have transformed how printing works. Today, we are the most trusted online xerox partner in the region.
-            </p>
-        </div>
-        <div class="space-y-8" data-aos="fade-left">
-            <h2 class="text-3xl font-black text-slate-900 uppercase">Our Values</h2>
-            <div class="story-underline mb-6"></div>
-            <div class="flex gap-6">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center icon-blue shrink-0"><i class="fas fa-check"></i></div>
-                <div>
-                    <h4 class="font-bold text-lg">Quality First</h4>
-                    <p class="text-gray-500 text-sm">We use high-grade 75GSM+ paper and original pigment inks for crisp text.</p>
-                </div>
-            </div>
-            <div class="flex gap-6">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center icon-green shrink-0"><i class="fas fa-bolt"></i></div>
-                <div>
-                    <h4 class="font-bold text-lg">Fast Service</h4>
-                    <p class="text-gray-500 text-sm">Our automated workflow ensures your documents are processed immediately.</p>
-                </div>
-            </div>
-            <div class="flex gap-6">
-                <div class="w-12 h-12 rounded-xl flex items-center justify-center icon-red shrink-0"><i class="fas fa-headset"></i></div>
-                <div>
-                    <h4 class="font-bold text-lg">Customer Care</h4>
-                    <p class="text-gray-500 text-sm">A dedicated support team is available 24/7 for all your order queries.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+/* --- Home Page Specific --- */
+.hero-highlight { background-color: var(--highlight); }
 
-<section class="bg-white py-24 px-6">
-    <div class="container mx-auto text-center mb-16">
-        <h2 class="text-3xl font-black uppercase" data-aos="fade-up">What We Offer</h2>
-        <p class="text-gray-500 mt-2">Comprehensive solutions for every document need.</p>
-    </div>
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div class="text-center" data-aos="fade-up">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 icon-blue"><i class="fas fa-print"></i></div>
-            <h4 class="font-bold mb-2">High Quality Printing</h4>
-            <p class="text-xs text-gray-400">Crisp, clear, and professional.</p>
-        </div>
-        <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 icon-green"><i class="fas fa-book-open"></i></div>
-            <h4 class="font-bold mb-2">Professional Binding</h4>
-            <p class="text-xs text-gray-400">Spiral, Soft, and Thesis binding.</p>
-        </div>
-        <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 icon-red"><i class="fas fa-shipping-fast"></i></div>
-            <h4 class="font-bold mb-2">Quick Turnaround</h4>
-            <p class="text-xs text-gray-400">Ready in minutes, delivered in hours.</p>
-        </div>
-        <div class="text-center" data-aos="fade-up" data-aos-delay="300">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 icon-yellow"><i class="fas fa-user-tie"></i></div>
-            <h4 class="font-bold mb-2">Personal Service</h4>
-            <p class="text-xs text-gray-400">Tailored to your specific needs.</p>
-        </div>
-    </div>
-</section>
+/* --- Services Page Specific --- */
+.service-tab {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 4px solid transparent;
+}
+.active-tab {
+    background-color: white !important;
+    border-bottom: 4px solid var(--primary) !important;
+    color: var(--primary) !important;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+.upload-area {
+    border: 3px dashed #e2e8f0;
+    transition: all 0.3s ease;
+}
+.upload-area:hover {
+    border-color: var(--primary);
+    background-color: #f8fafc;
+}
 
-<section class="bg-gray-50 py-20 px-6">
-    <div class="container mx-auto">
-        <h2 class="text-3xl font-black text-center mb-16 uppercase">Get in Touch</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div class="flex items-center gap-6" data-aos="fade-right">
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center icon-blue text-xl"><i class="fas fa-map-marker-alt"></i></div>
-                <div><h4 class="font-bold">Visit Us</h4><p class="text-gray-500 text-sm">Print Hub, City Road, VSP</p></div>
-            </div>
-            <div class="flex items-center gap-6" data-aos="fade-up">
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center icon-green text-xl"><i class="fas fa-phone-alt"></i></div>
-                <div><h4 class="font-bold">Call Us</h4><p class="text-gray-500 text-sm">+91 98765 43210</p></div>
-            </div>
-            <div class="flex items-center gap-6" data-aos="fade-left">
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center icon-red text-xl"><i class="fas fa-envelope"></i></div>
-                <div><h4 class="font-bold">Email Us</h4><p class="text-gray-500 text-sm">support@fastcopy.com</p></div>
-            </div>
-        </div>
-    </div>
-</section>
+/* --- About Page Specific --- */
+.icon-box {
+    width: 60px; height: 60px;
+    border-radius: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+}
+.blue-icon { color: #3b82f6; background: #eff6ff; }
+.green-icon { color: #10b981; background: #ecfdf5; }
+.red-icon { color: #ef4444; background: #fef2f2; }
+.yellow-icon { color: #f59e0b; background: #fffbeb; }
 
-{% endblock %}
+.quality-card:hover { transform: translateY(-10px); transition: 0.3s; }
+
+/* --- Contact Page Specific --- */
+.contact-input {
+    @apply w-full border-2 border-slate-100 p-4 rounded-2xl outline-none focus:border-blue-500 transition-all bg-slate-50 focus:bg-white;
+}
+
+.help-section {
+    background-color: #2563eb; /* Highlighted Blue */
+    color: white;
+    border-radius: 2rem;
+}
+
+.contact-icon-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
