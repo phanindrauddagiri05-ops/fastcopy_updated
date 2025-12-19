@@ -4,37 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Copy | Online Xerox</title>
+    <title>Fast Copy | Premium Xerox Solutions</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="bg-white text-slate-900">
-    <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="/" class="text-2xl font-black text-blue-600 tracking-tighter">FAST COPY</a>
-            <div class="hidden md:flex space-x-8 font-bold items-center">
-                <a href="/">Home</a>
-                <a href="/services">Services</a>
-                <a href="/about">About Us</a>
-                <a href="/contact">Contact</a>
-                <a href="/cart"><i class="fas fa-shopping-cart"></i> Cart</a>
-                <a href="/login" class="bg-blue-600 text-white px-6 py-2 rounded-full">Login</a>
+<body>
+
+    <nav class="bg-white sticky top-0 z-50 py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="/" class="text-2xl font-black text-blue-600 flex items-center gap-2">
+                <i class="fas fa-print"></i> FAST COPY
+            </a>
+            <div class="hidden md:flex space-x-8 items-center text-xs font-bold tracking-widest">
+                <a href="/" class="nav-link">HOME</a>
+                <a href="/services" class="nav-link">SERVICES</a>
+                <a href="/about" class="nav-link">ABOUT US</a>
+                <a href="/contact" class="nav-link">CONTACT</a>
+                <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart text-lg"></i></a>
+                <a href="/login" class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 transition shadow-lg">LOGIN</a>
             </div>
         </div>
     </nav>
 
-    {% block content %}{% endblock %}
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
-    <footer class="text-white pt-16 pb-8">
-        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-slate-800 pb-12">
-            <div><h3 class="text-xl font-bold mb-4">Fast Copy</h3><p class="text-slate-400 text-sm">Professional Online Xerox Booking with Door-step Delivery.</p></div>
-            <div><h4 class="font-bold mb-6 text-blue-400 uppercase text-xs">Quick Links</h4><ul class="space-y-3 text-slate-400 text-sm"><li><a href="/">Home</a></li><li><a href="/services">Services</a></li></ul></div>
-            <div><h4 class="font-bold mb-6 text-blue-400 uppercase text-xs">Contact Us</h4><p class="text-slate-400 text-sm">+91 98765 43210</p></div>
-            <div><h4 class="font-bold mb-6 text-blue-400 uppercase text-xs">Follow Us</h4><div class="flex space-x-4"><i class="fab fa-instagram"></i><i class="fab fa-whatsapp"></i></div></div>
+    <footer class="pt-16 pb-8">
+        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
+            <div>
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-blue-500">
+                    <i class="fas fa-print"></i> FAST COPY
+                </h3>
+                <p class="text-gray-400 text-sm leading-relaxed">The ultimate destination for all your printing needs. Quality service, fast delivery, and affordable prices.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Quick Links</h4>
+                <ul class="space-y-3 text-gray-400 text-sm">
+                    <li><a href="/" class="hover:text-white transition">Home</a></li>
+                    <li><a href="/services" class="hover:text-white transition">Services</a></li>
+                    <li><a href="/about" class="hover:text-white transition">About Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Contact Us</h4>
+                <p class="text-gray-400 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i> 123 Print St, Digital City</p>
+                <p class="text-gray-400 text-sm mb-2"><i class="fas fa-phone mr-2"></i> +91 98765 43210</p>
+                <p class="text-gray-400 text-sm"><i class="fas fa-envelope mr-2"></i> support@fastcopy.com</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Follow Us</h4>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-600 transition"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
         </div>
-        <p class="text-center text-slate-500 text-xs mt-8">&copy; 2025 Fast Copy. All Rights Reserved.</p>
+        <p class="text-center text-gray-500 text-xs mt-8">&copy; 2025 Fast Copy. All Rights Reserved.</p>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>

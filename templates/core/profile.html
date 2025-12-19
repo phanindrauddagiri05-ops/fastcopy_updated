@@ -4,57 +4,53 @@
     <div class="container mx-auto px-6">
         <div class="bg-white p-8 rounded-3xl shadow-sm mb-8 flex justify-between items-center" data-aos="fade-down">
             <div>
-                <h1 class="text-3xl font-black uppercase">Welcome, {{ user.first_name }}</h1>
+                <h1 class="text-3xl font-black uppercase">Hello, {{ user.first_name }}</h1>
                 <p class="text-slate-500 font-bold tracking-widest text-xs">MOBILE: {{ profile.mobile }}</p>
             </div>
-            <button class="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold">Edit Profile</button>
+            <button class="bg-slate-100 px-6 py-2 rounded-xl font-bold border">Edit Profile</button>
         </div>
 
         <div class="bg-white p-10 rounded-3xl shadow-sm mb-8" data-aos="fade-up">
-            <h3 class="text-xl font-black mb-8 uppercase text-blue-600 tracking-widest">Order Tracking</h3>
+            <h3 class="text-xl font-black mb-10 uppercase text-blue-600 tracking-widest">Current Order Status</h3>
             <div class="grid grid-cols-3 gap-4 text-center">
-                <div class="group">
-                    <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white shadow-lg"><i class="fas fa-spinner fa-spin"></i></div>
-                    <p class="font-bold text-xs uppercase">In Progress</p>
+                <div>
+                    <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-xl border-4 border-white"><i class="fas fa-print"></i></div>
+                    <p class="font-bold text-[10px] uppercase">In Progress</p>
                 </div>
                 <div class="opacity-30">
-                    <div class="w-16 h-16 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white"><i class="fas fa-box-open"></i></div>
-                    <p class="font-bold text-xs uppercase">Ready</p>
+                    <div class="w-16 h-16 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white"><i class="fas fa-check"></i></div>
+                    <p class="font-bold text-[10px] uppercase">Ready</p>
                 </div>
                 <div class="opacity-30">
-                    <div class="w-16 h-16 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white"><i class="fas fa-truck"></i></div>
-                    <p class="font-bold text-xs uppercase">Delivered</p>
+                    <div class="w-16 h-16 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white"><i class="fas fa-truck-fast"></i></div>
+                    <p class="font-bold text-[10px] uppercase">Delivered</p>
                 </div>
             </div>
         </div>
 
-        <div class="space-y-4" data-aos="fade-up">
+        <div class="space-y-4">
             <h3 class="text-xl font-black uppercase mb-4 tracking-widest">Booking History</h3>
             {% for order in orders %}
-            <div class="bg-white p-6 rounded-2xl border flex justify-between items-center">
-                <div>
-                    <h4 class="font-black uppercase text-slate-800">{{ order.service_name }}</h4>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">{{ order.created_at|date:"d M Y" }}</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-xl font-black">₹{{ order.total_price }}</p>
-                    <span class="text-[10px] font-black uppercase text-blue-600">{{ order.status }}</span>
-                </div>
+            <div class="bg-white p-6 rounded-2xl border flex justify-between items-center" data-aos="fade-left">
+                <div><h4 class="font-black uppercase text-sm">{{ order.service_name }}</h4><p class="text-[10px] text-slate-400 font-bold uppercase">{{ order.created_at|date:"d M Y" }}</p></div>
+                <div class="text-right"><p class="text-xl font-black">₹{{ order.total_price }}</p><span class="text-[10px] font-black uppercase text-blue-600">{{ order.status }}</span></div>
             </div>
             {% empty %}
-            <p class="text-center text-slate-400 py-10">No orders yet.</p>
+            <div class="text-center py-10 bg-white rounded-2xl border-2 border-dashed text-slate-400 font-bold">No orders yet.</div>
             {% endfor %}
         </div>
 
         <div class="mt-12 text-center">
-            <button onclick="confirmLogout()" class="text-red-500 font-black uppercase text-xs flex items-center gap-2 mx-auto"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <button onclick="logoutCall()" class="text-red-500 font-black uppercase text-xs flex items-center gap-2 mx-auto hover:text-red-700 transition">
+                <i class="fas fa-sign-out-alt"></i> LOGOUT FROM FAST COPY
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-    function confirmLogout() {
-        if(confirm("Logout from Fast Copy?")) window.location.href = "{% url 'logout' %}";
+    function logoutCall() {
+        if(confirm("Are you sure you want to logout?")) window.location.href = "{% url 'logout' %}";
     }
 </script>
 {% endblock %}

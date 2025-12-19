@@ -1,68 +1,88 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<section class="bg-white py-12 px-6 border-b">
-    <div class="container mx-auto text-center" data-aos="fade-down">
-        <h1 class="text-4xl font-black uppercase">Configure Your Order</h1>
-        <p class="text-slate-500 mt-2">Select a service and customize your document details.</p>
-    </div>
+<section class="bg-white py-16 px-6 text-center" data-aos="fade-down">
+    <h1 class="text-4xl font-black uppercase tracking-tight">Configure Your Service</h1>
+    <p class="text-slate-500 mt-2">Professional quality standards for all your document needs.</p>
 </section>
 
-<div class="container mx-auto px-6 py-12">
+<div class="container mx-auto px-6 py-10">
     <div class="flex overflow-x-auto space-x-6 pb-6 mb-12 no-scrollbar border-b">
         {% for s in services %}
-        <button onclick="selectService('{{ s.name }}', '{{ forloop.counter }}')" 
-                id="btn-{{ forloop.counter }}"
-                class="service-tab whitespace-nowrap px-10 py-4 rounded-t-3xl border border-b-0 font-bold flex items-center gap-3">
-            <i class="fas {{ s.icon_class }}"></i> {{ s.name }}
-        </button>
+        <div onclick="selectService('{{ s.name }}', '{{ forloop.counter }}')" 
+             id="tab-{{ forloop.counter }}" 
+             class="service-tab bg-white px-10 py-5 rounded-t-3xl border border-b-0 flex items-center gap-3 font-bold whitespace-nowrap">
+            <i class="fas {{ s.icon_class }} text-xl"></i> {{ s.name }}
+        </div>
         {% endfor %}
     </div>
 
-    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border" data-aos="zoom-in">
-        <div id="form-header" class="p-8 text-white transition-all duration-500 bg-blue-600">
-            <h2 id="active-service-title" class="text-3xl font-black uppercase tracking-widest">Printing</h2>
+    <div class="max-w-4xl mx-auto rounded-[2.5rem] shadow-2xl overflow-hidden border bg-white" data-aos="zoom-in">
+        <div id="form-header" class="p-8 text-white transition-all duration-700">
+            <h2 id="form-title" class="text-3xl font-black uppercase tracking-widest">Printing</h2>
         </div>
 
-        <form class="p-8 md:p-12 space-y-10">
+        <form method="POST" enctype="multipart/form-data" class="p-8 md:p-12 space-y-10">
+            {% csrf_token %}
+            <input type="hidden" name="service_name" id="hidden_service_name" value="Printing">
+            <input type="hidden" name="total_price_hidden" id="total_price_hidden" value="0">
+
             <div class="space-y-4">
-                <h3 class="text-xl font-bold">1. Your Information</h3>
+                <h3 class="text-xl font-black text-slate-800">1. Your Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input type="text" placeholder="Full Name" class="w-full border-2 p-4 rounded-2xl outline-none focus:border-blue-500 bg-slate-50">
-                    <input type="text" placeholder="Phone Number" class="w-full border-2 p-4 rounded-2xl outline-none focus:border-blue-500 bg-slate-50">
+                    <input type="text" placeholder="Full Name" required class="custom-input">
+                    <input type="text" placeholder="Phone Number" required class="custom-input">
                 </div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-xl font-bold">2. Upload Your Document</h3>
-                <div class="upload-area rounded-3xl p-12 text-center relative group">
-                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updatePrice()">
-                    <i class="fas fa-cloud-arrow-up text-5xl text-blue-500 mb-4"></i>
-                    <p class="font-bold text-slate-700">Click to upload file</p>
-                    <p class="text-xs text-slate-400 mt-1 uppercase">PDF, DOCX, JPG supported</p>
+                <h3 class="text-xl font-black text-slate-800">2. Upload Your Document</h3>
+                <div class="upload-box rounded-3xl p-12 text-center relative group">
+                    <input type="file" name="document" accept=".pdf" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFileUpload(this)">
+                    <div id="upload-status" class="space-y-3">
+                        <i class="fas fa-cloud-arrow-up text-5xl text-blue-500 floating-3d"></i>
+                        <p class="font-bold">Click to upload file</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">S.No: 001 | PDF Only</p>
+                    </div>
                 </div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-xl font-bold">3. Choose Options</h3>
+                <h3 class="text-xl font-black text-slate-800">3. Choose Options</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <select id="pType" class="w-full border-2 p-4 rounded-2xl bg-white outline-none focus:border-blue-500" onchange="updatePrice()">
-                        <option value="bw">Black & White (₹2)</option><option value="color">Color (₹10)</option>
+                    <select name="print_type" id="print-type" class="custom-input" onchange="updatePrice()">
+                        <option value="bw">Black & White (₹2)</option>
+                        <option value="color">Color (₹10)</option>
                     </select>
-                    <select id="sType" class="w-full border-2 p-4 rounded-2xl bg-white outline-none focus:border-blue-500" onchange="updatePrice()">
-                        <option value="1">One Side</option><option value="2">Two Sides</option><option value="0.5">1/2 Page</option><option value="0.25">1/4 Page</option>
+                    <select name="side_type" id="side-type" class="custom-input" onchange="updatePrice()">
+                        <option value="1">One Side</option>
+                        <option value="2">Two Sides</option>
+                        <option value="0.5">1/2 Page</option>
+                        <option value="0.25">1/4 Page</option>
+                        <option value="0.125">1/8 Page</option>
                     </select>
-                    <input type="number" id="pCopies" value="1" min="1" class="w-full border-2 p-4 rounded-2xl outline-none focus:border-blue-500" oninput="updatePrice()">
+                    <input type="number" id="copy-count" value="1" min="1" name="copies" class="custom-input" oninput="updatePrice()">
                 </div>
             </div>
 
-            <div class="bg-slate-50 p-8 rounded-3xl flex justify-between items-center border">
-                <span class="text-slate-400 font-bold uppercase tracking-widest">Estimated Price:</span>
-                <span class="text-4xl font-black text-slate-900">₹<span id="final-price">2</span></span>
+            <div class="bg-slate-900 p-8 rounded-3xl flex justify-between items-center text-white border-b-4 border-blue-600">
+                <div>
+                    <p class="text-[10px] font-black uppercase text-blue-400 tracking-widest">Total Price</p>
+                    <h4 class="text-5xl font-black">₹<span id="price-display">0</span></h4>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold opacity-50 uppercase">Detected Pages: <span id="page-display">0</span></p>
+                </div>
             </div>
 
-            <div class="flex gap-4">
-                <button type="submit" class="flex-1 bg-green-600 text-white font-black py-5 rounded-2xl hover:bg-green-700 shadow-lg">ORDER NOW</button>
-                <button type="button" class="flex-1 bg-slate-100 text-slate-800 font-black py-5 rounded-2xl border hover:bg-slate-200">ADD TO CART</button>
+            <div class="flex flex-col md:flex-row gap-4 pt-4">
+                <button type="submit" id="order-btn" class="flex-1 text-white font-black py-5 rounded-2xl shadow-xl transition-all uppercase">
+                    Order Now
+                </button>
+                <button type="button" onclick="addToCart()" class="flex-1 bg-slate-100 text-slate-800 font-black py-5 rounded-2xl border-2 hover:bg-slate-200 uppercase">
+                    Add to Cart
+                </button>
             </div>
         </form>
     </div>

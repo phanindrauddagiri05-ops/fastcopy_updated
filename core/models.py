@@ -15,12 +15,22 @@ class Profile(models.Model):
 
 class Order(models.Model):
     STATUS = [
-        ('In Progress', 'In Progress'),
-        ('Ready', 'Order is Ready'),
+        ('In Progress', 'In Progress'), 
+        ('Ready', 'Ready'), 
         ('Delivered', 'Delivered')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     service_name = models.CharField(max_length=100)
-    total_price = models.IntegerField()
+    document = models.FileField(upload_to='orders/', null=True, blank=True)
+    
+    # ADDED DEFAULTS TO FIX MIGRATION ERRORS
+    print_type = models.CharField(max_length=20, default='bw') 
+    side_type = models.CharField(max_length=20, default='1') # Default to One Side
+    copies = models.IntegerField(default=1)
+    total_price = models.IntegerField(default=0)
+    
     status = models.CharField(max_length=20, choices=STATUS, default='In Progress')
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} - {self.service_name}"

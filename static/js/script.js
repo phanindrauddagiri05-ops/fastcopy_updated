@@ -1,82 +1,88 @@
-// Service Configuration
-const serviceData = {
-    'Printing': { color: '#2563eb', rate: 2 },
-    'Spiral Binding': { color: '#9333ea', rate: 45 },
-    'Soft Binding': { color: '#db2777', rate: 60 },
-    'Custom Printing': { color: '#059669', rate: 15 },
-    'Thesis Binding': { color: '#d97706', rate: 150 },
-    'Photo Frames': { color: '#dc2626', rate: 200 }
+const serviceThemes = {
+    'Printing': '#2563eb',
+    'Spiral Binding': '#9333ea',
+    'Soft Binding': '#db2777',
+    'Custom Printing': '#059669',
+    'Thesis Binding': '#d97706',
+    'Photo Frames': '#dc2626'
 };
 
+let detectedPages = 0;
+
 function selectService(name, id) {
-    const config = serviceData[name] || serviceData['Printing'];
+    const themeColor = serviceThemes[name] || '#2563eb';
     
-    // Update Form Header
-    const header = document.getElementById('form-header');
-    const title = document.getElementById('active-service-title');
-    if(header) header.style.backgroundColor = config.color;
-    if(title) title.innerText = name;
+    // UI Updates
+    document.getElementById('form-title').innerText = name;
+    document.getElementById('hidden_service_name').value = name;
+    document.getElementById('form-header').style.backgroundColor = themeColor;
+    document.getElementById('order-btn').style.backgroundColor = themeColor;
 
-    // Update Tabs
-    document.querySelectorAll('.service-tab').forEach(tab => tab.classList.remove('active-tab'));
-    const activeBtn = document.getElementById('btn-' + id);
-    if(activeBtn) activeBtn.classList.add('active-tab');
-
-    // Calculate initial price for new service
-    updatePrice(config.rate);
+    // Tab Highlighting
+    document.querySelectorAll('.service-tab').forEach(t => t.classList.remove('active-tab'));
+    document.getElementById('tab-' + id).classList.add('active-tab');
+    
+    updatePrice();
 }
 
-function updatePrice(customRate = null) {
-    const type = document.getElementById('pType');
-    const side = document.getElementById('sType');
-    const copies = document.getElementById('pCopies');
-    const display = document.getElementById('final-price');
+async function handleFileUpload(input) {
+    if (!input.files[0]) return;
+    const formData = new FormData();
+    formData.append('document', input.files[0]);
 
-    if(!display) return;
+    document.getElementById('upload-status').innerHTML = `<i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i><p>Counting Pages...</p>`;
 
-    // Determine Base Rate
-    let base = customRate;
-    if(!base) {
-        const activeTitle = document.getElementById('active-service-title').innerText;
-        base = serviceData[activeTitle].rate;
+    const res = await fetch('/calculate-pages/', { method: 'POST', body: formData });
+    const data = await res.json();
+    
+    if (data.success) {
+        detectedPages = data.pages;
+        document.getElementById('page-display').innerText = data.pages;
+        document.getElementById('upload-status').innerHTML = `<i class="fas fa-check-circle text-3xl text-green-500"></i><p class="text-sm font-bold">${input.files[0].name}</p>`;
+        updatePrice();
     }
-
-    const typeMult = (type && type.value === 'color') ? 5 : 1;
-    const sideMult = side ? parseFloat(side.value) : 1;
-    const count = copies ? (parseInt(copies.value) || 1) : 1;
-
-    const total = (base * typeMult * sideMult) * count;
-    display.innerText = Math.ceil(total);
 }
 
-// Global Initialization
+function updatePrice() {
+    const rate = document.getElementById('print-type').value === 'bw' ? 2 : 10;
+    const sides = parseFloat(document.getElementById('side-type').value);
+    const copies = parseInt(document.getElementById('copy-count').value) || 1;
+    
+    const total = (detectedPages * rate * sides) * copies;
+    document.getElementById('price-display').innerText = Math.ceil(total);
+    document.getElementById('total_price_hidden').value = Math.ceil(total);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize AOS
     AOS.init({ duration: 1000, once: true });
-
-    // Auto-click first tab on Services page
     const firstTab = document.querySelector('.service-tab');
-    if(firstTab) firstTab.click();
+    if (firstTab) firstTab.click();
 });
 
-/**
- * Cart Calculation Logic
- */
-function updateCartTotal() {
-    const prices = document.querySelectorAll('.cart-item-card h4');
-    let total = 0;
-    prices.forEach(p => {
-        total += parseFloat(p.innerText.replace('₹', ''));
+// ... (Keep handleFileUpload and updatePrice functions from previous step) ...
+
+async function addToCart() {
+    const formData = new FormData();
+    formData.append('service_name', document.getElementById('hidden_service_name').value);
+    formData.append('print_type', document.getElementById('print-type').value);
+    formData.append('side_type', document.getElementById('side-type').value);
+    formData.append('copies', document.getElementById('copy-count').value);
+    formData.append('pages', detectedPages);
+    formData.append('total_price_hidden', document.getElementById('total_price_hidden').value);
+
+    const res = await fetch('/add-to-cart/', {
+        method: 'POST',
+        body: formData
     });
-    
-    const totalDisplay = document.getElementById('cart-total-display');
-    if (totalDisplay) {
-        totalDisplay.innerText = total.toLocaleString('en-IN');
+    const data = await res.json();
+
+    if (data.success) {
+        // Update the cart count in navbar
+        const badge = document.getElementById('cart-badge');
+        if(badge) badge.innerText = data.cart_count;
+        
+        alert("Item added to cart successfully!");
+    } else {
+        alert("Failed to add to cart.");
     }
 }
-
-// Update DOMContentLoaded to include cart init
-document.addEventListener('DOMContentLoaded', () => {
-    // ... existing logic
-    updateCartTotal();
-});
