@@ -10,20 +10,28 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
-
-    <nav class="bg-white sticky top-0 z-50 py-4">
+<body class="bg-slate-50">
+    <nav class="bg-white sticky top-0 z-50 py-4 shadow-sm">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <a href="/" class="text-2xl font-black text-blue-600 flex items-center gap-2">
+            <a href="{% url 'home' %}" class="text-2xl font-black text-blue-600 flex items-center gap-2">
                 <i class="fas fa-print"></i> FAST COPY
             </a>
             <div class="hidden md:flex space-x-8 items-center text-xs font-bold tracking-widest">
-                <a href="/" class="nav-link">HOME</a>
-                <a href="/services" class="nav-link">SERVICES</a>
-                <a href="/about" class="nav-link">ABOUT US</a>
-                <a href="/contact" class="nav-link">CONTACT</a>
-                <a href="/cart" class="nav-link"><i class="fas fa-shopping-cart text-lg"></i></a>
-                <a href="/login" class="bg-blue-600 text-white px-8 py-3 rounded-full hover:bg-blue-700 transition shadow-lg">LOGIN</a>
+                <a href="{% url 'home' %}" class="nav-link">HOME</a>
+                <a href="{% url 'services' %}" class="nav-link">SERVICES</a>
+                <a href="{% url 'about' %}" class="nav-link">ABOUT US</a>
+                <a href="{% url 'contact' %}" class="nav-link">CONTACT</a>
+                <a href="{% url 'cart' %}" class="nav-link relative">
+                    <i class="fas fa-shopping-cart text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+                        {{ request.session.cart|length }}
+                    </span>
+                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg">PROFILE</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg">LOGIN</a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -32,33 +40,32 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="pt-16 pb-8">
+    <footer class="bg-slate-900 pt-16 pb-8 mt-20">
         <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
             <div>
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-blue-500">
                     <i class="fas fa-print"></i> FAST COPY
                 </h3>
-                <p class="text-gray-400 text-sm leading-relaxed">The ultimate destination for all your printing needs. Quality service, fast delivery, and affordable prices.</p>
+                <p class="text-gray-400 text-sm leading-relaxed">Your ultimate destination for quality printing, fast delivery, and affordable binding solutions.</p>
             </div>
             <div>
                 <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Quick Links</h4>
                 <ul class="space-y-3 text-gray-400 text-sm">
-                    <li><a href="/" class="hover:text-white transition">Home</a></li>
-                    <li><a href="/services" class="hover:text-white transition">Services</a></li>
-                    <li><a href="/about" class="hover:text-white transition">About Us</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'services' %}">Services</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Contact Us</h4>
-                <p class="text-gray-400 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i> 123 Print St, Digital City</p>
                 <p class="text-gray-400 text-sm mb-2"><i class="fas fa-phone mr-2"></i> +91 98765 43210</p>
                 <p class="text-gray-400 text-sm"><i class="fas fa-envelope mr-2"></i> support@fastcopy.com</p>
             </div>
             <div>
-                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Follow Us</h4>
+                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Social</h4>
                 <div class="flex space-x-4">
-                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-600 transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
