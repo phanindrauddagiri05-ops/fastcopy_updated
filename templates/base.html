@@ -3,136 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAST COPY | Premium Printing & Binding</title>
-    
+    <title>FastCopy | Premium Printing Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap');
-        
-        :root {
-            --glass: rgba(255, 255, 255, 0.8);
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
-            overflow-x: hidden;
-        }
-
-        .nav-glass {
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .nav-link {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0%;
-            height: 2px;
-            background: #2563eb;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* 3D Button Effect */
+        /* Custom 3D Button Effect */
         .btn-3d {
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 0 #1e40af;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .btn-3d:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #1e40af;
+        .btn-3d:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.2);
         }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
+<body class="bg-slate-50">
 
-    <nav class="nav-glass sticky top-0 z-50 py-5">
-        <div class="container mx-auto px-6 flex justify-between items-center">
-            
-            <a href="{% url 'home' %}" class="text-2xl font-extrabold text-blue-600 flex items-center gap-2 tracking-tighter">
-                <i class="fas fa-bolt text-yellow-400"></i> FAST COPY
+    <nav class="glass-nav fixed w-full z-50 top-0">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="{% url 'home' %}" class="text-2xl font-black italic tracking-tighter text-slate-900 group">
+                FAST<span class="text-blue-600 group-hover:text-slate-900 transition-colors">COPY</span>
             </a>
 
-            <div class="hidden md:flex space-x-10 items-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">
-                <a href="{% url 'home' %}" class="nav-link">Home</a>
-                <a href="{% url 'services' %}" class="nav-link">Services</a>
-                <a href="{% url 'about' %}" class="nav-link">About</a>
-                <a href="{% url 'contact' %}" class="nav-link text-slate-400">Support</a>
-                
-                <a href="{% url 'cart' %}" class="relative group">
-                    <i class="fas fa-shopping-bag text-xl text-slate-800 transition-transform group-hover:scale-110"></i>
-                    <span id="cart-badge" class="absolute -top-2 -right-3 bg-red-600 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 border-2 border-white">
+            <div class="hidden md:flex items-center gap-10">
+                <a href="{% url 'home' %}" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-600 transition">Home</a>
+                <a href="{% url 'services' %}" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-600 transition">Services</a>
+                <a href="{% url 'about' %}" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-600 transition">About</a>
+                <a href="{% url 'contact' %}" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-600 transition">Contact</a>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <a href="{% url 'cart' %}" class="relative p-2 text-slate-700 hover:text-blue-600 transition">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    {% if request.session.cart %}
+                    <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-lg border-2 border-white">
                         {{ request.session.cart|length }}
                     </span>
+                    {% endif %}
                 </a>
 
                 {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="bg-blue-600 text-white px-7 py-3 rounded-full btn-3d text-[10px] flex items-center gap-2">
-                        <i class="fas fa-user-circle"></i> PROFILE
-                    </a>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-black text-blue-600 uppercase border-r pr-4 border-slate-200">
+                            Hi, {{ user.username }}
+                        </span>
+                        <a href="{% url 'logout' %}" class="btn-3d px-6 py-2.5 bg-red-50 text-red-600 rounded-full font-black uppercase text-[10px] tracking-widest">
+                            Logout
+                        </a>
+                    </div>
                 {% else %}
-                    <a href="{% url 'login' %}" class="bg-slate-900 text-white px-7 py-3 rounded-full btn-3d text-[10px]">
-                        LOGIN
+                    <a href="{% url 'login' %}" class="btn-3d px-8 py-3 bg-slate-900 text-white rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">
+                        Login
                     </a>
                 {% endif %}
             </div>
-
-            <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
 
-    {% if messages %}
-    <div class="fixed top-24 right-6 z-[100] space-y-3">
-        {% for message in messages %}
-        <div class="px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce
-            {% if message.tags == 'success' %} bg-green-500 {% else %} bg-red-500 {% endif %} text-white">
-            <i class="fas {% if message.tags == 'success' %} fa-check-circle {% else %} fa-exclamation-triangle {% endif %}"></i>
-            <span class="text-xs font-bold uppercase tracking-widest">{{ message }}</span>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+    <main class="pt-24 min-h-screen">
+        {% if messages %}
+            <div class="container mx-auto px-6 mb-4">
+                {% for message in messages %}
+                    <div class="p-4 rounded-2xl {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-100{% else %}bg-red-50 text-red-700 border border-red-100{% endif %} font-bold text-xs uppercase tracking-widest mb-2" data-aos="fade-left">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} mr-2"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-    <main>
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="bg-white border-t border-slate-100 py-12 mt-20">
+    <footer class="bg-white border-t border-slate-100 py-16 mt-20">
         <div class="container mx-auto px-6 text-center">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">
-                © 2025 Fast Copy Inc. | Digital Print Solutions
-            </p>
-            <div class="flex justify-center gap-6 text-slate-300">
-                <i class="fab fa-instagram hover:text-pink-500 transition-colors cursor-pointer"></i>
-                <i class="fab fa-whatsapp hover:text-green-500 transition-colors cursor-pointer"></i>
-                <i class="fab fa-twitter hover:text-blue-400 transition-colors cursor-pointer"></i>
+            <h2 class="text-xl font-black italic text-slate-800 uppercase tracking-tighter mb-4">FASTCOPY</h2>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.5em] mb-8">Premium Printing Solutions</p>
+            <div class="flex justify-center gap-6 text-slate-400">
+                <a href="#" class="hover:text-blue-600 transition"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="hover:text-blue-600 transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="hover:text-blue-600 transition"><i class="fab fa-facebook-f"></i></a>
             </div>
+            <p class="text-[8px] text-slate-300 font-bold mt-10 uppercase tracking-widest">&copy; 2025 FastCopy Services. All Rights Reserved.</p>
         </div>
     </footer>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
         AOS.init({
             duration: 800,
-            once: true
+            once: true,
+            easing: 'ease-out-back'
         });
     </script>
 </body>
