@@ -1,78 +1,139 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast Copy | Premium Xerox Solutions</title>
+    <title>FAST COPY | Premium Printing & Binding</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap');
+        
+        :root {
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .nav-glass {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* 3D Button Effect */
+        .btn-3d {
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #1e40af;
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1e40af;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
 </head>
-<body class="bg-slate-50">
-    <nav class="bg-white sticky top-0 z-50 py-4 shadow-sm">
+<body>
+
+    <nav class="nav-glass sticky top-0 z-50 py-5">
         <div class="container mx-auto px-6 flex justify-between items-center">
-            <a href="{% url 'home' %}" class="text-2xl font-black text-blue-600 flex items-center gap-2">
-                <i class="fas fa-print"></i> FAST COPY
+            
+            <a href="{% url 'home' %}" class="text-2xl font-extrabold text-blue-600 flex items-center gap-2 tracking-tighter">
+                <i class="fas fa-bolt text-yellow-400"></i> FAST COPY
             </a>
-            <div class="hidden md:flex space-x-8 items-center text-xs font-bold tracking-widest">
-                <a href="{% url 'home' %}" class="nav-link">HOME</a>
-                <a href="{% url 'services' %}" class="nav-link">SERVICES</a>
-                <a href="{% url 'about' %}" class="nav-link">ABOUT US</a>
-                <a href="{% url 'contact' %}" class="nav-link">CONTACT</a>
-                <a href="{% url 'cart' %}" class="nav-link relative">
-                    <i class="fas fa-shopping-cart text-lg"></i>
-                    <span id="cart-badge" class="absolute -top-2 -right-3 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
+
+            <div class="hidden md:flex space-x-10 items-center text-[11px] font-black uppercase tracking-[0.2em] text-slate-700">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'services' %}" class="nav-link">Services</a>
+                <a href="{% url 'about' %}" class="nav-link">About</a>
+                <a href="{% url 'contact' %}" class="nav-link text-slate-400">Support</a>
+                
+                <a href="{% url 'cart' %}" class="relative group">
+                    <i class="fas fa-shopping-bag text-xl text-slate-800 transition-transform group-hover:scale-110"></i>
+                    <span id="cart-badge" class="absolute -top-2 -right-3 bg-red-600 text-white text-[9px] font-bold rounded-full px-1.5 py-0.5 border-2 border-white">
                         {{ request.session.cart|length }}
                     </span>
                 </a>
+
                 {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}" class="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg">PROFILE</a>
+                    <a href="{% url 'profile' %}" class="bg-blue-600 text-white px-7 py-3 rounded-full btn-3d text-[10px] flex items-center gap-2">
+                        <i class="fas fa-user-circle"></i> PROFILE
+                    </a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="bg-blue-600 text-white px-8 py-3 rounded-full shadow-lg">LOGIN</a>
+                    <a href="{% url 'login' %}" class="bg-slate-900 text-white px-7 py-3 rounded-full btn-3d text-[10px]">
+                        LOGIN
+                    </a>
                 {% endif %}
             </div>
+
+            <button class="md:hidden text-2xl"><i class="fas fa-bars"></i></button>
         </div>
     </nav>
 
+    {% if messages %}
+    <div class="fixed top-24 right-6 z-[100] space-y-3">
+        {% for message in messages %}
+        <div class="px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce
+            {% if message.tags == 'success' %} bg-green-500 {% else %} bg-red-500 {% endif %} text-white">
+            <i class="fas {% if message.tags == 'success' %} fa-check-circle {% else %} fa-exclamation-triangle {% endif %}"></i>
+            <span class="text-xs font-bold uppercase tracking-widest">{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <main>
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
 
-    <footer class="bg-slate-900 pt-16 pb-8 mt-20">
-        <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
-            <div>
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-blue-500">
-                    <i class="fas fa-print"></i> FAST COPY
-                </h3>
-                <p class="text-gray-400 text-sm leading-relaxed">Your ultimate destination for quality printing, fast delivery, and affordable binding solutions.</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Quick Links</h4>
-                <ul class="space-y-3 text-gray-400 text-sm">
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'services' %}">Services</a></li>
-                    <li><a href="{% url 'about' %}">About Us</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Contact Us</h4>
-                <p class="text-gray-400 text-sm mb-2"><i class="fas fa-phone mr-2"></i> +91 98765 43210</p>
-                <p class="text-gray-400 text-sm"><i class="fas fa-envelope mr-2"></i> support@fastcopy.com</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6 text-blue-400 text-xs tracking-widest uppercase">Social</h4>
-                <div class="flex space-x-4">
-                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white"><i class="fab fa-instagram"></i></a>
-                </div>
+    <footer class="bg-white border-t border-slate-100 py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">
+                © 2025 Fast Copy Inc. | Digital Print Solutions
+            </p>
+            <div class="flex justify-center gap-6 text-slate-300">
+                <i class="fab fa-instagram hover:text-pink-500 transition-colors cursor-pointer"></i>
+                <i class="fab fa-whatsapp hover:text-green-500 transition-colors cursor-pointer"></i>
+                <i class="fab fa-twitter hover:text-blue-400 transition-colors cursor-pointer"></i>
             </div>
         </div>
-        <p class="text-center text-gray-500 text-xs mt-8">&copy; 2025 Fast Copy. All Rights Reserved.</p>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
 </body>
 </html>

@@ -1,92 +1,98 @@
 {% extends 'base.html' %}
-{% block content %}
-<section class="glass-header py-20 text-center" data-aos="fade-down">
-    <div class="container mx-auto px-6">
-        <h1 class="text-6xl font-black text-slate-900 tracking-tighter uppercase mb-4">Our Premium Services</h1>
-        <p class="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
-            High-quality printing and binding solutions delivered at your doorstep. 
-            Select a service below to customize your order.
-        </p>
-    </div>
-</section>
+{% load static %}
 
+{% block content %}
 <div class="container mx-auto px-6 py-12">
-    <div class="flex overflow-x-auto space-x-8 pb-12 no-scrollbar justify-center">
+    <div class="text-center mb-16" data-aos="zoom-in">
+        <h1 class="text-6xl font-black uppercase italic tracking-tighter">Fast <span class="text-blue-600">Copy</span> Services</h1>
+        <p class="text-slate-400 font-bold mt-2">Professional 3D Precise Pricing System</p>
+    </div>
+
+    <div class="flex overflow-x-auto space-x-6 pb-10 justify-center no-scrollbar" data-aos="fade-up">
         {% for s in services %}
-        <div onclick="selectService('{{ s.name }}', '{{ forloop.counter }}')" 
+        <div onclick="updateService('{{ s.name }}', '{{ s.theme_color }}', '{{ forloop.counter }}')" 
              id="tab-{{ forloop.counter }}"
-             class="service-tab bg-white p-10 rounded-[3rem] flex flex-col items-center gap-4 min-w-[200px] border-2">
-            <i class="fas {{ s.icon_class }} text-4xl text-slate-400"></i>
-            <span class="font-black uppercase text-xs tracking-widest text-slate-800">{{ s.name }}</span>
+             class="service-tab bg-white p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all duration-500 min-w-[180px] text-center
+             {% if forloop.first %} active-tab shadow-2xl -translate-y-2 {% endif %}"
+             style="{% if forloop.first %} border-color: {{ s.theme_color }}; {% endif %}">
+            <i class="fas {{ s.icon_class }} text-2xl mb-3" style="color: {{ s.theme_color }};"></i>
+            <p class="font-black uppercase text-[10px] tracking-widest">{{ s.name }}</p>
         </div>
         {% endfor %}
     </div>
 
-    <div id="main-form-card" class="max-w-4xl mx-auto bg-white border-t-[15px] rounded-[3.5rem] shadow-2xl overflow-hidden transition-all duration-700" data-aos="zoom-in">
+    <div id="main-card" class="max-w-6xl mx-auto bg-white rounded-[4rem] shadow-2xl border-t-[20px] p-12 transition-all duration-700" 
+         style="border-color: {{ first_service.theme_color }};" data-aos="fade-up">
         
-        <div id="form-header-bg" class="p-12 text-white flex justify-between items-center transition-colors duration-500">
-            <div>
-                <h2 id="service-title-display" class="text-4xl font-black uppercase italic tracking-tighter">Printing</h2>
-                <p id="service-desc" class="opacity-80 text-xs font-bold uppercase tracking-widest mt-2"></p>
-            </div>
-            <i id="floating-icon" class="fas fa-print text-6xl opacity-20 floating-3d"></i>
-        </div>
-
-        <form method="POST" enctype="multipart/form-data" class="p-10 space-y-16">
+        <form id="orderForm" method="POST" action="{% url 'order-now' %}" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="hidden" name="service_name" id="hidden_service_name">
-            <input type="hidden" name="total_price_hidden" id="total_price_hidden" value="0">
+            <input type="hidden" name="service_name" id="hidden-service-name" value="{{ first_service.name }}">
+            <input type="hidden" name="total_price_hidden" id="total-price-hidden" value="0">
+            <input type="hidden" name="print_type_label" id="p-label-hidden" value="B&W">
+            <input type="hidden" name="side_type_label" id="s-label-hidden" value="One Side">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="relative group">
-                    <input type="text" name="name" required class="custom-input peer placeholder-transparent" id="name_input">
-                    <label class="absolute left-6 -top-2.5 bg-white px-2 text-xs font-black text-slate-400 peer-placeholder-shown:text-base peer-placeholder-shown:top-5 peer-focus:-top-2.5 peer-focus:text-xs transition-all">FULL NAME</label>
-                </div>
-                <div class="relative">
-                    <span class="absolute left-6 top-5 font-black text-slate-300">+91</span>
-                    <input type="text" name="phone" required class="custom-input pl-16" placeholder="PHONE NUMBER">
-                </div>
-            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div class="space-y-10">
+                    <div>
+                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">1: Your Information</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" name="name" placeholder="Full Name" required class="p-5 bg-slate-50 rounded-3xl w-full focus:ring-2 focus:ring-blue-500 outline-none border-none">
+                            <input type="text" name="phone" placeholder="Phone Number" required class="p-5 bg-slate-50 rounded-3xl w-full focus:ring-2 focus:ring-blue-500 outline-none border-none">
+                        </div>
+                    </div>
 
-            <div class="dropzone-box relative overflow-hidden group">
-                <input type="file" name="document" accept=".pdf" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleFileUpload(this)">
-                <div id="upload-status" class="space-y-4">
-                    <i class="fas fa-cloud-upload-alt text-6xl text-slate-300 group-hover:text-blue-500 transition-colors floating-3d"></i>
-                    <p class="font-black text-slate-800 tracking-tight">CLICK OR DRAG & DROP PDF</p>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Automatic Page Detection Enabled</p>
-                </div>
-            </div>
+                    <div>
+                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">2: Upload Document</h3>
+                        <div class="relative p-12 border-4 border-dashed border-slate-100 rounded-[3rem] text-center hover:bg-slate-50 transition-all group">
+                            <input type="file" name="document" required class="absolute inset-0 opacity-0 cursor-pointer" 
+                                   onchange="handleFileUpload(event, '{% url 'calculate_pages' %}', '{{ csrf_token }}')">
+                            <i class="fas fa-file-pdf text-5xl text-slate-200 group-hover:text-blue-500 transition-colors mb-4"></i>
+                            <p id="file-status-text" class="font-bold text-slate-600">S.No: #001 | Click to upload PDF</p>
+                            <p class="text-[9px] text-slate-300 mt-2 italic">Supports: PDF, DOCX, Images</p>
+                        </div>
+                    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <select id="print-type" name="print_type" class="custom-input" onchange="updatePrice()">
-                    <option value="bw">Black & White (₹2)</option>
-                    <option value="color">Full Color (₹10)</option>
-                </select>
-                <select id="side-type" name="side_type" class="custom-input" onchange="updatePrice()">
-                    <option value="1">One Side</option>
-                    <option value="2">Two Sides</option>
-                    <option value="0.5">1/2 Page</option>
-                    <option value="0.25">1/4 Page</option>
-                </select>
-                <div class="flex items-center custom-input">
-                    <button type="button" onclick="const i = document.getElementById('copy-count'); i.value = Math.max(1, parseInt(i.value)-1); updatePrice()" class="text-slate-400 hover:text-slate-900 transition"><i class="fas fa-minus"></i></button>
-                    <input type="number" id="copy-count" name="copies" value="1" min="1" class="flex-1 text-center bg-transparent border-none outline-none font-black" readonly>
-                    <button type="button" onclick="const i = document.getElementById('copy-count'); i.value = parseInt(i.value)+1; updatePrice()" class="text-slate-400 hover:text-slate-900 transition"><i class="fas fa-plus"></i></button>
+                    <div>
+                        <h3 class="text-[10px] font-black uppercase text-slate-400 mb-6 tracking-widest">3: Choose Options</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <select id="pType" class="p-5 bg-slate-100 rounded-3xl font-bold appearance-none outline-none border-none">
+                                <option value="2">B&W (₹2)</option>
+                                <option value="10">Color (₹10)</option>
+                            </select>
+                            <select id="sType" class="p-5 bg-slate-100 rounded-3xl font-bold appearance-none outline-none border-none">
+                                <option value="1">One Side</option>
+                                <option value="1.8">Two Side</option>
+                                <option value="0.5">1/2</option>
+                                <option value="0.25">1/4</option>
+                                <option value="0.125">1/8</option>
+                            </select>
+                            <input type="number" id="copies" name="copies" value="1" min="1" class="p-5 bg-slate-100 rounded-3xl font-bold text-center outline-none border-none">
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="bg-slate-900 p-12 rounded-[3rem] flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl">
-                <div>
-                    <p class="text-[10px] font-black uppercase text-blue-400 tracking-widest">Estimated Total</p>
-                    <h4 id="price-display" class="text-6xl font-black text-white mt-1">₹0</h4>
-                    <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase tracking-widest">Pages: <span id="detected-pages-label">0</span></p>
-                </div>
-                <div class="flex gap-4 w-full md:w-auto">
-                    <button type="button" onclick="addToCart()" class="flex-1 bg-transparent text-white border-2 border-slate-700 px-10 py-5 rounded-2xl font-black uppercase hover:bg-white hover:text-slate-900 transition-all">Add to Cart</button>
-                    <button type="submit" id="order-now-btn" class="flex-1 px-12 py-5 rounded-2xl text-white font-black uppercase shadow-xl hover:scale-105 transition-all">Order Now</button>
+                <div class="bg-slate-50 rounded-[3.5rem] p-12 text-center flex flex-col justify-between border-4 border-white shadow-inner" data-aos="flip-right">
+                    <h2 id="form-title" class="text-5xl font-black uppercase italic tracking-tighter" style="color: {{ first_service.theme_color }};">
+                        {{ first_service.name }}
+                    </h2>
+                    <div class="py-10">
+                        <span class="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">Estimated Price</span>
+                        <div class="text-9xl font-black tracking-tighter">₹<span id="price-display">0</span></div>
+                        <p id="page-count-badge" class="text-[10px] font-bold text-blue-600 mt-2 uppercase tracking-widest">Pages: 0</p>
+                    </div>
+                    <div class="flex gap-4">
+                        {% if user.is_authenticated %}
+                        <button type="submit" class="flex-1 py-6 bg-slate-900 text-white rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 transition-all">Order Now</button>
+                        <button type="button" onclick="addToCart('{% url 'add_to_cart' %}', '{{ csrf_token }}')" class="flex-1 py-6 border-2 border-slate-200 bg-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-slate-100 transition-all">Add to Cart</button>
+                        {% else %}
+                        <a href="/login" class="w-full py-6 bg-blue-600 text-white rounded-full font-black uppercase text-[10px] text-center tracking-widest shadow-xl">Login to Unlock Order</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<script src="{% static 'js/main.js' %}"></script>
 {% endblock %}

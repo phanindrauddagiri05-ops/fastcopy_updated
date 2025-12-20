@@ -1,56 +1,110 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="bg-slate-50 min-h-screen py-10">
-    <div class="container mx-auto px-6">
-        <div class="bg-white p-8 rounded-3xl shadow-sm mb-8 flex justify-between items-center" data-aos="fade-down">
+<div class="container mx-auto px-6 py-12 max-w-5xl">
+    
+    <div class="bg-white rounded-[3rem] shadow-2xl p-10 flex flex-wrap justify-between items-center mb-10 border-b-8 border-blue-600" data-aos="fade-down">
+        <div class="flex items-center gap-6">
+            <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-white text-3xl shadow-lg">
+                <i class="fas fa-user"></i>
+            </div>
             <div>
-                <h1 class="text-3xl font-black uppercase">Hello, {{ user.first_name }}</h1>
-                <p class="text-slate-500 font-bold tracking-widest text-xs">MOBILE: {{ profile.mobile }}</p>
+                <h1 class="text-4xl font-black text-slate-800 uppercase italic">Welcome, {{ user.first_name }}!</h1>
+                <p class="text-slate-500 font-bold tracking-widest"><i class="fas fa-mobile-alt mr-2 text-blue-600"></i>{{ profile.mobile }}</p>
             </div>
-            <button class="bg-slate-100 px-6 py-2 rounded-xl font-bold border">Edit Profile</button>
         </div>
+        <button class="px-8 py-4 bg-slate-900 text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all shadow-xl">
+            <i class="fas fa-edit mr-2"></i> Edit Profile
+        </button>
+    </div>
 
-        <div class="bg-white p-10 rounded-3xl shadow-sm mb-8" data-aos="fade-up">
-            <h3 class="text-xl font-black mb-10 uppercase text-blue-600 tracking-widest">Current Order Status</h3>
-            <div class="grid grid-cols-3 gap-4 text-center">
+    <div class="mb-12" data-aos="fade-up">
+        <h3 class="text-xs font-black uppercase text-slate-400 mb-6 tracking-[0.3em] ml-4">Current Order Status</h3>
+        {% if tracking %}
+        <div class="bg-slate-900 rounded-[3.5rem] p-12 text-white shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
+            
+            <div class="flex justify-between items-center mb-10 border-b border-white/10 pb-6">
                 <div>
-                    <div class="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-xl border-4 border-white"><i class="fas fa-print"></i></div>
-                    <p class="font-bold text-[10px] uppercase">In Progress</p>
+                    <h4 class="text-2xl font-bold italic">{{ tracking.service_name }}</h4>
+                    <p class="text-blue-400 text-[10px] font-black uppercase tracking-widest mt-1">ID: #{{ tracking.order_id|stringformat:"s"|slice:":8" }}</p>
                 </div>
-                <div class="opacity-30">
-                    <div class="w-16 h-16 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white"><i class="fas fa-check"></i></div>
-                    <p class="font-bold text-[10px] uppercase">Ready</p>
+                <div class="text-right">
+                    <span class="px-6 py-2 bg-blue-600 rounded-full text-[10px] font-black uppercase shadow-lg">{{ tracking.status }}</span>
                 </div>
-                <div class="opacity-30">
-                    <div class="w-16 h-16 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-white"><i class="fas fa-truck-fast"></i></div>
-                    <p class="font-bold text-[10px] uppercase">Delivered</p>
+            </div>
+
+            <div class="flex justify-between items-center relative px-4">
+                <div class="flex flex-col items-center z-10">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-xl shadow-xl transition-transform hover:rotate-12"><i class="fas fa-cog fa-spin"></i></div>
+                    <p class="text-[9px] mt-3 font-black uppercase text-blue-400">In Progress</p>
                 </div>
+                
+                <div class="flex flex-col items-center z-10">
+                    <div class="w-14 h-14 rounded-2xl {% if tracking.status != 'In Progress' %}bg-blue-600{% else %}bg-slate-700 text-slate-500{% endif %} flex items-center justify-center text-xl shadow-xl"><i class="fas fa-check-double"></i></div>
+                    <p class="text-[9px] mt-3 font-black uppercase {% if tracking.status != 'In Progress' %}text-blue-400{% else %}text-slate-500{% endif %}">Ready</p>
+                </div>
+
+                <div class="flex flex-col items-center z-10">
+                    <div class="w-14 h-14 rounded-2xl {% if tracking.status == 'Delivered' %}bg-blue-600{% else %}bg-slate-700 text-slate-500{% endif %} flex items-center justify-center text-xl shadow-xl"><i class="fas fa-truck"></i></div>
+                    <p class="text-[9px] mt-3 font-black uppercase {% if tracking.status == 'Delivered' %}text-blue-400{% else %}text-slate-500{% endif %}">Delivered</p>
+                </div>
+                
+                <div class="absolute top-7 left-0 w-full h-1 bg-slate-800 -z-0"></div>
             </div>
         </div>
+        {% else %}
+        <div class="bg-slate-100 rounded-[3rem] p-10 text-center border-4 border-dashed border-slate-200">
+            <p class="font-black uppercase text-slate-400 text-xs tracking-widest">No active orders to track</p>
+        </div>
+        {% endif %}
+    </div>
 
-        <div class="space-y-4">
-            <h3 class="text-xl font-black uppercase mb-4 tracking-widest">Booking History</h3>
-            {% for order in orders %}
-            <div class="bg-white p-6 rounded-2xl border flex justify-between items-center" data-aos="fade-left">
-                <div><h4 class="font-black uppercase text-sm">{{ order.service_name }}</h4><p class="text-[10px] text-slate-400 font-bold uppercase">{{ order.created_at|date:"d M Y" }}</p></div>
-                <div class="text-right"><p class="text-xl font-black">₹{{ order.total_price }}</p><span class="text-[10px] font-black uppercase text-blue-600">{{ order.status }}</span></div>
+    <div class="mb-12" data-aos="fade-right">
+        <div class="flex justify-between items-center mb-8 px-4">
+            <h3 class="text-xs font-black uppercase text-slate-400 tracking-[0.3em]">Recent Bookings</h3>
+            <a href="{% url 'history' %}" class="px-6 py-3 border-2 border-slate-200 rounded-full font-black uppercase text-[9px] tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-md">View All History</a>
+        </div>
+        
+        <div class="grid grid-cols-1 gap-6">
+            {% for b in recent_bookings %}
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl flex justify-between items-center border-l-[10px] border-blue-600 hover:-translate-y-2 transition-all">
+                <div class="flex items-center gap-6">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-xl"><i class="fas fa-file-invoice"></i></div>
+                    <div>
+                        <h5 class="font-black uppercase text-slate-800 tracking-tight">{{ b.service_name }}</h5>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{{ b.created_at|date:"D, d M Y" }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xl font-black text-slate-900 tracking-tighter">₹{{ b.total_price }}</p>
+                    <p class="text-[9px] font-black text-blue-600 uppercase tracking-widest">{{ b.status }}</p>
+                </div>
             </div>
-            {% empty %}
-            <div class="text-center py-10 bg-white rounded-2xl border-2 border-dashed text-slate-400 font-bold">No orders yet.</div>
             {% endfor %}
         </div>
+    </div>
 
-        <div class="mt-12 text-center">
-            <button onclick="logoutCall()" class="text-red-500 font-black uppercase text-xs flex items-center gap-2 mx-auto hover:text-red-700 transition">
-                <i class="fas fa-sign-out-alt"></i> LOGOUT FROM FAST COPY
-            </button>
-        </div>
+    <div class="text-center mt-20 pt-10 border-t border-slate-100" data-aos="zoom-in">
+        <button onclick="confirmLogout()" class="px-16 py-6 bg-red-50 text-red-600 rounded-full font-black uppercase text-xs tracking-[0.4em] hover:bg-red-600 hover:text-white transition-all shadow-2xl border-2 border-red-100">
+            <i class="fas fa-power-off mr-3"></i> Secure Logout
+        </button>
     </div>
 </div>
 
 <script>
-    function logoutCall() {
-        if(confirm("Are you sure you want to logout?")) window.location.href = "{% url 'logout' %}";
+function confirmLogout() {
+    if(confirm("Are you sure you want to end your session?")) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{% url 'logout' %}";
+        const csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.name = 'csrfmiddlewaretoken';
+        csrf.value = '{{ csrf_token }}';
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
     }
+}
 </script>
 {% endblock %}

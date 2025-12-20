@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mx-auto px-6 py-12 max-w-4xl">
+    <div class="mb-12 flex items-center gap-4">
+        <a href="{% url 'profile' %}" class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-600 hover:text-white transition-all"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-4xl font-black uppercase italic italic text-slate-800 tracking-tighter">Full <span class="text-blue-600">History</span></h1>
+    </div>
+
+    <div class="space-y-8">
+        {% for order in orders %}
+        <div class="bg-white rounded-[3rem] shadow-xl p-10 border-2 border-slate-50 overflow-hidden relative" data-aos="fade-up">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-900 uppercase italic">{{ order.service_name }}</h3>
+                    <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest">Order ID: #{{ order.order_id }}</p>
+                </div>
+                <p class="text-3xl font-black text-slate-900">₹{{ order.total_price }}</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
+                <div>
+                    <p class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Customer</p>
+                    <p class="font-bold text-slate-800 text-xs">{{ user.first_name }}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Contact</p>
+                    <p class="font-bold text-slate-800 text-xs">{{ profile.mobile }}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Date</p>
+                    <p class="font-bold text-slate-800 text-xs">{{ order.created_at|date:"d M Y" }}</p>
+                </div>
+                <div>
+                    <p class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Status</p>
+                    <p class="font-bold text-blue-600 text-xs uppercase">{{ order.status }}</p>
+                </div>
+            </div>
+            
+            <div class="mt-6 px-4">
+                <p class="text-[8px] font-black uppercase text-slate-400 tracking-widest">Delivery Address</p>
+                <p class="font-bold text-slate-600 text-xs italic mt-1">{{ profile.address }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

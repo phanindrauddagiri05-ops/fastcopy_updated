@@ -1,28 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="auth-container px-6">
-    <div class="auth-card" data-aos="zoom-in">
-        <div class="text-center mb-8">
-            <h2 class="text-3xl font-black uppercase tracking-tight text-slate-900">Welcome Back</h2>
-            <p class="text-slate-500 text-sm mt-2">Login to manage your orders and profile</p>
+<div class="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4" data-aos="zoom-in">
+    <div class="max-w-md w-full bg-white rounded-[3rem] shadow-2xl p-10 border-t-[12px] border-blue-600">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-black uppercase italic italic text-slate-800">Welcome <span class="text-blue-600">Back</span></h2>
+            <p class="text-slate-400 text-xs font-bold mt-2">LOGIN WITH YOUR MOBILE NUMBER</p>
         </div>
-
-        <form action="" method="POST">
+        <form method="POST" class="space-y-6">
             {% csrf_token %}
-            <label class="text-xs font-black uppercase text-slate-400 ml-1">Mobile Number</label>
-            <input type="text" name="mobile" placeholder="Enter Mobile Number" required class="auth-input">
-            
-            <label class="text-xs font-black uppercase text-slate-400 ml-1">Password</label>
-            <input type="password" name="password" placeholder="Enter Password" required class="auth-input">
-            
-            <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl hover:bg-blue-700 transition-all shadow-lg uppercase tracking-widest mt-4">
-                Login
-            </button>
+            <div class="relative">
+                <i class="fas fa-phone absolute top-5 left-5 text-slate-300"></i>
+                <input type="text" name="mobile" placeholder="Mobile Number" required 
+                       class="w-full pl-12 p-5 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 focus:ring-2 focus:ring-blue-500 transition-all">
+            </div>
+            <div class="relative">
+                <i class="fas fa-lock absolute top-5 left-5 text-slate-300"></i>
+                <input type="password" name="password" placeholder="Password" required 
+                       class="w-full pl-12 p-5 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 focus:ring-2 focus:ring-blue-500 transition-all">
+            </div>
+            <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-full font-black uppercase tracking-widest shadow-xl hover:scale-105 transition-all">Login</button>
         </form>
-
-        <div class="text-center mt-8 pt-6 border-t border-slate-100">
-            <p class="text-slate-500 text-sm">Don't have an account?</p>
-            <a href="/register" class="text-blue-600 font-black uppercase text-xs hover:underline mt-2 inline-block">Register Now</a>
+        <div class="mt-8 text-center">
+            <p class="text-slate-400 text-xs font-bold">NEW HERE? <a href="{% url 'register' %}" class="text-blue-600 underline">CREATE ACCOUNT</a></p>
         </div>
     </div>
 </div>

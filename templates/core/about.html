@@ -1,27 +1,132 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<section class="bg-white py-20 px-6 text-center" data-aos="fade-down">
-    <h1 class="text-4xl md:text-5xl font-black uppercase">About Fast Copy</h1>
-    <p class="text-slate-500 max-w-2xl mx-auto mt-4">Pioneering hassle-free printing for students and professionals.</p>
+<section class="py-20 bg-white text-center" data-aos="fade-down">
+    <div class="container mx-auto px-6">
+        <h1 class="text-5xl font-black text-slate-900 uppercase tracking-tighter mb-4">About Fast Copy</h1>
+        <p class="text-slate-500 max-w-2xl mx-auto text-lg">We are your premium destination for high-speed, high-quality printing and binding solutions.</p>
+    </div>
 </section>
 
-<section class="bg-white py-20 px-6">
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
-        <div class="quality-card p-10 rounded-3xl border text-center" data-aos="zoom-in">
-            <div class="icon-box blue-icon mx-auto"><i class="fas fa-users text-2xl"></i></div>
-            <h3 class="font-bold">Happy Customers</h3>
+<section class="py-12 bg-slate-50">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="bg-white p-8 rounded-[2rem] shadow-xl text-center hover:scale-105 transition-transform" data-aos="zoom-in" data-aos-delay="100">
+                <i class="fas fa-smile text-4xl text-yellow-500 mb-4 floating-3d"></i>
+                <h3 class="text-2xl font-black">5000+</h3>
+                <p class="text-slate-400 text-sm font-bold uppercase tracking-widest mt-2">Happy Customers</p>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] shadow-xl text-center hover:scale-105 transition-transform" data-aos="zoom-in" data-aos-delay="200">
+                <i class="fas fa-print text-4xl text-blue-500 mb-4 floating-3d"></i>
+                <h3 class="text-2xl font-black">100k+</h3>
+                <p class="text-slate-400 text-sm font-bold uppercase tracking-widest mt-2">Pages Printed</p>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] shadow-xl text-center hover:scale-105 transition-transform" data-aos="zoom-in" data-aos-delay="300">
+                <i class="fas fa-hand-holding-heart text-4xl text-red-500 mb-4 floating-3d"></i>
+                <h3 class="text-2xl font-black">Quality</h3>
+                <p class="text-slate-400 text-sm font-bold uppercase tracking-widest mt-2">Reasonable Care</p>
+            </div>
+            <div class="bg-white p-8 rounded-[2rem] shadow-xl text-center hover:scale-105 transition-transform" data-aos="zoom-in" data-aos-delay="400">
+                <i class="fas fa-shipping-fast text-4xl text-green-500 mb-4 floating-3d"></i>
+                <h3 class="text-2xl font-black">Fast</h3>
+                <p class="text-slate-400 text-sm font-bold uppercase tracking-widest mt-2">Instant Pickup</p>
+            </div>
         </div>
-        <div class="quality-card p-10 rounded-3xl border text-center" data-aos="zoom-in" data-aos-delay="100">
-            <div class="icon-box green-icon mx-auto"><i class="fas fa-print text-2xl"></i></div>
-            <h3 class="font-bold">Total Prints</h3>
+    </div>
+</section>
+
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div data-aos="fade-right">
+            <h2 class="text-3xl font-black uppercase text-blue-600 mb-6 tracking-tight">Our Story</h2>
+            <p class="text-slate-600 leading-relaxed mb-4">
+                Fast Copy started with a simple mission: to make high-quality document services accessible to students and professionals alike. We noticed that getting a thesis bound or a high-volume document printed often took too long or cost too much.
+            </p>
+            <p class="text-slate-600 leading-relaxed">
+                Today, we use state-of-the-art digital printing technology and premium binding materials to ensure your work looks professional, durable, and impressive.
+            </p>
         </div>
-        <div class="quality-card p-10 rounded-3xl border text-center" data-aos="zoom-in" data-aos-delay="200">
-            <div class="icon-box red-icon mx-auto"><i class="fas fa-heart text-2xl"></i></div>
-            <h3 class="font-bold">Reasonable Care</h3>
+        <div class="space-y-8" data-aos="fade-left">
+            <h2 class="text-3xl font-black uppercase text-slate-900 mb-6 tracking-tight">Our Values</h2>
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-check-circle text-blue-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-black uppercase text-sm tracking-widest">Quality First</h4>
+                    <p class="text-slate-400 text-xs">We use only high-grade paper and vibrant inks.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-bolt text-purple-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-black uppercase text-sm tracking-widest">Fast Service</h4>
+                    <p class="text-slate-400 text-xs">Express printing while you wait.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-pink-100 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-user-shield text-pink-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-black uppercase text-sm tracking-widest">Customer Care</h4>
+                    <p class="text-slate-400 text-xs">Your satisfaction is our ultimate priority.</p>
+                </div>
+            </div>
         </div>
-        <div class="quality-card p-10 rounded-3xl border text-center" data-aos="zoom-in" data-aos-delay="300">
-            <div class="icon-box yellow-icon mx-auto"><i class="fas fa-award text-2xl"></i></div>
-            <h3 class="font-bold">Top Quality</h3>
+    </div>
+</section>
+
+<section class="py-20 bg-slate-900 text-white overflow-hidden">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-4xl font-black uppercase tracking-tighter mb-16" data-aos="zoom-in">What We Offer</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-file-alt text-4xl text-blue-400 mb-4 floating-3d"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">High Quality Printing</h4>
+                <p class="text-slate-500 text-xs uppercase font-bold">Sharp text and vivid images every single time.</p>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-book-open text-4xl text-purple-400 mb-4 floating-3d"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">Professional Binding</h4>
+                <p class="text-slate-500 text-xs uppercase font-bold">Spiral, Soft, and Thesis Hard-binding styles.</p>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="300">
+                <i class="fas fa-clock text-4xl text-orange-400 mb-4 floating-3d"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">Quick Turnaround</h4>
+                <p class="text-slate-500 text-xs uppercase font-bold">Most orders completed in under 30 minutes.</p>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="400">
+                <i class="fas fa-user-cog text-4xl text-pink-400 mb-4 floating-3d"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">Personal Service</h4>
+                <p class="text-slate-500 text-xs uppercase font-bold">Custom configurations to meet your exact needs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-4xl font-black uppercase tracking-tighter mb-12" data-aos="fade-up">Get In Touch</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="p-10 border-2 border-slate-50 rounded-[3rem] hover:bg-blue-50 transition-colors" data-aos="fade-up">
+                <i class="fas fa-map-marker-alt text-3xl text-blue-600 mb-4"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">Visit Us</h4>
+                <p class="text-slate-400 text-sm">123 Print Street, Digital City, 533437</p>
+            </div>
+            <div class="p-10 border-2 border-slate-50 rounded-[3rem] hover:bg-green-50 transition-colors" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-phone-alt text-3xl text-green-600 mb-4"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">Call Us</h4>
+                <p class="text-slate-400 text-sm">+91 98765 43210</p>
+            </div>
+            <div class="p-10 border-2 border-slate-50 rounded-[3rem] hover:bg-orange-50 transition-colors" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-envelope text-3xl text-orange-600 mb-4"></i>
+                <h4 class="font-black uppercase tracking-widest mb-2">Email Us</h4>
+                <p class="text-slate-400 text-sm">support@fastcopy.com</p>
+            </div>
         </div>
     </div>
 </section>

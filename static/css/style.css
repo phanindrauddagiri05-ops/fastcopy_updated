@@ -52,3 +52,215 @@ body { font-family: 'Inter', sans-serif; background: #f0f4f8; overflow-x: hidden
 
 /* Hide Scrollbars */
 .no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* --- Root Vars --- */
+:root {
+    --primary-blue: #2563eb;
+    --dark-slate: #0f172a;
+}
+
+/* Master 3D Floating Animation */
+@keyframes floatMaster {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+.floating-3d {
+    display: inline-block;
+    animation: floatMaster 4s ease-in-out infinite;
+}
+
+/* AOS Tweaks */
+[data-aos] {
+    pointer-events: none;
+}
+.aos-animate {
+    pointer-events: auto;
+}
+
+/* Typography Enhancements */
+h1, h2, h3, h4 {
+    letter-spacing: -0.05em;
+}
+
+.tracking-widest {
+    letter-spacing: 0.25em !important;
+}
+
+/* Custom Input Styling for the Form */
+.custom-input {
+    width: 100%;
+    background-color: #f8fafc;
+    border: 2px solid #f1f5f9;
+    padding: 1.1rem 1.5rem;
+    border-radius: 1.25rem;
+    outline: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.custom-input:focus {
+    background-color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
+}
+
+.custom-input::placeholder {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* 3D Animations */
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+.floating-3d {
+    animation: float 4s ease-in-out infinite;
+    display: inline-block;
+}
+
+/* Glassmorphism utility for highlighted sections */
+.backdrop-blur-md {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Cart Item Glassmorphism */
+.group:hover {
+    transform: translateX(10px);
+}
+
+/* Step Counter Dot for Selection Mode (Future update) */
+.selection-dot {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e2e8f0;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+/* Background floating icons */
+.bg-cart-icon {
+    position: absolute;
+    font-size: 15rem;
+    opacity: 0.03;
+    right: -5%;
+    bottom: -5%;
+    z-index: -1;
+}
+
+/* Grand Total Animation */
+.text-5xl {
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 3D Floating Animation for Empty Cart Icon */
+@keyframes float3D {
+    0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+    50% { transform: translateY(-20px) rotate(3deg) scale(1.05); }
+}
+
+.floating-3d {
+    display: inline-block;
+    animation: float3D 4s ease-in-out infinite;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+}
+
+/* Hover Scaling for Items */
+.group:hover {
+    transform: translateZ(20px) scale(1.02);
+    z-index: 5;
+}
+
+/* Scroll Container Behavior */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Checkbox Styling */
+.cart-selector {
+    appearance: none;
+    background-color: #f1f5f9;
+}
+.cart-selector:checked {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+/* Glassmorphism Input Glow */
+.custom-input {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.custom-input:focus {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 30px -10px rgba(37, 99, 235, 0.2);
+    border-color: #2563eb;
+}
+
+/* 3D Floating Animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-15px) rotate(3deg); }
+}
+
+.floating-3d {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* --- Floating ID Card Style --- */
+.floating-3d {
+    animation: floatMaster 4s ease-in-out infinite;
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.2);
+}
+
+@keyframes floatMaster {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* --- Status Pill Animation --- */
+.status-pill {
+    transition: all 0.3s ease;
+}
+.status-pill:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+/* --- Smooth Entry for Lists --- */
+[data-aos="fade-up"] {
+    transition-timing-function: cubic-bezier(.175, .885, .32, 1.275);
+}
+/* Floating Animation */
+@keyframes float3D {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(2deg); }
+}
+.floating-3d { animation: float3D 4s ease-in-out infinite; }
+
+/* 3D Glassmorphism */
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-radius: 2rem;
+}
+
+/* 3D Input Glow */
+.custom-input {
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.custom-input:focus {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.1);
+    border-color: #2563eb;
+}
