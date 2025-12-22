@@ -80,18 +80,28 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def profile_view(request):
-    profile = get_object_or_404(UserProfile, user=request.user)
+    """
+    Renders the student dashboard. 
+    Uses get_or_create to prevent 404 errors for Superusers/Admin.
+    """
+    # This replaces get_object_or_404
+    profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={'mobile': 'Not Provided', 'address': 'Not Provided'}
+    )
+    
     try:
         user_orders = Order.objects.filter(user=request.user).order_by('-created_at')
         tracking = user_orders.exclude(status='Delivered').first()
         recent_bookings = user_orders[:5]
-    except:
+    except Exception:
         tracking = None
         recent_bookings = []
+
     return render(request, 'core/profile.html', {
-        'profile': profile, 
-        'recent_bookings': recent_bookings, 
-        'tracking': tracking
+        'profile': profile,
+        'recent_bookings': recent_bookings,
+        'tracking': tracking,
     })
 
 @login_required(login_url='login')
