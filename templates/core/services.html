@@ -25,12 +25,6 @@
                     <button id="tab-Custom" onclick="selectService(this, 'Custom Printing', '#fd7e14', 'fa-sliders-h')" class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0">
                         <i class="fas fa-sliders-h me-1"></i> Custom
                     </button>
-                    <button class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0 opacity-50 cursor-not-allowed">
-                        <i class="fas fa-graduation-cap me-1"></i> Thesis
-                    </button>
-                    <button class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0 opacity-50 cursor-not-allowed">
-                        <i class="fas fa-image me-1"></i> Photo
-                    </button>
                 </div>
             </div>
         </div>
@@ -63,11 +57,11 @@
                                     <div class="row g-2">
                                         <div class="col-md-6 col-6">
                                             <label class="form-label mb-1 small fw-bold text-muted text-uppercase">Your Name</label>
-                                            <input type="text" name="name" value="{{ user.first_name }}" class="form-control form-control-sm bg-light border-0 rounded-3 fw-bold">
+                                            <input type="text" name="name" value="{{ user.first_name }}" pattern="[A-Za-z\s]+" title="Name should only contain letters" class="form-control form-control-sm bg-light border-0 rounded-3 fw-bold" required>
                                         </div>
                                         <div class="col-md-6 col-6">
                                             <label class="form-label mb-1 small fw-bold text-muted text-uppercase">Mobile</label>
-                                            <input type="text" name="mobile_number" value="{{ user.username }}" class="form-control form-control-sm bg-light border-0 rounded-3 fw-bold">
+                                            <input type="text" name="mobile_number" value="{{ user.username }}" pattern="\d{10}" title="10-digit mobile number" class="form-control form-control-sm bg-light border-0 rounded-3 fw-bold" required>
                                         </div>
 
                                         <div class="col-6" id="standard-type-container">
@@ -108,7 +102,7 @@
 
                                         <div class="col-6">
                                             <label class="form-label mb-1 small fw-bold text-muted text-uppercase">Location</label>
-                                            <select name="location" id="location" class="form-select form-select-sm bg-light border-0 rounded-3 fw-bold shadow-sm">
+                                            <select name="location" id="location" class="form-select form-select-sm bg-light border-0 rounded-3 fw-bold shadow-sm" required>
                                                 <option value="" selected disabled>Select...</option>
                                                 <option value="Raghu college">Raghu College</option>
                                                 <option value="Lendi college">Lendi College</option>
@@ -134,7 +128,7 @@
                                 <div class="col-lg-6">
                                     <label class="form-label mb-1 small fw-bold text-muted text-uppercase text-center w-100">PDF Preview</label>
                                     <div class="upload-box position-relative bg-light rounded-4 border-dashed border-2 d-flex align-items-center justify-content-center overflow-hidden mx-auto" style="height: 180px; width: 100%; max-width: 250px;">
-                                        <input type="file" name="document" id="document" class="d-none" accept=".pdf">
+                                        <input type="file" name="document" id="document" class="d-none" accept=".pdf" required>
                                         <label for="document" id="upload-ui" class="text-center cursor-pointer p-2 w-100 h-100 d-flex flex-column align-items-center justify-content-center">
                                             <i class="fas fa-cloud-upload-alt fs-3 text-secondary mb-1"></i>
                                             <p class="small fw-bold text-secondary text-uppercase mb-0" style="font-size: 0.6rem;">Select PDF File</p>
@@ -167,12 +161,8 @@
                                         <h2 class="fw-bold text-dark italic mb-0">₹<span id="price-display">0.00</span></h2>
                                     </div>
                                     <div class="d-flex gap-2 w-100 justify-content-end">
-                                        <button type="button" id="add-to-cart-btn" class="btn btn-3d btn-lg btn-outline-secondary fw-bold text-uppercase rounded-pill px-4 py-3" style="font-size: 0.8rem; min-width: 140px;">
-                                            Add to Cart
-                                        </button>
-                                        <button type="submit" id="main-submit" formaction="{% url 'order-now' %}" class="btn btn-3d btn-lg btn-primary fw-bold text-uppercase rounded-pill px-5 py-3 shadow-lg border-0" style="font-size: 0.85rem; min-width: 160px;">
-                                            Order Now
-                                        </button>
+                                        <button type="button" id="add-to-cart-btn" class="btn btn-3d btn-lg btn-outline-secondary fw-bold text-uppercase rounded-pill px-4 py-3" style="font-size: 0.8rem; min-width: 140px;">Add to Cart</button>
+                                        <button type="submit" id="main-submit" formaction="{% url 'order-now' %}" class="btn btn-3d btn-lg btn-primary fw-bold text-uppercase rounded-pill px-5 py-3 shadow-lg border-0" style="font-size: 0.85rem; min-width: 160px;">Order Now</button>
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +184,6 @@
     .service-page-wrapper .fw-black { font-weight: 900; }
     .service-page-wrapper #pdf-preview-canvas { max-width: 100%; object-fit: contain; }
     .cursor-not-allowed { cursor: not-allowed !important; }
-    
     @media (min-width: 768px) {
         .service-page-wrapper .service-tab { font-size: 0.8rem; }
         .service-page-wrapper .service-tab.active-tab { padding: 0.5rem 1.5rem !important; }
@@ -262,10 +251,7 @@
         if (s) {
             const tabMap = { 'Printing': '#tab-Printing', 'Spiral': '#tab-Spiral', 'Soft': '#tab-Soft', 'Custom': '#tab-Custom' };
             const tabSelector = tabMap[s];
-            if (tabSelector) {
-                $(tabSelector).click();
-                window.scrollTo(0, 0);
-            }
+            if (tabSelector) { $(tabSelector).click(); window.scrollTo(0, 0); }
         } else {
             selectService($('#tab-Printing')[0], 'Printing', '#0d6efd', 'fa-print');
             window.scrollTo(0, 0);
@@ -350,6 +336,7 @@
                 let pagesArray = inputVal.split(',').filter(x => x.trim() !== "");
                 let uniquePages = new Set();
                 let isInvalid = false;
+
                 pagesArray.forEach(part => {
                     if (part.includes('-')) {
                         let range = part.split('-');
@@ -364,12 +351,15 @@
                         if (!isNaN(num) && num >= 1 && (T === 0 || num <= T)) uniquePages.add(num); 
                     }
                 });
+
                 if (T > 0 && isInvalid) {
-                    alert("Page numbers entered exceed the total pages (" + T + ") in the PDF.");
+                    // ALERT TRIGGERED HERE
+                    alert("Error: One or more page numbers entered exceed the total PDF page count (" + T + ").");
                     $('#custom_color_input').val("");
                     calculateFinalPrice();
                     return;
                 }
+
                 colorPart = uniquePages.size * 8; bwPart = (T - uniquePages.size) * 1.5;
                 printingCostPerSet = colorPart + bwPart;
             } else if (P === 'bw') {
@@ -395,39 +385,25 @@
             else if (currentService === "Thesis Binding") bindingCost = 160;
         }
 
-        $('#label-binding-cost').text('₹' + (bindingCost * copies).toFixed(2));
         const grandTotal = totalPrinting + (bindingCost * copies);
         $('#price-display').text(grandTotal.toFixed(2));
-        
-        // RECTIFIED: Ensure Integer sent to backend to solve ValueError
         $('#total_price_hidden').val(Math.round(grandTotal));
     }
 
-    // UPDATED REDIRECTS FOR CART AND ORDER
     $('#add-to-cart-btn').click(function(e) {
         if(!T) { alert("Please upload a document first!"); return; }
         if(!$('#location').val()) { alert("Please select a location!"); return; }
-        
         let formData = new FormData($('#order-form')[0]);
         $.ajax({ 
             url: "{% url 'add_to_cart' %}", 
-            type: "POST", 
-            data: formData, 
-            processData: false, 
-            contentType: false, 
-            success: function(res) { 
-                if(res.success) window.location.href = "{% url 'services' %}"; 
-            } 
+            type: "POST", data: formData, processData: false, contentType: false, 
+            success: function(res) { if(res.success) window.location.href = "{% url 'services' %}"; } 
         });
     });
 
-    // Handle Order Now with Home Redirect
     $('#order-form').submit(function(e) {
         if(!T) { alert("Please upload a document first!"); e.preventDefault(); return; }
         if(!$('#location').val()) { alert("Please select a location!"); e.preventDefault(); return; }
-        
-        // Let the form submit normally to order-now view, 
-        // the view should handle the redirect to home.
     });
 </script>
 {% endblock %}
