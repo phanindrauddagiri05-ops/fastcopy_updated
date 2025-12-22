@@ -3,59 +3,41 @@
 
 {% block content %}
 <style>
-    /* --- 📱 MOBILE-FIRST RESPONSIVE DESIGN --- */
+    /* --- 📱 MOBILE-FIRST RESPONSIVE ENGINE --- */
     @media (max-width: 991px) {
-        .profile-section {
-            padding-top: 10px !important;
-        }
-        /* Ensure 3D cards stack with balanced spacing */
-        .row.g-5 {
-            --bs-gutter-y: 1.5rem;
-        }
-        /* Typography scaling for mobile readability */
+        .profile-section { padding-top: 10px !important; }
+        .row.g-5 { --bs-gutter-y: 1.5rem; }
         h2 { font-size: 1.6rem !important; }
-        .text-xl { font-size: 1.1rem !important; }
-
-        /* Modern Mobile Table (Card-Style) */
-        .table-responsive {
-            border: none !important;
-        }
-        .table thead {
-            display: none; /* Hide headers on mobile */
-        }
+        .table-responsive { border: none !important; }
+        .table thead { display: none; }
         .table tbody tr {
             display: block;
-            background: rgba(248, 250, 252, 0.5);
+            background: rgba(248, 250, 252, 0.8);
             border: 1px solid #e2e8f0;
             border-radius: 1.2rem;
             margin-bottom: 1rem;
-            padding: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
         .table tbody td {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 5px !important;
+            padding: 8px 0 !important;
             border: none !important;
-            font-size: 11px !important;
+            font-size: 12px !important;
         }
-        /* Inject labels for mobile card view */
         .table tbody td::before {
             content: attr(data-label);
-            font-size: 8px;
+            font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: #94a3b8;
             font-weight: 900;
         }
     }
-
-    /* Desktop Adjustments */
     @media (min-width: 992px) {
-        .sticky-sidebar {
-            position: sticky;
-            top: 120px;
-        }
+        .sticky-sidebar { position: sticky; top: 120px; }
     }
 </style>
 
@@ -65,29 +47,31 @@
 
     <div class="container mx-auto px-4 relative z-10">
         <div class="row g-5">
-            
             <div class="col-lg-4" data-aos="fade-right">
                 <div class="sticky-sidebar bg-white/80 backdrop-blur-xl border border-slate-200 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl text-center">
                     <div class="relative inline-block mb-6">
-                        <div class="w-24 h-24 md:w-32 md:h-32 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl md:text-4xl font-black italic shadow-2xl shadow-blue-500/40">
+                        <div class="w-24 h-24 md:w-32 md:h-32 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl md:text-4xl font-black italic shadow-2xl">
                             {{ request.user.first_name|slice:":1"|upper }}
                         </div>
-                        <button data-bs-toggle="modal" data-bs-target="#editProfileModal" class="absolute bottom-0 right-0 w-9 h-9 md:w-10 md:h-10 bg-slate-900 text-white rounded-full flex items-center justify-center border-4 border-white hover:scale-110 transition-transform shadow-lg">
-                            <i class="fa-solid fa-pen text-[10px]"></i>
-                        </button>
                     </div>
                     
-                    <h2 class="font-black italic tracking-tighter text-slate-900 mb-1 user-name-display">{{ request.user.first_name }}</h2>
+                    <h2 class="font-black italic tracking-tighter text-slate-900 mb-1">{{ request.user.first_name }}</h2>
                     <p class="text-blue-600 font-black text-[9px] uppercase tracking-widest mb-6">Premium Student Hub</p>
+                    
+                    <div class="mb-6">
+                        <a href="{% url 'edit_profile' %}" class="inline-flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-blue-600 transition-colors no-underline">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+                        </a>
+                    </div>
                     
                     <div class="space-y-3 text-start">
                         <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
                             <span class="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Mobile Access</span>
-                            <span class="text-sm font-bold text-slate-700" id="sidebar-mobile-display">+91 {{ profile.mobile }}</span>
+                            <span class="text-sm font-bold text-slate-700">+91 {{ profile.mobile }}</span>
                         </div>
                         <div class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
                             <span class="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Campus Location</span>
-                            <span class="text-xs md:text-sm font-bold text-slate-700" id="sidebar-address-display">{{ profile.address }}</span>
+                            <span class="text-xs md:text-sm font-bold text-slate-700">{{ profile.address }}</span>
                         </div>
                     </div>
 
@@ -99,40 +83,42 @@
 
             <div class="col-lg-8">
                 {% if tracking %}
-                <div class="bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 text-white shadow-2xl mb-8 relative overflow-hidden" data-aos="fade-up">
+                <div class="bg-slate-900 rounded-[2rem] p-6 md:p-8 text-white shadow-2xl mb-8 relative overflow-hidden" data-aos="fade-up">
                     <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-3xl"></div>
                     <div class="relative z-10">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-black italic tracking-tight">Active Tracking</h3>
-                            <span class="px-4 py-1.5 bg-blue-600 rounded-full text-[9px] font-black uppercase tracking-widest">In {{ tracking.status }}</span>
+                            <h3 class="text-xl font-black italic tracking-tight">Active Order Tracking</h3>
+                            <span class="px-4 py-1.5 bg-blue-600 rounded-full text-[9px] font-black uppercase tracking-widest">{{ tracking.status }}</span>
                         </div>
-                        
-                        <div class="p-4 md:p-5 bg-white/5 border border-white/10 rounded-2xl md:rounded-3xl flex flex-col md:flex-row items-center gap-4 text-center md:text-start">
-                            <div class="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-500 text-xl">
-                                <i class="fa-solid fa-print fa-spin-slow"></i>
-                            </div>
+                        <div class="p-4 bg-white/5 border border-white/10 rounded-2xl flex flex-col md:flex-row items-center gap-4 text-center md:text-start">
+                            <div class="w-14 h-14 bg-blue-600/20 rounded-2xl flex items-center justify-center text-blue-500 text-xl"><i class="fa-solid fa-print fa-spin-slow"></i></div>
                             <div class="flex-grow">
                                 <h4 class="text-md font-black italic mb-0">{{ tracking.service_name }}</h4>
-                                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest m-0">Tracking: #FC-{{ tracking.id }}</p>
+                                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-widest m-0">#{{ tracking.order_id }}</p>
                             </div>
-                            <div class="w-full md:w-auto pt-3 md:pt-0">
-                                <p class="text-xl font-black italic text-blue-500">₹{{ tracking.total_price }}</p>
-                            </div>
+                            <div class="w-full md:w-auto pt-3 md:pt-0"><p class="text-xl font-black italic text-blue-500">₹{{ tracking.total_price }}</p></div>
                         </div>
                     </div>
                 </div>
                 {% endif %}
 
-                <div class="bg-white border border-slate-200 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-sm" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-white border border-slate-200 rounded-[2.5rem] p-6 md:p-8 shadow-sm" data-aos="fade-up" data-aos-delay="100">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-black italic text-slate-900">Orders Log</h3>
-                        <a href="{% url 'history' %}" class="text-[9px] font-black text-blue-600 uppercase no-underline">See Full History →</a>
+                        <h3 class="text-xl font-black italic text-slate-900">Recent Log</h3>
+                        
+                        {% if recent_bookings %}
+                        <a href="{% url 'history' %}" class="text-[9px] font-black text-blue-600 uppercase no-underline border-b-2 border-blue-600 pb-1">See Full History →</a>
+                        {% else %}
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest opacity-50 cursor-not-allowed">History Locked</span>
+                        {% endif %}
                     </div>
                     
                     <div class="table-responsive">
+                        {% if recent_bookings %}
                         <table class="table table-borderless align-middle m-0">
                             <thead class="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
                                 <tr>
+                                    <th>Order ID</th>
                                     <th>Service Hub</th>
                                     <th>Date</th>
                                     <th>Bill</th>
@@ -142,6 +128,9 @@
                             <tbody class="text-xs font-bold text-slate-600">
                                 {% for order in recent_bookings %}
                                 <tr>
+                                    <td class="py-3 md:py-4" data-label="Order ID">
+                                        <span class="text-blue-600 font-black">#{{ order.order_id }}</span>
+                                    </td>
                                     <td class="py-3 md:py-4" data-label="Service">{{ order.service_name }}</td>
                                     <td class="py-3 md:py-4 text-slate-400" data-label="Date">{{ order.created_at|date:"d M, Y" }}</td>
                                     <td class="py-3 md:py-4 font-black" data-label="Bill">₹{{ order.total_price }}</td>
@@ -149,53 +138,25 @@
                                         <span class="px-3 py-1 bg-slate-100 rounded-lg text-[8px] uppercase font-black text-slate-500">{{ order.status }}</span>
                                     </td>
                                 </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center py-10 text-slate-400 italic">No transactions found in your history.</td>
-                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                        {% else %}
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200 text-3xl">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <h4 class="text-slate-900 font-black italic text-lg mb-1">No Orders Found</h4>
+                            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-6">Your transaction log is currently empty</p>
+                            <a href="{% url 'services' %}" class="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-105 transition-transform no-underline">
+                                <i class="fa-solid fa-plus"></i> Order Now
+                            </a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-
-<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content rounded-[2rem] md:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
-            <div class="modal-header border-none p-6 pb-0">
-                <h4 class="text-2xl font-black italic tracking-tight">Sync <span class="text-blue-600">Details</span></h4>
-                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-6">
-                <form onsubmit="handleProfileUpdate(event, '{% url 'edit_profile' %}')">
-                    {% csrf_token %}
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-1">Student Full Name</label>
-                            <input type="text" name="name" value="{{ request.user.first_name }}" class="custom-input bg-slate-50 border-slate-200" required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-1">Registered Mobile</label>
-                            <input type="text" name="mobile" value="{{ profile.mobile }}" class="custom-input bg-slate-50 border-slate-200" required>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-1">Campus Address</label>
-                            <textarea name="address" rows="3" class="custom-input bg-slate-50 border-slate-200 pt-3" required>{{ profile.address }}</textarea>
-                        </div>
-
-                        <button type="submit" class="btn-3d w-full bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest mt-4 shadow-xl shadow-blue-500/30">
-                            Update Account Now
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
