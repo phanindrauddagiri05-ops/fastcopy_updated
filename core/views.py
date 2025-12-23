@@ -1,137 +1,76 @@
-import re  # Crucial: Fixed the NameError
+import re
 import PyPDF2
 import io
+import uuid
+import os
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from .models import Service, Order, UserProfile
 
-import re
-
-# --- 👤 AUTHENTICATION & REGISTRATION HUB ---
+# --- 👤 1. AUTHENTICATION & REGISTRATION ---
 
 def register_view(request):
-    """Handles student registration with strict Regex validation."""
+    """Handles new student registration and creates UserProfile."""
     if request.method == "POST":
         full_name = request.POST.get('name', '').strip()
         mobile = request.POST.get('mobile', '').strip()
-        email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
-        confirm_password = request.POST.get('confirm_password', '')
-        address = request.POST.get('address', '').strip()
-
-        # 1. Name Validation (Only letters and spaces)
-        if not re.match(r"^[a-zA-Z\s]+$", full_name):
-            messages.error(request, "Registration Failed: Name must contain only letters.")
-            return redirect('register')
-
-        # 2. Mobile Validation (Exactly 10 digits)
-        if not re.match(r"^\d{10}$", mobile):
-            messages.error(request, "Registration Failed: Mobile number must be exactly 10 digits.")
-            return redirect('register')
-
-        # 3. Password Length Validation (Min 6 characters)
-        if len(password) < 6:
-            messages.error(request, "Registration Failed: Password must be at least 6 characters long.")
-            return redirect('register')
-
-        if password != confirm_password:
-            messages.error(request, "Registration Failed: Passwords do not match.")
-            return redirect('register')
-
+        
         if User.objects.filter(username=mobile).exists():
-            messages.error(request, "Registration Failed: This mobile number is already registered.")
+            messages.error(request, "Mobile number already registered.")
             return redirect('register')
-
+            
         try:
-            # Create User (Using mobile as username for login)
-            user = User.objects.create_user(
-                username=mobile, 
-                password=password, 
-                email=email, 
-                first_name=full_name
-            )
-            UserProfile.objects.create(user=user, mobile=mobile, address=address)
-            messages.success(request, "Account created successfully! Please login.")
+            user = User.objects.create_user(username=mobile, password=password, first_name=full_name)
+            UserProfile.objects.create(user=user, mobile=mobile, address='')
+            messages.success(request, "Account created! Please login.")
             return redirect('login')
         except Exception as e:
-            messages.error(request, f"Database Error: {str(e)}")
+            messages.error(request, f"Error: {str(e)}")
             
     return render(request, 'core/register.html')
 
 def login_view(request):
+    """Authenticates user via mobile number."""
     if request.method == "POST":
-        mobile = request.POST.get('mobile')
-        pw = request.POST.get('password')
-        user = authenticate(request, username=mobile, password=pw)
+        user = authenticate(request, username=request.POST.get('mobile'), password=request.POST.get('password'))
         if user:
             login(request, user)
-            messages.success(request, f"Welcome, {user.first_name}!")
             return redirect('profile')
-        messages.error(request, "Invalid mobile number or password.")
+        messages.error(request, "Invalid credentials.")
     return render(request, 'core/login.html')
 
 def logout_view(request):
     logout(request)
     return redirect('home')
 
-# --- 📊 PROFILE & STUDENT DASHBOARD ---
-
-
+# --- 📊 2. PROFILE & DASHBOARD ---
 
 @login_required(login_url='login')
 def profile_view(request):
-    """
-    Renders the dashboard. Fetches the latest non-delivered order 
-    to show real-time tracking from the Admin Panel.
-    """
-    # Prevent 404 for Admin/Superusers without a profile
-    profile, created = UserProfile.objects.get_or_create(
-        user=request.user,
-        defaults={'mobile': request.user.username, 'address': 'Update your address'}
-    )
-
-    # Fetch all orders for history
-    all_orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    
-    # Fetch the single most recent order that IS NOT delivered yet for the Tracking Widget
-    active_tracking = all_orders.exclude(status='Delivered').first()
-    
-    # Fetch top 5 recent orders for the dashboard table
-    recent_bookings = all_orders[:5]
-
+    """Dashboard showing recent orders and status tracking."""
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    active_tracking = orders.exclude(status='Delivered').first()
     return render(request, 'core/profile.html', {
-        'profile': profile,
-        'recent_bookings': recent_bookings,
-        'tracking': active_tracking, # This links to the Admin Panel status updates
+        'profile': profile, 
+        'recent_bookings': orders[:5], 
+        'tracking': active_tracking
     })
-
-# ... (keep all other registration/service views exactly as we coded before)
 
 @login_required(login_url='login')
 def edit_profile(request):
+    """Allows updating name and address."""
     profile = get_object_or_404(UserProfile, user=request.user)
     if request.method == "POST":
-        name = request.POST.get('name', '').strip()
-        mobile = request.POST.get('mobile', '').strip()
-        
-        # Validation for Edit Profile
-        if not re.match(r"^[a-zA-Z\s]+$", name):
-            messages.error(request, "Update Failed: Name should only contain letters.")
-            return redirect('edit_profile')
-        
-        if not re.match(r"^\d{10}$", mobile):
-            messages.error(request, "Update Failed: Invalid 10-digit mobile number.")
-            return redirect('edit_profile')
-
-        request.user.first_name = name
-        request.user.username = mobile # Sync login ID
+        request.user.first_name = request.POST.get('name')
         request.user.save()
-        
-        profile.mobile = mobile
         profile.address = request.POST.get('address')
         profile.save()
         messages.success(request, "Profile updated successfully!")
@@ -140,25 +79,32 @@ def edit_profile(request):
 
 @login_required(login_url='login')
 def history_view(request):
+    """Full order history."""
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'core/history.html', {'orders': orders})
 
-# --- 🛒 CART & ORDERING SYSTEM ---
-
-@login_required(login_url='login')
-def cart_page(request):
-    cart_items = request.session.get('cart', [])
-    total_bill = sum(float(item.get('total_price', 0)) for item in cart_items)
-    return render(request, 'core/cart.html', {'cart_items': cart_items, 'total_bill': total_bill})
+# --- 🛒 3. CART & ORDERING SYSTEM (FILE STORAGE) ---
 
 @login_required(login_url='login')
 def add_to_cart(request):
+    """AJAX: Saves file to media/temp and metadata to session."""
     if request.method == "POST":
+        uploaded_file = request.FILES.get('document')
+        if not uploaded_file:
+            return JsonResponse({'success': False, 'message': 'No file uploaded'})
+
+        # Secure file storage in temporary folder
+        file_path = default_storage.save(f'temp/{uuid.uuid4()}_{uploaded_file.name}', ContentFile(uploaded_file.read()))
+        
         item = {
             'service_name': request.POST.get('service_name'),
             'total_price': request.POST.get('total_price_hidden'),
-            'document_name': request.FILES['document'].name if 'document' in request.FILES else "File.pdf"
+            'document_name': uploaded_file.name,
+            'temp_path': file_path,
+            'copies': request.POST.get('copies', 1),
+            'print_type': request.POST.get('print_type', 'Standard')
         }
+        
         cart = request.session.get('cart', [])
         cart.append(item)
         request.session['cart'] = cart
@@ -167,54 +113,82 @@ def add_to_cart(request):
     return JsonResponse({'success': False})
 
 @login_required(login_url='login')
+def cart_page(request):
+    cart_items = request.session.get('cart', [])
+    total_bill = sum(float(item.get('total_price', 0)) for item in cart_items)
+    return render(request, 'core/cart.html', {'cart_items': cart_items, 'total_bill': round(total_bill, 2)})
+
+@login_required(login_url='login')
 def remove_from_cart(request, item_id):
-    cart_list = request.session.get('cart', [])
-    if 0 <= item_id < len(cart_list):
-        cart_list.pop(item_id)
-        request.session['cart'] = cart_list
+    cart = request.session.get('cart', [])
+    if 0 <= item_id < len(cart):
+        item = cart.pop(item_id)
+        if default_storage.exists(item.get('temp_path', '')):
+            default_storage.delete(item['temp_path'])
+        request.session['cart'] = cart
         request.session.modified = True
     return redirect('cart')
 
 @login_required(login_url='login')
 def order_all(request):
+    """Processes checkout for all items in the cart."""
     if request.method == "POST":
         cart_items = request.session.get('cart', [])
-        if not cart_items:
-            messages.warning(request, "Your cart is empty.")
-            return redirect('services')
-            
         for item in cart_items:
-            Order.objects.create(
-                user=request.user,
-                service_name=item.get('service_name'),
-                total_price=float(item.get('total_price', 0)),
-                status='Pending'
-            )
+            temp_path = item.get('temp_path')
+            if temp_path and default_storage.exists(temp_path):
+                with default_storage.open(temp_path) as f:
+                    Order.objects.create(
+                        order_id=str(uuid.uuid4())[:8].upper(),
+                        user=request.user,
+                        service_name=item.get('service_name'),
+                        total_price=float(item.get('total_price', 0)),
+                        document=ContentFile(f.read(), name=item.get('document_name')),
+                        status='Pending'
+                    )
+                default_storage.delete(temp_path)
         request.session['cart'] = []
-        messages.success(request, f"Successfully placed {len(cart_items)} unique orders!")
+        messages.success(request, "All orders placed successfully!")
         return redirect('profile')
     return redirect('cart')
 
-# --- 📄 PDF ENGINE & UTILS ---
+@login_required(login_url='login')
+def order_now(request):
+    """Handles immediate direct ordering."""
+    if request.method == "POST":
+        uploaded_file = request.FILES.get('document')
+        if uploaded_file:
+            Order.objects.create(
+                order_id=str(uuid.uuid4())[:8].upper(),
+                user=request.user,
+                service_name=request.POST.get('service_name'),
+                total_price=float(request.POST.get('total_price_hidden', 0)),
+                document=uploaded_file,
+                status='Pending'
+            )
+            messages.success(request, "Order placed successfully!")
+            return redirect('profile')
+    return redirect('services')
+
+# --- 📄 4. PDF ENGINE & UTILS ---
 
 def calculate_pages(request):
-    """AJAX endpoint for PDF page counting."""
+    """Real-time PDF page counting."""
     if request.method == 'POST' and request.FILES.get('document'):
         try:
-            pdf_data = request.FILES['document'].read()
-            reader = PyPDF2.PdfReader(io.BytesIO(pdf_data))
-            return JsonResponse({'success': True, 'pages': len(reader.pages)})
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(request.FILES['document'].read()))
+            return JsonResponse({'success': True, 'pages': len(pdf_reader.pages)})
         except:
-            return JsonResponse({'success': False, 'message': 'Invalid PDF file.'})
+            return JsonResponse({'success': False})
     return JsonResponse({'success': False})
 
+# --- 🌐 5. STATIC PAGES ---
+
 def home(request):
-    services = Service.objects.all()[:3]
-    return render(request, 'core/index.html', {'services': services})
+    return render(request, 'core/index.html', {'services': Service.objects.all()[:3]})
 
 def services_page(request):
-    services = Service.objects.all()
-    return render(request, 'core/services.html', {'services': services, 'first_service': services.first()})
+    return render(request, 'core/services.html', {'services': Service.objects.all()})
 
 def about(request): return render(request, 'core/about.html')
 def contact(request): return render(request, 'core/contact.html')

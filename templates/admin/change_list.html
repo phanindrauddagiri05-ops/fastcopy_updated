@@ -1,0 +1,28 @@
+{% extends "admin/change_list.html" %}
+{% block content_footer %}
+<div style="margin-top: 20px; padding: 20px; background: #fff; border: 1px solid #ddd; border-radius: 8px;">
+    <h3 style="margin-bottom: 15px; color: #1e293b;">📊 Orders Summary & Revenue</h3>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; text-align: center;">
+        <div style="padding: 10px; border: 1px solid #eee;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold;">TOTAL REVENUE</p>
+            <h2 style="color: #15803d;">{{ summary_data.total_revenue }}</h2>
+        </div>
+        <div style="padding: 10px; border: 1px solid #eee;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold;">TOTAL ORDERS</p>
+            <h2>{{ summary_data.total_orders }}</h2>
+        </div>
+        <div style="padding: 10px; border: 1px solid #eee;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold; color: #be123c;">PENDING</p>
+            <h2>{{ summary_data.pending }}</h2>
+        </div>
+        <div style="padding: 10px; border: 1px solid #eee;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold; color: #15803d;">DELIVERED</p>
+            <h2>{{ summary_data.delivered }}</h2>
+        </div>
+        <div style="padding: 10px; border: 1px solid #eee;">
+            <p style="font-size: 11px; color: #64748b; font-weight: bold;">REJECTED</p>
+            <h2>{{ summary_data.rejected }}</h2>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <label>Select Service:</label>
+    <input type="text" name="service_name" value="Document Printing" readonly>
+    
+    <label>Total Price:</label>
+    <input type="text" name="total_price" value="50.00">
+
+    <label>Upload Document (PDF/Image):</label>
+    <input type="file" name="document" required>
+
+    <button type="submit">Place Order</button>
+</form>

@@ -1,5 +1,11 @@
 {% extends "admin/base.html" %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">FastCopy Management</a>
+</h1>
+{% endblock %}
+
 {% block nav-global %}
-    <a href="{% url 'admin:accounting' %}" style="font-weight: bold; color: #ffca28; margin-right: 20px;">📊 BUSINESS ACCOUNTING</a>
-    {{ block.super }}
+    {# Leave this empty to remove custom dashboard links #}
 {% endblock %}
