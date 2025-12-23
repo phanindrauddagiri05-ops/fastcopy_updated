@@ -1,32 +1,40 @@
 {% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block result_list %}
+    {{ block.super }}
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const table = document.querySelector("#result_list");
+            if (table) {
+                let footer = table.createTFoot();
+                let row = footer.insertRow(0);
+                row.style.backgroundColor = "#f8fafc";
+                row.style.fontWeight = "bold";
+                
+                for (let i = 0; i < 8; i++) {
+                    let cell = row.insertCell(i);
+                    cell.style.padding = "15px";
+                    // Using |floatformat here is safe because summary_total is a float
+                    if (i === 4) cell.innerHTML = "TOTAL REVENUE:";
+                    if (i === 5) cell.innerHTML = "₹{{ summary_total|floatformat:2 }}";
+                    if (i === 6) cell.innerHTML = "{{ summary_count }} Orders";
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
 {% block content_footer %}
-<div style="margin-top: 20px; padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-family: sans-serif;">
-    <h3 style="margin-bottom: 15px; color: #1e293b;">📊 Orders Summary & Revenue Analytics</h3>
-    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; text-align: center;">
-        <div style="padding: 12px; background: white; border: 1px solid #eee; border-radius: 6px;">
-            <p style="font-size: 11px; font-weight: bold; color: #64748b; margin: 0;">TOTAL REVENUE</p>
-            <h2 style="color: #15803d; margin: 5px 0 0 0;">₹{{ summary_data.total_revenue|floatformat:2 }}</h2>
+    <div style="margin-top: 20px; display: flex; gap: 15px; font-family: sans-serif;">
+        <div style="flex: 1; background: #15803d; color: white; padding: 20px; border-radius: 12px;">
+            <p style="margin: 0; font-size: 11px; font-weight: bold; opacity: 0.8;">FILTERED REVENUE</p>
+            <h2 style="margin: 5px 0 0 0;">₹{{ summary_total|floatformat:2 }}</h2>
         </div>
-        <div style="padding: 12px; background: white; border: 1px solid #eee; border-radius: 6px;">
-            <p style="font-size: 11px; font-weight: bold; color: #64748b; margin: 0;">TOTAL ORDERS</p>
-            <h2 style="margin: 5px 0 0 0; color: #1e293b;">{{ summary_data.total_orders }}</h2>
+        <div style="flex: 1; background: #1e293b; color: white; padding: 20px; border-radius: 12px;">
+            <p style="margin: 0; font-size: 11px; font-weight: bold; opacity: 0.8;">TOTAL ORDERS</p>
+            <h2 style="margin: 5px 0 0 0;">{{ summary_count }}</h2>
         </div>
-        <a href="?status__exact=Pending" style="text-decoration: none; padding: 12px; background: white; border: 1px solid #eee; border-radius: 6px;">
-            <p style="font-size: 11px; font-weight: bold; color: #be123c; margin: 0;">PENDING</p>
-            <h2 style="margin: 5px 0 0 0; color: #000;">{{ summary_data.pending }}</h2>
-        </a>
-        <a href="?status__exact=Ready" style="text-decoration: none; padding: 12px; background: white; border: 1px solid #eee; border-radius: 6px;">
-            <p style="font-size: 11px; font-weight: bold; color: #ca8a04; margin: 0;">READY</p>
-            <h2 style="margin: 5px 0 0 0; color: #000;">{{ summary_data.ready }}</h2>
-        </a>
-        <a href="?status__exact=Delivered" style="text-decoration: none; padding: 12px; background: white; border: 1px solid #eee; border-radius: 6px;">
-            <p style="font-size: 11px; font-weight: bold; color: #15803d; margin: 0;">DELIVERED</p>
-            <h2 style="margin: 5px 0 0 0; color: #000;">{{ summary_data.delivered }}</h2>
-        </a>
-        <a href="?status__exact=Rejected" style="text-decoration: none; padding: 12px; background: white; border: 1px solid #eee; border-radius: 6px;">
-            <p style="font-size: 11px; font-weight: bold; color: #64748b; margin: 0;">REJECTED</p>
-            <h2 style="margin: 5px 0 0 0; color: #000;">{{ summary_data.rejected }}</h2>
-        </a>
     </div>
-</div>
 {% endblock %}

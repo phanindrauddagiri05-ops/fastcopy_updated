@@ -72,10 +72,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # 7. INTERNATIONALIZATION (India Specific)
-LANGUAGE_CODE = 'en-in'
-TIME_ZONE = 'Asia/Kolkata'
+# fastCopyConfig/settings.py
+
+LANGUAGE_CODE = 'en-us'
+
+# Set this to Asia/Kolkata for correct India Time
+TIME_ZONE = 'Asia/Kolkata' 
+
 USE_I18N = True
-USE_TZ = True
+USE_TZ = True # Keeps internal storage robust while displaying IST
 
 # 8. STATIC FILES (CSS, JS, Images)
 STATIC_URL = 'static/'

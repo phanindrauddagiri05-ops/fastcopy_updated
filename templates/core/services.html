@@ -79,7 +79,7 @@
 
                                         <div class="col-6" id="standard-type-container">
                                             <label class="form-label mb-1 small fw-bold text-muted text-uppercase">Printing Type</label>
-                                            <select name="print_type" id="print_type" class="form-select form-select-sm bg-light border-0 rounded-3 fw-bold">
+                                            <select name="print_mode" id="print_type" class="form-select form-select-sm bg-light border-0 rounded-3 fw-bold">
                                                 <option value="bw">Black & White</option>
                                                 <option value="color">Color</option>
                                                 <option value="custom_split">Custom Split</option>
@@ -260,6 +260,13 @@
         if(!/^\d{10}$/.test(mobileVal)) { alert("Mobile should be exactly 10 digits!"); return; }
 
         let formData = new FormData($('#order-form')[0]);
+        
+        let currentType = $('#print_type').val();
+        if(currentType === 'custom_split'){
+            let pages = $('#custom_color_input').val();
+            formData.set('print_mode', 'custom_split'); 
+        }
+
         $.ajax({
             url: "{% url 'add_to_cart' %}",
             type: "POST",
@@ -398,6 +405,10 @@
             }
             else if (currentService === "Soft Binding") bindingCost = 25;
         }
+        
+        // UPDATE BINDING SUMMARY TEXT DYNAMICALLY
+        $('#label-binding-cost').text('₹' + bindingCost.toFixed(2));
+
         const grandTotal = totalPrinting + (bindingCost * copies);
         $('#price-display').text(grandTotal.toFixed(2));
         $('#total_price_hidden').val(Math.round(grandTotal));
