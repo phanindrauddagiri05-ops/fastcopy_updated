@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-16 md:py-24 bg-slate-50 min-vh-100 flex items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="max-w-lg mx-auto text-center">
+            
+            <div class="mb-8" data-aos="zoom-in">
+                <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+                    <i class="fa-solid fa-xmark text-3xl"></i>
+                </div>
+                <h1 class="text-3xl font-black italic tracking-tighter text-slate-900 uppercase">Payment <span class="text-red-600">Failed</span></h1>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">
+                    Order ID: #FC-{{ order_id|default:order.id }}
+                </p>
+            </div>
+
+            <div class="bg-white p-6 md:p-8 rounded-[2rem] shadow-2xl border border-slate-100 mb-8" data-aos="fade-up">
+                <p class="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+                    Transaction was unsuccessful. This could be due to a timeout, network error, or cancellation. No money was deducted from your account.
+                </p>
+
+                <div class="space-y-3">
+                    <a href="{% url 'checkout_summary' order_id|default:order.id %}" class="btn-3d block w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] no-underline shadow-lg hover:bg-blue-700 transition-all">
+                        Try Again <i class="fa-solid fa-rotate-right ml-2"></i>
+                    </a>
+                    
+                    <a href="{% url 'contact' %}" class="block text-[9px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-600 no-underline">
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+
+            <a href="{% url 'home' %}" class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] no-underline hover:text-slate-900">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -41,16 +41,15 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Order, site=admin_site)
 class OrderAdmin(admin.ModelAdmin):
-    # Added 'service_name' to filter list; once an order with "Custom Printing" is placed, it appears here automatically.
-    list_display = ('order_id_link', 'user_name', 'service_name', 'display_document', 'mobile_number', 'printing_type_display', 'price_display', 'status_badge', 'created_at')
+    list_display = ('order_id_link', 'user_name', 'service_name', 'display_file_thumbnail', 'mobile_number', 'printing_type_display', 'price_display', 'status_badge', 'created_at')
     list_filter = ('status', 'service_name', 'location', ('created_at', admin.DateFieldListFilter))
     search_fields = ('order_id', 'user__first_name', 'user__username')
-    readonly_fields = ('order_id', 'created_at', 'user_name', 'user_email', 'mobile_number', 'display_document_large', 'printing_type_display')
+    readonly_fields = ('order_id', 'created_at', 'user_name', 'user_email', 'mobile_number', 'display_full_file_preview', 'printing_type_display')
     
     fieldsets = (
         ('User Information', {'fields': ('user', 'location', 'user_name', 'mobile_number', 'user_email')}),
         ('Printing Specs', {'fields': ('service_name', 'print_mode', 'side_type', 'copies', 'custom_color_pages')}),
-        ('Document View', {'fields': ('document', 'display_document_large')}),
+        ('File Management', {'fields': ('document', 'image_upload', 'display_full_file_preview')}),
         ('Financials', {'fields': ('total_price',)}),
         ('Workflow', {'fields': ('status', 'order_id', 'created_at')}),
     )
@@ -59,17 +58,34 @@ class OrderAdmin(admin.ModelAdmin):
         url = reverse('fastcopy_admin:core_order_change', args=[obj.id])
         return format_html('<a href="{}" style="font-weight:bold;color:#2563eb">{}</a>', url, obj.order_id or "...")
 
-    def display_document(self, obj):
-        if obj.document and obj.document.name:
-            return format_html('<a href="{}" target="_blank" style="background:#2563eb;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;text-decoration:none">📂 VIEW DOC</a>', obj.document.url)
+    def display_file_thumbnail(self, obj):
+        if obj.image_upload:
+            return format_html('<a href="{}" target="_blank"><img src="{}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #ddd;"/></a>', obj.image_upload.url, obj.image_upload.url)
+        elif obj.document:
+            return format_html('<a href="{}" target="_blank" style="background:#2563eb;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;text-decoration:none">📂 VIEW PDF</a>', obj.document.url)
         return mark_safe('<span style="color:#94a3b8">No File</span>')
+    display_file_thumbnail.short_description = "File"
 
-    def display_document_large(self, obj):
-        return format_html('<a href="{}" target="_blank" style="background:#1e293b;color:#fff;padding:8px 12px;border-radius:5px;text-decoration:none">Preview Full Document</a>', obj.document.url) if obj.document else "No file uploaded"
+    def display_full_file_preview(self, obj):
+        html = ""
+        if obj.image_upload:
+            html += format_html('<div style="margin-bottom:10px;"><img src="{}" style="max-width:300px;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.1);"/></div>', obj.image_upload.url)
+        if obj.document:
+            html += format_html('<a href="{}" target="_blank" style="background:#1e293b;color:#fff;padding:8px 12px;border-radius:5px;text-decoration:none;display:inline-block;">Preview PDF Document</a>', obj.document.url)
+        return mark_safe(html) if html else "No file uploaded"
+    display_full_file_preview.short_description = "Preview"
 
     def printing_type_display(self, obj):
-        mode = str(getattr(obj, 'print_mode', 'bw'))
-        return format_html('<b style="color:#fd7e14">{}</b>', mode) if "(" in mode else mode.upper()
+        """Displays Mode + Custom Page Numbers if applicable"""
+        mode = str(getattr(obj, 'print_mode', 'bw')).lower()
+        pages = str(getattr(obj, 'custom_color_pages', '') or '')
+        
+        if 'custom' in mode and pages:
+            # Displays as CUSTOM (1,2,4-6) in orange
+            return format_html('<b style="color:#fd7e14">CUSTOM ({})</b>', pages)
+        
+        return mode.upper()
+    printing_type_display.short_description = "Mode"
 
     def user_name(self, obj): return obj.user.first_name
     def user_email(self, obj): return obj.user.email

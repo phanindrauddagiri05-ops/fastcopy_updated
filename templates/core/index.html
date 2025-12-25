@@ -35,18 +35,18 @@
                 </div>
                 
                 <div class="col-lg-6 order-1 order-lg-2" data-aos="zoom-in" data-aos-duration="1000">
-                    <div class="relative d-flex justify-center justify-content-lg-end">
-                        <div class="absolute inset-0 bg-blue-600/5 blur-[100px] rounded-full"></div>
+                    <div class="position-relative d-block">
+                        <div class="absolute inset-0 bg-blue-600/5 blur-[100px] rounded-full pointer-events-none"></div>
                         
-                        <div id="heroCarousel" class="carousel slide carousel-fade hero-image-wrapper p-2 w-100 lg:w-2/3 mx-auto ms-lg-auto" data-bs-ride="carousel" data-bs-interval="3000">
-                            <div class="carousel-inner rounded-4 shadow-2xl border-4 border-white">
-                                <div class="carousel-item active">
+                        <div id="heroCarousel" class="carousel slide carousel-fade hero-image-wrapper p-2 w-100 lg:w-2/3 mx-auto ms-lg-auto" data-bs-ride="carousel">
+                            <div class="carousel-inner rounded-4 shadow-2xl border-4 border-white overflow-hidden">
+                                <div class="carousel-item active" data-bs-interval="3000">
                                     <img src="{% static 'images/fast copy img1.jpeg' %}" class="d-block w-100 object-cover aspect-[4/3] floating-3d" alt="Premium Printing">
                                 </div>
-                                <div class="carousel-item">
+                                <div class="carousel-item" data-bs-interval="3000">
                                     <img src="{% static 'images/fast copy img2.jpeg' %}" class="d-block w-100 object-cover aspect-[4/3] floating-3d" alt="Quality Binding">
                                 </div>
-                                <div class="carousel-item">
+                                <div class="carousel-item" data-bs-interval="3000">
                                     <img src="{% static 'images/fast copy img3.jpeg' %}" class="d-block w-100 object-cover aspect-[4/3] floating-3d" alt="Fast Documentation">
                                 </div>
                             </div>
@@ -236,4 +236,17 @@
         </div>
     </section>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var heroCarouselEl = document.querySelector('#heroCarousel');
+        if (heroCarouselEl) {
+            var carousel = new bootstrap.Carousel(heroCarouselEl, {
+                interval: 3000,
+                ride: 'carousel',
+                pause: false
+            });
+        }
+    });
+</script>
 {% endblock %}

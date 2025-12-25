@@ -40,7 +40,10 @@ def register_view(request):
     return render(request, 'core/register.html')
 
 def login_view(request):
-    """UPDATED: Now redirects to HOME instead of Profile"""
+    """
+    Handles authentication and returns user to the service they 
+    were trying to access via the 'next' parameter.
+    """
     if request.user.is_authenticated:
         return redirect('home')
 
@@ -52,7 +55,10 @@ def login_view(request):
         if user:
             login(request, user)
             messages.success(request, f"Welcome back, {user.first_name}!")
-            return redirect('home')  # Updated redirect logic
+            
+            # This handles the redirect back to the service/upload form
+            next_url = request.GET.get('next')
+            return redirect(next_url if next_url else 'home')
         else:
             messages.error(request, "Invalid mobile number or password.")
             
@@ -102,18 +108,27 @@ def calculate_pages(request):
             return JsonResponse({'success': False})
     return JsonResponse({'success': False})
 
-@login_required(login_url='login')
 def add_to_cart(request):
+    """
+    AJAX view to handle file uploads. 
+    Manual check ensures safety if JS is bypassed.
+    """
     if request.method == "POST":
-        uploaded_file = request.FILES.get('document') # Only one input used
+        if not request.user.is_authenticated:
+            return JsonResponse({
+                'success': False, 
+                'message': 'User must be login before uploading the document'
+            }, status=401)
+
+        uploaded_file = request.FILES.get('document')
         if not uploaded_file:
-            return JsonResponse({'success': False})
+            return JsonResponse({'success': False, 'message': 'No file selected'})
 
         ext = uploaded_file.name.split('.')[-1].lower()
         file_path = None
         image_path = None
 
-        # Logic to separate PDF from Image processing
+        # Logic for PDF vs Image
         if ext == 'pdf':
             file_path = default_storage.save(f'temp/{uuid.uuid4()}_{uploaded_file.name}', ContentFile(uploaded_file.read()))
         else:
@@ -267,16 +282,16 @@ def get_phonepe_token():
 def checkout_summary(request, order_id):
     """Displays order confirmation before initiating payment."""
     order = get_object_or_404(Order, id=order_id)
-    return render(request, 'checkout.html', {'order': order})
+    return render(request, 'core/checkout.html', {'order': order})
 
-@login_required(login_url='login')
 def initiate_payment(request, order_id):
     """Starts the PhonePe Pay Page flow."""
     order = get_object_or_404(Order, id=order_id)
     token = get_phonepe_token()
     
     if not token:
-        return render(request, 'payment_failed.html', {
+        # UPDATED PATH TO core/
+        return render(request, 'core/payment_failed.html', {
             "order": order, 
             "error": "Authentication with Payment Gateway Failed."
         })
@@ -314,20 +329,21 @@ def initiate_payment(request, order_id):
             headers=headers
         )
         res_data = response.json()
-        print(f"PAY INITIATE RESPONSE: {res_data}")
 
         if res_data.get('success'):
             pay_url = res_data['data']['instrumentResponse']['redirectInfo']['url']
             return redirect(pay_url)
         else:
-            return render(request, 'payment_failed.html', {
+            # UPDATED PATH TO core/
+            return render(request, 'core/payment_failed.html', {
                 "order": order, 
                 "error": res_data.get('message', 'Gateway rejection')
             })
             
     except Exception as e:
-        return render(request, 'payment_failed.html', {"order": order, "error": str(e)})
-
+        # UPDATED PATH TO core/
+        return render(request, 'core/payment_failed.html', {'order_id': order_id})
+    
 @csrf_exempt
 def payment_callback(request):
     """Handles logic after the user returns from PhonePe."""
@@ -341,11 +357,13 @@ def payment_callback(request):
             order.payment_status = "Success"
             order.status = "Ready"
             order.save()
-            return render(request, 'payment_success.html', {'order': order})
+            # UPDATED PATH TO core/
+            return render(request, 'core/payment_success.html', {'order': order})
         else:
             order.payment_status = "Failed"
             order.save()
-            return render(request, 'payment_failed.html', {'order': order})
+            # UPDATED PATH TO core/
+            return render(request, 'core/payment_failed.html', {'order_id': order_id})
             
     return redirect('home')
 

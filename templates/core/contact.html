@@ -2,101 +2,105 @@
 {% load static %}
 
 {% block content %}
-<section class="py-12 py-md-20 bg-white text-center" data-aos="fade-down">
-    <div class="container mx-auto px-6">
-        <h1 class="text-3xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter mb-3 italic">Get in <span class="text-blue-600">Touch</span></h1>
-        <p class="text-slate-500 max-w-2xl mx-auto text-[11px] md:text-lg font-bold uppercase tracking-wide opacity-75">
-            Bulk orders or quick queries? Our premium support team is ready to assist.
+<section class="py-10 py-md-20 bg-white text-center" data-aos="fade-down">
+    <div class="container mx-auto px-4 px-md-6">
+        <h1 class="text-3xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter mb-2 italic">Get in <span class="text-blue-600">Touch</span></h1>
+        <p class="text-slate-500 max-w-2xl mx-auto text-[9px] md:text-lg font-bold uppercase tracking-widest opacity-75 leading-relaxed">
+            Bulk orders or quick queries? <br class="d-md-none"> Our premium support team is assistance-ready.
         </p>
     </div>
 </section>
 
-<div class="container mx-auto px-3 px-md-6 py-4 py-md-12">
-    <div class="row g-4 g-md-5 align-items-start">
+<div class="container mx-auto px-3 px-md-6 py-2 py-md-12">
+    <div class="row g-4 g-md-5 align-items-start justify-content-center">
         
-        <div class="col-lg-7" data-aos="fade-right">
-            <div class="bg-white p-4 p-md-10 rounded-[2rem] rounded-md-[2.5rem] shadow-2xl border-4 border-white">
-                <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase mb-6 md:mb-8 tracking-tight italic">Send a <span class="text-blue-600">Message</span></h2>
+        <div class="col-lg-6 order-2 order-lg-1" data-aos="fade-right">
+            <div class="bg-white p-3 p-md-8 rounded-[2rem] rounded-md-[2.5rem] shadow-2xl border-4 border-white mx-auto" style="max-width: 600px;">
+                <h2 class="text-lg md:text-2xl font-black text-slate-900 uppercase mb-4 md:mb-6 tracking-tight italic text-center text-md-start">
+                    Send a <span class="text-blue-600">Message</span>
+                </h2>
                 
-                <form action="#" method="POST" class="row g-3 g-md-4">
+                <form action="#" method="POST" class="row row-cols-2 g-2 g-md-3">
                     {% csrf_token %}
                     
-                    <div class="col-md-6">
-                        <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Full Name *</label>
-                        <input type="text" name="name" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-3 fw-bold shadow-sm text-sm">
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Email Address *</label>
-                        <input type="email" name="email" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-3 fw-bold shadow-sm text-sm">
+                    <div class="col">
+                        <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Name *</label>
+                        <input type="text" name="name" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-2 fw-bold shadow-sm text-xs md:text-sm">
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Phone Number *</label>
-                        <input type="tel" name="phone" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-3 fw-bold shadow-sm text-sm">
+                    <div class="col">
+                        <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Phone *</label>
+                        <input type="tel" name="phone" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-2 fw-bold shadow-sm text-xs md:text-sm">
                     </div>
                     
-                    <div class="col-md-6">
+                    <div class="col">
+                        <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Email *</label>
+                        <input type="email" name="email" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-2 fw-bold shadow-sm text-xs md:text-sm">
+                    </div>
+                    
+                    <div class="col">
                         <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Subject *</label>
-                        <input type="text" name="subject" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-3 fw-bold shadow-sm text-sm">
+                        <input type="text" name="subject" required class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-2 fw-bold shadow-sm text-xs md:text-sm">
                     </div>
 
                     <div class="col-12">
                         <label class="text-[8px] md:text-[9px] font-black uppercase text-slate-400 ml-1 tracking-widest">Your Message *</label>
-                        <textarea name="message" required rows="3" class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-3 fw-bold shadow-sm resize-none text-sm"></textarea>
+                        <textarea name="message" required rows="3" class="form-control bg-slate-50 border-0 rounded-xl py-2 py-md-2 fw-bold shadow-sm resize-none text-xs md:text-sm"></textarea>
                     </div>
 
-                    <div class="col-12 text-center text-md-start mt-3 mt-md-4">
-                        <button type="submit" class="btn-3d bg-blue-600 text-white px-7 py-2.5 rounded-xl font-black uppercase text-[9px] tracking-widest shadow-xl">
-                            Send Message <i class="fas fa-paper-plane ml-2"></i>
+                    <div class="col-12 d-flex justify-content-center justify-content-md-start mt-3">
+                        <button type="submit" class="btn-3d w-100 w-md-auto bg-blue-600 text-white px-md-4 py-2 rounded-xl font-black uppercase text-[8px] md:text-[10px] tracking-widest shadow-xl transition-all">
+                            Submit Request <i class="fas fa-paper-plane ms-2"></i>
                         </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="col-lg-5" data-aos="fade-left">
-            <div class="ps-lg-5 space-y-8 mt-4 mt-lg-0">
-                <h2 class="text-xl md:text-2xl font-black text-slate-900 uppercase tracking-tight italic">Hub <span class="text-blue-600">Details</span></h2>
+        <div class="col-lg-4 order-1 order-lg-2" data-aos="fade-left">
+            <div class="ps-lg-4 space-y-6 md:space-y-8 mb-5 mb-lg-0">
+                <h2 class="text-lg md:text-2xl font-black text-slate-900 uppercase tracking-tight italic text-center text-md-start">
+                    Hub <span class="text-blue-600">Details</span>
+                </h2>
                 
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-1 g-4">
-                    <div class="col d-flex align-items-start gap-3 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 text-blue-600 transition-transform group-hover:rotate-12 shadow-sm">
-                            <i class="fas fa-map-marker-alt text-xs md:text-base"></i>
+                <div class="row g-3 g-md-4">
+                    <div class="col-6 col-lg-12 d-flex align-items-start gap-2 gap-md-3 group">
+                        <div class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0 text-blue-600 transition-transform group-hover:rotate-12 shadow-sm">
+                            <i class="fas fa-map-marker-alt text-[10px] md:text-base"></i>
                         </div>
                         <div>
-                            <h4 class="font-black uppercase text-[8px] md:text-[10px] tracking-widest text-slate-400 m-0">Our Address</h4>
-                            <p class="text-xs font-bold text-slate-700 mt-1">ADB Road, Surampalem, 533437</p>
+                            <h4 class="font-black uppercase text-[7px] md:text-[10px] tracking-widest text-slate-400 m-0">Address</h4>
+                            <p class="text-[9px] md:text-xs font-bold text-slate-700 mt-1">Vizaganagaram, 533437</p>
                         </div>
                     </div>
 
-                    <div class="col d-flex align-items-start gap-3 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0 text-green-600 transition-transform group-hover:rotate-12 shadow-sm">
-                            <i class="fas fa-phone-alt text-xs md:text-base"></i>
+                    <div class="col-6 col-lg-12 d-flex align-items-start gap-2 gap-md-3 group">
+                        <div class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0 text-green-600 transition-transform group-hover:rotate-12 shadow-sm">
+                            <i class="fas fa-phone-alt text-[10px] md:text-base"></i>
                         </div>
                         <div>
-                            <h4 class="font-black uppercase text-[8px] md:text-[10px] tracking-widest text-slate-400 m-0">Call Us</h4>
-                            <p class="text-xs font-bold text-slate-700 mt-1">+91 63015 26803</p>
+                            <h4 class="font-black uppercase text-[7px] md:text-[10px] tracking-widest text-slate-400 m-0">Call Us</h4>
+                            <p class="text-[9px] md:text-xs font-bold text-slate-700 mt-1">+91 9441055486</p>
                         </div>
                     </div>
 
-                    <div class="col d-flex align-items-start gap-3 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0 text-orange-600 transition-transform group-hover:rotate-12 shadow-sm">
-                            <i class="fas fa-envelope text-xs md:text-base"></i>
+                    <div class="col-6 col-lg-12 d-flex align-items-start gap-2 gap-md-3 group">
+                        <div class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0 text-orange-600 transition-transform group-hover:rotate-12 shadow-sm">
+                            <i class="fas fa-envelope text-[10px] md:text-base"></i>
                         </div>
                         <div>
-                            <h4 class="font-black uppercase text-[8px] md:text-[10px] tracking-widest text-slate-400 m-0">Email Us</h4>
-                            <p class="text-xs font-bold text-slate-700 mt-1">support@fastcopy.com</p>
+                            <h4 class="font-black uppercase text-[7px] md:text-[10px] tracking-widest text-slate-400 m-0">Email</h4>
+                            <p class="text-[9px] md:text-xs font-bold text-slate-700 mt-1">support@fc.com</p>
                         </div>
                     </div>
 
-                    <div class="col d-flex align-items-start gap-3 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0 text-purple-600 transition-transform group-hover:rotate-12 shadow-sm">
-                            <i class="fas fa-clock text-xs md:text-base"></i>
+                    <div class="col-6 col-lg-12 d-flex align-items-start gap-2 gap-md-3 group">
+                        <div class="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0 text-purple-600 transition-transform group-hover:rotate-12 shadow-sm">
+                            <i class="fas fa-clock text-[10px] md:text-base"></i>
                         </div>
                         <div>
-                            <h4 class="font-black uppercase text-[8px] md:text-[10px] tracking-widest text-slate-400 m-0">Working Hours</h4>
-                            <p class="text-xs font-bold text-slate-700 mt-1 uppercase">Mon - Sat: 9am - 8pm</p>
+                            <h4 class="font-black uppercase text-[7px] md:text-[10px] tracking-widest text-slate-400 m-0">Hours</h4>
+                            <p class="text-[9px] md:text-xs font-bold text-slate-700 mt-1 uppercase">9am - 8pm</p>
                         </div>
                     </div>
                 </div>
@@ -105,29 +109,29 @@
     </div>
 </div>
 
-<section class="mt-10 mt-md-20 py-10 py-md-16 bg-slate-900 text-white relative overflow-hidden rounded-[2rem] rounded-md-[3rem] mx-3 md:mx-6 mb-12">
+<section class="mt-6 py-8 py-md-16 bg-slate-900 text-white relative overflow-hidden rounded-[2rem] rounded-md-[4rem] mx-3 md:mx-6 mb-12">
     <div class="absolute -right-20 -top-20 w-80 h-80 bg-blue-600/10 rounded-full blur-[100px]"></div>
     
     <div class="container mx-auto px-4 text-center relative z-10">
-        <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-3 italic" data-aos="zoom-in">Need Quick <span class="text-blue-500">Help?</span></h2>
-        <p class="text-slate-400 max-w-xl mx-auto mb-8 text-[10px] font-bold uppercase tracking-widest opacity-80 px-4">Skip the queue and connect with us instantly.</p>
+        <h2 class="text-xl md:text-4xl font-black uppercase tracking-tighter mb-2 italic" data-aos="zoom-in">Need Quick <span class="text-blue-500">Help?</span></h2>
+        <p class="text-slate-400 max-w-xl mx-auto mb-6 text-[8px] md:text-[10px] font-bold uppercase tracking-widest opacity-80 px-4">Skip the queue and connect with us instantly.</p>
         
         <div class="row g-3 justify-content-center">
-            <div class="col-6 col-md-5 col-lg-4" data-aos="fade-up">
-                <div class="bg-white/5 backdrop-blur-md p-4 p-md-8 rounded-[1.5rem] rounded-md-[2.5rem] border border-white/10 hover:bg-white/10 transition-all duration-500 h-100">
-                    <i class="fas fa-headset text-2xl md:text-3xl text-blue-400 mb-3 floating-3d"></i>
-                    <h3 class="text-sm md:text-xl font-black uppercase mb-1">Voice Call</h3>
-                    <p class="text-slate-500 mb-4 uppercase text-[7px] md:text-[8px] font-black tracking-widest">9am - 8pm</p>
-                    <a href="tel:+916301526803" class="btn-3d bg-blue-600 text-white px-4 py-2 rounded-lg font-black uppercase text-[8px] md:text-[9px] tracking-widest no-underline">Call Now</a>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up">
+                <div class="bg-white/5 backdrop-blur-md p-4 p-md-6 rounded-[1.5rem] rounded-md-[2.5rem] border border-white/10 hover:bg-white/10 transition-all duration-500 h-100 flex flex-column align-items-center">
+                    <i class="fas fa-headset text-xl md:text-3xl text-blue-400 mb-2 md:mb-3 floating-3d"></i>
+                    <h3 class="text-[10px] md:text-lg font-black uppercase mb-1">Voice Call</h3>
+                    <p class="text-slate-500 mb-3 uppercase text-[6px] md:text-[8px] font-black tracking-widest">9am - 8pm</p>
+                    <a href="tel:+919441055486" class="btn-3d w-100 bg-blue-600 text-white py-2 rounded-lg font-black uppercase text-[7px] md:text-[9px] tracking-widest no-underline">Call Now</a>
                 </div>
             </div>
 
-            <div class="col-6 col-md-5 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="bg-white/5 backdrop-blur-md p-4 p-md-8 rounded-[1.5rem] rounded-md-[2.5rem] border border-white/10 hover:bg-white/10 transition-all duration-500 h-100">
-                    <i class="fab fa-whatsapp text-2xl md:text-4xl text-green-400 mb-3 floating-3d"></i>
-                    <h3 class="text-sm md:text-xl font-black uppercase mb-1">WhatsApp</h3>
-                    <p class="text-slate-500 mb-4 uppercase text-[7px] md:text-[8px] font-black tracking-widest">Instant Response</p>
-                    <a href="https://wa.me/916301526803" target="_blank" class="btn-3d bg-green-600 text-white px-4 py-2 rounded-lg font-black uppercase text-[8px] md:text-[9px] tracking-widest no-underline">WhatsApp Chat</a>
+            <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="bg-white/5 backdrop-blur-md p-4 p-md-6 rounded-[1.5rem] rounded-md-[2.5rem] border border-white/10 hover:bg-white/10 transition-all duration-500 h-100 flex flex-column align-items-center">
+                    <i class="fab fa-whatsapp text-xl md:text-4xl text-green-400 mb-2 md:mb-3 floating-3d"></i>
+                    <h3 class="text-[10px] md:text-lg font-black uppercase mb-1">WhatsApp</h3>
+                    <p class="text-slate-500 mb-3 uppercase text-[6px] md:text-[8px] font-black tracking-widest">Fast Reply</p>
+                    <a href="https://wa.me/9441055486" target="_blank" class="btn-3d w-100 bg-green-600 text-white py-2 rounded-lg font-black uppercase text-[7px] md:text-[9px] tracking-widest no-underline">Message</a>
                 </div>
             </div>
         </div>
