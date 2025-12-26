@@ -39,8 +39,7 @@ urlpatterns = [
 
     # --- 💳 Payments ---
     path('payment/initiate/', views.initiate_payment, name='initiate_payment'),
-    path('payment/callback/', views.payment_callback, name='payment_callback'),
-    
+    path('payment/callback/', views.payment_callback, name='payment_callback'),    
     # bypass_payment: Test/Bypass logic that handles DIR/TXN isolation automatically
     path('payment/bypass-test/', views.bypass_payment, name='bypass_payment'),
 ]

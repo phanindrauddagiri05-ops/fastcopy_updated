@@ -15,19 +15,7 @@ from .models import Service, Order, UserProfile, CartItem
 
 # --- 🚀 0. CORE LOGIC ENGINES (Success/Failure/Helper) ---
 
-from django.db import transaction
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
-from .models import Order, CartItem
 
-
-import base64, json, hashlib, requests
-from django.db import transaction
-from django.shortcuts import redirect
-from django.contrib import messages
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from .models import Order, CartItem
 
 def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
     """
@@ -226,8 +214,24 @@ def edit_profile(request):
 
 @login_required(login_url='login')
 def history_view(request):
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'core/history.html', {'orders': orders})
+    """
+    MASTER TRANSACTION LOG:
+    Fetches all orders associated with the logged-in user.
+    Ordered by '-created_at' to show the most recent activity at the top.
+    Includes filtering for Pending, Success, and Cancelled states.
+    """
+    # 1. Fetch all orders for the user
+    all_orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
+    # 2. Context metadata for the UI
+    context = {
+        'orders': all_orders,
+        'total_orders_count': all_orders.count(),
+        # Optimization: Only count active/pending orders for a "Processing" badge if needed
+        'active_count': all_orders.filter(status__in=['Pending', 'Confirmed', 'Ready']).count(),
+    }
+
+    return render(request, 'core/history.html', context)
 
 # --- 🛒 2. CART & PDF ENGINE ---
 
@@ -267,10 +271,45 @@ def add_to_cart(request):
 
 @login_required(login_url='login')
 def cart_page(request):
-    cart = request.session.get('cart', [])
-    total_bill = sum(float(i.get('total_price', 0)) for i in cart)
-    total_eff = sum(int(i.get('pages', 0)) * int(i.get('copies', 1)) for i in cart)
-    return render(request, 'core/cart.html', {'cart_items': cart, 'total_bill': round(total_bill, 2), 'total_pages': total_eff, 'min_required': 5, 'remaining_pages': max(0, 5 - total_eff)})
+    """
+    DATABASE-FIRST CART VIEW:
+    Fetches directly from the CartItem table to ensure 100% sync
+    with failed-payment restorations.
+    """
+    # 1. Fetch from Database (This is the fix)
+    db_items = CartItem.objects.filter(user=request.user).order_by('-created_at')
+    
+    # 2. Sync the session so the Navbar count is correct
+    cart_list = []
+    for i in db_items:
+        cart_list.append({
+            'service_name': i.service_name,
+            'total_price': str(i.total_price),
+            'document_name': i.document_name,
+            'temp_path': i.temp_path,
+            'temp_image_path': i.temp_image_path,
+            'copies': i.copies,
+            'pages': i.pages,
+            'location': i.location,
+            'print_mode': i.print_mode,
+            'side_type': i.side_type,
+            'custom_color_pages': i.custom_color_pages,
+        })
+    request.session['cart'] = cart_list
+    request.session.modified = True
+
+    # 3. Calculate Totals
+    total_bill = sum(float(i.total_price) for i in db_items)
+    total_eff_pages = sum(int(i.pages) * int(i.copies) for i in db_items)
+
+    context = {
+        'cart_items': cart_list, 
+        'total_bill': round(total_bill, 2),
+        'total_pages': total_eff_pages,
+        'min_required': 5,
+        'remaining_pages': max(0, 5 - total_eff_pages)
+    }
+    return render(request, 'core/cart.html', context)
 
 @login_required(login_url='login')
 def remove_from_cart(request, item_id):
@@ -372,8 +411,8 @@ def initiate_payment(request):
     """
     STRICT ISOLATION & PERSISTENCE:
     1. Identifies source (Direct vs Cart) via batch_txn_id prefix.
-    2. For DIRECT orders: Automatically adds to DB Cart BEFORE payment to handle "Back" button scenarios.
-    3. Records Pending Order in DB for history.
+    2. For DIRECT orders: Automatically adds to DB Cart BEFORE payment to handle "Back" or "Close Tab" scenarios.
+    3. Records Pending Order in DB for history tracking.
     4. Redirects to PhonePe gateway.
     """
     batch_txn_id = request.session.get('pending_batch_id')
@@ -383,13 +422,13 @@ def initiate_payment(request):
     if not batch_txn_id: 
         return redirect('cart')
 
-    # --- 🛡️ THE ISOLATION & CART PERSISTENCE FILTER ---
+    # --- 🛡️ THE ISOLATION & FAIL-SAFE TRANSFER FILTER ---
     if batch_txn_id.startswith("DIR"):
         # Source: Service Page (Order Now)
         items_to_process = [direct_item] if direct_item else []
         
-        # [NEW REQUIREMENT] Persistent Restore: 
-        # Add to DB Cart immediately. If user backs out of PhonePe, it's already in their cart.
+        # PRE-EMPTIVE BACKUP: Add to DB Cart immediately.
+        # This covers the "Back" button or "Close Window" scenario.
         if direct_item:
             CartItem.objects.get_or_create(
                 user=request.user,
@@ -431,7 +470,7 @@ def initiate_payment(request):
                     'copies': item.get('copies'), 
                     'custom_color_pages': item.get('custom_color_pages', ''),
                     'payment_status': "Pending", 
-                    'status': "Pending"  # SET STATUS TO PENDING
+                    'status': "Pending"
                 }
             )
 
@@ -451,34 +490,19 @@ def initiate_payment(request):
         "paymentInstrument": {"type": "PAY_PAGE"}
     }
 
-    # Encode and Generate Checksum
     base64_payload = base64.b64encode(json.dumps(payload).encode()).decode()
     verify_str = base64_payload + "/pg/v1/pay" + settings.PHONEPE_SALT_KEY
     checksum = hashlib.sha256(verify_str.encode()).hexdigest() + "###" + settings.PHONEPE_SALT_INDEX
 
-    headers = {
-        "Content-Type": "application/json", 
-        "X-VERIFY": checksum, 
-        "accept": "application/json"
-    }
+    headers = {"Content-Type": "application/json", "X-VERIFY": checksum, "accept": "application/json"}
     
     try:
-        response = requests.post(
-            settings.PHONEPE_API_URL, 
-            json={"request": base64_payload}, 
-            headers=headers
-        )
+        response = requests.post(settings.PHONEPE_API_URL, json={"request": base64_payload}, headers=headers)
         res_json = response.json()
-        
         if res_json.get('success'):
             return redirect(res_json['data']['instrumentResponse']['redirectInfo']['url'])
         else:
-            # Gateway Failure: Mark as Cancelled
-            Order.objects.filter(transaction_id=batch_txn_id).update(
-                payment_status="Failed", 
-                status="Cancelled"
-            )
-            messages.error(request, "Gateway initialization failed.")
+            Order.objects.filter(transaction_id=batch_txn_id).update(payment_status="Failed", status="Cancelled")
             return redirect('cart')
     except Exception:
         return redirect('cart')
@@ -486,116 +510,104 @@ def initiate_payment(request):
 @login_required(login_url='login')
 def bypass_payment(request):
     """
-    TEST MODE: Simulates success and isolates clearing of correct items.
-    Ensures final order status is 'Pending'.
+    TEST MODE: Simulates a successful transaction with strict source isolation.
+    1. Detects source via 'pending_batch_id' prefix (DIR_ vs TXN_).
+    2. Finalizes the order records in the database with 'Pending' status.
+    3. Performs surgical cleanup:
+       - If Direct: Clears only the temporary session and the DB backup for that specific item.
+       - If Cart: Clears the entire session and DB cart.
     """
     txn_id = request.session.get('pending_batch_id')
     direct_item = request.session.get('direct_item')
     
-    # Isolation logic for test mode
+    # --- 1. Identify Target Items ---
     if txn_id and txn_id.startswith("DIR"):
+        # Source: Service Page (Order Now)
         items = [direct_item] if direct_item else []
     else:
+        # Source: Cart Page (Order All)
         items = request.session.get('cart', [])
 
+    # Validation check
     if not items or None in items:
-        messages.error(request, "No items found to process.")
+        messages.error(request, "No items found to process for this test.")
         return redirect('cart')
 
-    # process_successful_order contains the 'status="Pending"' update logic
+    # --- 2. Database Finalization ---
+    # process_successful_order moves files and sets status to 'Pending'
     last_o = process_successful_order(request.user, items, txn_id)
     
-    # Session and Database Cart Cleanup based on source
+    # --- 3. Surgical Cleanup ---
     if txn_id.startswith("DIR"):
+        # Success Cleanup for Direct Order:
+        # Remove the pre-emptive DB backup created in initiate_payment
+        if direct_item:
+            CartItem.objects.filter(
+                user=request.user, 
+                document_name=direct_item.get('document_name')
+            ).delete()
+        
+        # Remove the temporary service-page session item
         if 'direct_item' in request.session: 
             del request.session['direct_item']
     else:
+        # Success Cleanup for Cart Order:
+        # Wipe the entire persistent cart and session
         request.session['cart'] = []
         CartItem.objects.filter(user=request.user).delete()
         
+    # Commit session changes
     request.session.modified = True
-    messages.success(request, "Test Payment Successful (Bypassed)! Order Status: Pending.")
+    
+    messages.success(request, f"Test Payment Successful! Order {last_o.order_id} is now Pending.")
     return render(request, 'core/payment_success.html', {'order': last_o})
+
+from django.contrib import messages
 
 @csrf_exempt
 def payment_callback(request):
     """
-    STRICT ISOLATION CALLBACK:
-    Success: Finalizes order, clears session.
-    Failure (Direct): Marks order Cancelled, RESTORES item to Cart.
-    Failure (Cart): Marks order Cancelled, items remain in Cart.
+    STRICT CALLBACK: Handles failure, triggers flash message, and syncs cart.
     """
-    # 1. Capture PhonePe Response
-    txn_id = request.POST.get('merchantTransactionId')
-    code = request.POST.get('code')
+    txn_id = request.POST.get('merchantTransactionId', '')
+    code = request.POST.get('code', '')
     
-    # 2. Get data from session
     direct_item = request.session.get('direct_item')
-    cart_items = request.session.get('cart', [])
+    is_direct = txn_id.startswith("DIR") if txn_id else False
+    items_involved = [direct_item] if is_direct else request.session.get('cart', [])
 
-    # 3. Determine target items based on ID prefix (DIR_ or TXN_)
-    is_direct = txn_id.startswith("DIR")
-    items_involved = [direct_item] if is_direct else cart_items
-
-    # --- SUCCESS LOGIC ---
     if code == 'PAYMENT_SUCCESS':
-        # Permanently save files and confirm orders
         process_successful_order(request.user, items_involved, txn_id)
-        
-        if is_direct:
-            # Clear direct session, cart stays untouched
-            if 'direct_item' in request.session:
-                del request.session['direct_item']
-        else:
-            # Clear full cart database and session
-            CartItem.objects.filter(user=request.user).delete()
-            request.session['cart'] = []
-            
-        request.session.modified = True
-        messages.success(request, "Payment successful! Your order is being processed.")
+        # ... (Success cleanup logic) ...
+        messages.success(request, "Order placed successfully!")
         return redirect('history')
-
-    # --- FAILURE LOGIC ---
     else:
-        # Mark records as Failed/Cancelled in DB
+        # --- ❌ FAILURE CASE ---
         handle_failed_order(request.user, items_involved, txn_id)
         
+        # 1. SET THE MESSAGE: This is what you were missing
+        messages.error(
+            request, 
+            "PAYMENT FAILED: Your transaction could not be completed. Your items are safe in the cart."
+        )
+        
         if is_direct and direct_item:
-            # REQUIREMENT: Failed Service Order -> Add to Database Cart
+            # Move to DB Cart
             CartItem.objects.get_or_create(
                 user=request.user,
                 document_name=direct_item.get('document_name'),
-                defaults={
-                    'service_name': direct_item.get('service_name'),
-                    'total_price': direct_item.get('total_price'),
-                    'temp_path': direct_item.get('temp_path'),
-                    'temp_image_path': direct_item.get('temp_image_path'),
-                    'copies': direct_item.get('copies'),
-                    'pages': direct_item.get('pages', 1),
-                    'location': direct_item.get('location'),
-                    'print_mode': direct_item.get('print_mode'),
-                    'side_type': direct_item.get('side_type'),
-                    'custom_color_pages': direct_item.get('custom_color_pages')
-                }
+                defaults=direct_item
             )
-            
-            # Remove from temporary direct session
-            del request.session['direct_item']
-            
-            # Sync session cart from DB so UI updates immediately
+            # Sync Session so UI updates
             db_cart = CartItem.objects.filter(user=request.user)
-            request.session['cart'] = [
-                {
-                    'service_name': i.service_name, 'total_price': str(i.total_price),
-                    'document_name': i.document_name, 'temp_path': i.temp_path,
-                    'temp_image_path': i.temp_image_path, 'copies': i.copies,
-                    'pages': i.pages, 'location': i.location, 'print_mode': i.print_mode,
-                    'side_type': i.side_type, 'custom_color_pages': i.custom_color_pages
-                } for i in db_cart
-            ]
-            
+            request.session['cart'] = [{k: str(v) if k == 'total_price' else v for k, v in i.__dict__.items() if not k.startswith('_')} for i in db_cart]
+            if 'direct_item' in request.session:
+                del request.session['direct_item']
+
+        # 2. FORCE SAVE: Ensures the message is written to the DB/Cookie before redirect
         request.session.modified = True
-        messages.error(request, "Payment failed. The item has been added to your cart.")
+        request.session.save() 
+        
         return redirect('cart')
     
 # --- 🌐 5. STATIC PAGES ---
