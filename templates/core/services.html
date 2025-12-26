@@ -85,9 +85,9 @@
                                         <div class="col-6 d-none" id="custom-layout-container">
                                             <label class="form-label mb-1 small fw-bold text-muted text-uppercase">Custom Layout</label>
                                             <select name="layout_type" id="layout_type" class="form-select form-select-sm bg-light border-0 rounded-3 fw-bold">
-                                                <option value="4in1">4 in 1</option>
-                                                <option value="8in1">8 in 1</option>
-                                                <option value="9in1">9 in 1</option>
+                                                <option value="1/4">1/4 Layout</option>
+                                                <option value="1/8">1/8 Layout</option>
+                                                <option value="1/9">1/9 Layout</option>
                                             </select>
                                         </div>
 
@@ -202,7 +202,6 @@
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     let T = 0; 
     let currentService = "Printing";
@@ -220,9 +219,8 @@
         const isAuth = $('#is-user-authenticated').val() === 'true';
         if (!isAuth) {
             event.preventDefault();
-            alert("User must be login before uploading the document.");
-            const nextUrl = window.location.pathname + window.location.hash;
-            window.location.href = "{% url 'login' %}?next=" + encodeURIComponent(nextUrl);
+            alert("Please login before uploading the document.");
+            window.location.href = "{% url 'login' %}?next=" + encodeURIComponent(window.location.pathname + window.location.hash);
             return false;
         }
         return true;
@@ -274,67 +272,62 @@
         }
     }
 
-    function submitOrderAll() {
-        const form = $('<form>', { action: "{% url 'order_all' %}", method: 'POST' });
-        form.append($('<input>', { type: 'hidden', name: 'csrfmiddlewaretoken', value: '{{ csrf_token }}' }));
-        $('body').append(form);
-        form.submit();
-    }
-
-    // --- 🚀 FINAL PIN-TO-PIN VALIDATION ENGINE ---
+    // --- 🚀 UPDATED VALIDATION & REDIRECT ENGINE ---
     function processCart(isDirectOrder) {
         const isAuth = $('#is-user-authenticated').val() === 'true';
         if (!isAuth) {
-            alert("User must be login before uploading the document.");
+            alert("Please login first.");
             window.location.href = "{% url 'login' %}?next=" + encodeURIComponent(window.location.pathname + window.location.hash);
             return;
         }
 
-        // 1. PRIORITY 1: Check File Upload
         if (!T || T === 0) { 
             alert("Please upload a PDF or Image file first!"); 
             return; 
         }
 
-        // 2. PRIORITY 2: Check Location Selection
         const locationSelected = $('#location').val();
-        if (!locationSelected || locationSelected === "") {
+        if (!locationSelected) {
             alert("Please select your Campus Location.");
             $('#location').focus();
             return;
         }
 
-        // 3. PRIORITY 3: Volume Validation (Pages x Copies)
-        const minRequired = 5;
         const copies = parseInt($('#copies').val()) || 1;
         const totalVolume = T * copies;
 
-        if (isDirectOrder && totalVolume < minRequired) {
-            alert(`Minimum volume required: 5 total pages.\n\nYour selection: ${T} pages x ${copies} copies = ${totalVolume} total pages.\n\nPlease increase copies or add more pages to "Order Now".`);
-            isDirectOrder = false; 
+        // NEW REQUIREMENT: If < 5 pages, alert and FORCE to Cart Page
+        if (isDirectOrder && totalVolume < 5) {
+            alert(`Minimum volume required: 5 total pages.\n\nYour selection: ${totalVolume} total pages.\n\nClick OK to add this file to your cart. You can combine it with other files later.`);
+            isDirectOrder = false; // Force the logic to use 'add_to_cart' path
         }
 
-        // --- Execute Ajax ---
         let formData = new FormData($('#order-form')[0]);
         formData.set('page_count', T);
 
+        // Path selection
+        let targetUrl = isDirectOrder ? "{% url 'order_now' %}" : "{% url 'add_to_cart' %}";
+
         $.ajax({
-            url: "{% url 'add_to_cart' %}",
+            url: targetUrl,
             type: "POST",
             data: formData,
             processData: false,
             contentType: false,
             success: function(res) {
-                if (res.success) {
-                    if (isDirectOrder) submitOrderAll();
-                    else window.location.href = "{% url 'cart' %}";
+                if (isDirectOrder) {
+                    // Navigate to checkout summary for Direct Order
+                    window.location.href = "{% url 'cart_checkout_summary' %}";
                 } else {
-                    alert("Submission failed. Please try again.");
+                    // Navigate to Cart Page for both "Add to Cart" click AND forced < 5 volume
+                    window.location.href = "{% url 'cart' %}";
                 }
+            },
+            error: function() {
+                alert("An error occurred. Please try again.");
             }
         });
     }
-
     function handleNupRules() {
         const L = $('#layout_type').val();
         if(L === "4in1") { $('#side_type').val('double'); $('#side-type-container').addClass('d-none'); }
@@ -356,7 +349,6 @@
     $('#document').change(function(e) {
         let file = e.target.files[0];
         if (!file) return;
-
         $('#upload-ui').addClass('d-none');
         $('#preview-wrapper').removeClass('d-none');
 
@@ -424,39 +416,51 @@
 
         if(currentService === "Custom Printing") {
             const L = $('#layout_type').val();
-            let divisor = (L === "4in1") ? 4 : 8;
+            let divisor = 4;
+            if(L === "1/8") divisor = 8;
+            if(L === "1/9") divisor = 9;
             let sheets = Math.ceil(T / divisor);
-            printingCostPerSet = (L === "4in1") ? (sheets * 1.7) : (S === "single" ? sheets * 3 : sheets * 5);
+            printingCostPerSet = (L === "1/4") ? (sheets * 1.7) : (S === "single" ? sheets * 3 : sheets * 5);
             bwPart = printingCostPerSet;
         } else {
             if (P === 'custom_split') {
                 const inputVal = $('#custom_color_input').val();
-                let pagesArray = inputVal.split(',').filter(x => x.trim() !== "");
-                let uniquePages = new Set();
-                let isInvalid = false;
-                pagesArray.forEach(part => {
-                    if (part.includes('-')) {
-                        let range = part.split('-');
-                        let start = parseInt(range[0]), end = parseInt(range[1]);
-                        for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
-                            if (T > 0 && i > T) isInvalid = true;
-                            if (i >= 1 && (T === 0 || i <= T)) uniquePages.add(i);
-                        }
-                    } else {
-                        let num = parseInt(part);
-                        if (T > 0 && num > T) isInvalid = true;
-                        if (!isNaN(num) && num >= 1 && (T === 0 || num <= T)) uniquePages.add(num);
-                    }
-                });
+                if (!inputVal) {
+                    printingCostPerSet = T * 1.5;
+                    bwPart = printingCostPerSet;
+                } else {
+                    let pagesArray = inputVal.split(',').filter(x => x.trim() !== "");
+                    let uniquePages = new Set();
+                    let isInvalid = false;
+                    let invalidPageNum = 0;
 
-                if (T > 0 && isInvalid) {
-                    alert("Error: Page numbers entered exceed total PDF page count.");
-                    $('#custom_color_input').val("");
-                    calculateFinalPrice();
-                    return;
+                    pagesArray.forEach(part => {
+                        if (part.includes('-')) {
+                            let range = part.split('-');
+                            let start = parseInt(range[0]), end = parseInt(range[1]);
+                            for (let i = Math.min(start, end); i <= Math.max(start, end); i++) {
+                                if (T > 0 && i > T) { isInvalid = true; invalidPageNum = i; }
+                                if (i >= 1 && (T === 0 || i <= T)) uniquePages.add(i);
+                            }
+                        } else {
+                            let num = parseInt(part);
+                            if (T > 0 && num > T) { isInvalid = true; invalidPageNum = num; }
+                            if (!isNaN(num) && num >= 1 && (T === 0 || num <= T)) uniquePages.add(num);
+                        }
+                    });
+
+                    // --- CRITICAL ALERT FIX ---
+                    if (T > 0 && isInvalid) {
+                        alert("Invalid Entry: Page " + invalidPageNum + " exceeds the total count of " + T + " pages in your PDF.");
+                        $('#custom_color_input').val(""); // Reset the field
+                        calculateFinalPrice(); // Recalculate based on empty field
+                        return;
+                    }
+
+                    colorPart = uniquePages.size * 8; 
+                    bwPart = (T - uniquePages.size) * 1.5;
+                    printingCostPerSet = colorPart + bwPart;
                 }
-                colorPart = uniquePages.size * 8; bwPart = (T - uniquePages.size) * 1.5;
-                printingCostPerSet = colorPart + bwPart;
             } else if (P === 'bw') {
                 printingCostPerSet = (S === 'single') ? (T * 1.5) : (Math.ceil(T / 2) * 1.7); bwPart = printingCostPerSet;
             } else if (P === 'color') {

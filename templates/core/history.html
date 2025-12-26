@@ -17,10 +17,11 @@
                         <thead class="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
                             <tr>
                                 <th class="pb-4">Order ID</th>
-                                <th class="pb-4">Service</th>
-                                <th class="pb-4">Configuration</th> <th class="pb-4">Date</th>
-                                <th class="pb-4">Amount</th>
-                                <th class="pb-4 text-end">Status</th>
+                                <th class="pb-4">Service & Location</th>
+                                <th class="pb-4">Configuration</th>
+                                <th class="pb-4">Date</th>
+                                <th class="pb-4 text-center">Payment</th>
+                                <th class="pb-4 text-center">Order Status</th>
                             </tr>
                         </thead>
                         <tbody class="text-xs font-bold text-slate-600">
@@ -31,52 +32,59 @@
                                 <td>
                                     <div class="flex flex-col">
                                         <span class="text-slate-900 uppercase tracking-tight">{{ order.service_name }}</span>
-                                        <span class="text-[9px] text-slate-400 uppercase tracking-tighter">{{ order.location }}</span>
+                                        <span class="text-[9px] text-slate-400 uppercase tracking-tighter">{{ order.location|default:"General Campus" }}</span>
                                     </div>
                                 </td>
 
                                 <td>
                                     <div class="flex flex-wrap gap-1">
                                         {% if "custom" in order.print_mode.lower %}
-                                            <span class="px-2 py-1 bg-orange-50 text-orange-600 border border-orange-100 rounded text-[9px] font-black uppercase">
-                                                CUSTOM SPLIT
-                                            </span>
-                                        {% elif order.print_mode == 'bw' %}
-                                            <span class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[9px] font-black uppercase">
-                                                B&W
-                                            </span>
+                                            <span class="px-2 py-1 bg-orange-50 text-orange-600 border border-orange-100 rounded text-[8px] font-black uppercase">Custom Split</span>
+                                        {% elif order.print_mode == 'bw' or order.print_mode == 'black & white' %}
+                                            <span class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[8px] font-black uppercase">B&W</span>
                                         {% else %}
-                                            <span class="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[9px] font-black uppercase">
-                                                COLOR
-                                            </span>
+                                            <span class="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[8px] font-black uppercase">Color</span>
                                         {% endif %}
 
-                                        <span class="px-2 py-1 bg-slate-100 text-slate-500 rounded text-[9px] font-black uppercase">
-                                            {{ order.copies }} Qty
-                                        </span>
+                                        <span class="px-2 py-1 bg-slate-50 text-slate-500 border border-slate-100 rounded text-[8px] font-black uppercase">{{ order.copies }} Qty</span>
 
                                         {% if order.custom_color_pages %}
                                         <div class="w-full mt-1">
-                                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mb-0">
-                                                Color Pages: <span class="text-orange-500">{{ order.custom_color_pages }}</span>
+                                            <p class="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mb-0">
+                                                Pages: <span class="text-orange-500">{{ order.custom_color_pages }}</span>
                                             </p>
                                         </div>
                                         {% endif %}
                                     </div>
                                 </td>
 
-                                <td class="text-slate-400">{{ order.created_at|date:"d M Y" }}<br><span class="text-[9px] opacity-70">{{ order.created_at|date:"h:i A" }}</span></td>
-                                
-                                <td class="font-black text-slate-900 text-sm">₹{{ order.total_price }}</td>
+                                <td class="text-slate-400">
+                                    {{ order.created_at|date:"d M Y" }}<br>
+                                    <span class="text-[9px] opacity-70">{{ order.created_at|date:"h:i A" }}</span>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="flex flex-col items-center gap-1">
+                                        <span class="font-black text-slate-900">₹{{ order.total_price }}</span>
+                                        <span class="text-[7px] font-black uppercase tracking-tighter px-2 py-0.5 rounded
+                                            {% if order.payment_status == 'Success' %} text-green-600 bg-green-50
+                                            {% elif order.payment_status == 'Failed' %} text-red-600 bg-red-50
+                                            {% else %} text-blue-600 bg-blue-50 {% endif %}">
+                                            {{ order.payment_status }}
+                                        </span>
+                                    </div>
+                                </td>
                                 
                                 <td class="text-end">
-                                    <span class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase 
-                                        {% if order.status == 'Delivered' %} bg-green-100 text-green-600 
-                                        {% elif order.status == 'Rejected' %} bg-red-100 text-red-600
-                                        {% elif order.status == 'Ready' %} bg-orange-100 text-orange-600
-                                        {% else %} bg-blue-50 text-blue-600 {% endif %}">
-                                        {{ order.status }}
-                                    </span>
+                                    <div class="flex justify-end">
+                                        <span class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase 
+                                            {% if order.status == 'Delivered' %} bg-green-100 text-green-600 
+                                            {% elif order.status == 'Rejected' or order.status == 'Cancelled' %} bg-red-100 text-red-600
+                                            {% elif order.status == 'Ready' %} bg-orange-100 text-orange-600
+                                            {% else %} bg-blue-50 text-blue-600 {% endif %}">
+                                            {{ order.status }}
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -98,7 +106,7 @@
             {% endif %}
 
             <div class="mt-10 text-center">
-                <a href="{% url 'profile' %}" class="text-[9px] font-black text-slate-400 uppercase tracking-widest no-underline hover:text-blue-600 transition-colors">
+                <a href="{% url 'profile' %}" class="text-[9px] font-black text-slate-400 uppercase tracking-widest no-underline hover:text-blue-600 transition-all">
                     <i class="fa-solid fa-arrow-left mr-2"></i> Back to Dashboard
                 </a>
             </div>

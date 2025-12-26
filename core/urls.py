@@ -25,13 +25,22 @@ urlpatterns = [
     path('calculate-pages/', views.calculate_pages, name='calculate_pages'),
 
     # --- 🚀 Checkout & Orders ---
-    path('order/now/', views.order_now, name='order_now'), # Standard Form Post
-    path('order/direct/', views.process_direct_order, name='process_direct_order'), # Ajax Post
+    # order_now: Path for Service Page "Order Now" (Direct)
+    path('order/now/', views.order_now, name='order_now'),
+    
+    # process_direct_order: AJAX handler for Service Page validation
+    path('order/direct/', views.process_direct_order, name='process_direct_order'), 
+    
+    # order_all: Path for Cart Page "Order All" (Cart-based)
     path('order/process-all/', views.order_all, name='order_all'),
+    
+    # checkout_summary: Displays either Direct Item or Cart Items based on source prefix
     path('checkout/summary/', views.cart_checkout_summary, name='cart_checkout_summary'),
 
     # --- 💳 Payments ---
     path('payment/initiate/', views.initiate_payment, name='initiate_payment'),
     path('payment/callback/', views.payment_callback, name='payment_callback'),
+    
+    # bypass_payment: Test/Bypass logic that handles DIR/TXN isolation automatically
     path('payment/bypass-test/', views.bypass_payment, name='bypass_payment'),
 ]

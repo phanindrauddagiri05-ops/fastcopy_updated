@@ -111,3 +111,11 @@ LOGIN_REDIRECT_URL = 'home'
 
 # Optional: If you want to redirect them to home after logging out too
 LOGOUT_REDIRECT_URL = 'home'
+
+# --- 💳 PHONEPE GATEWAY CONFIG ---
+PHONEPE_MERCHANT_ID = "PGMDATA" # Replace with your Merchant ID
+PHONEPE_SALT_KEY = "YOUR_SALT_KEY" # Replace with your Salt Key
+PHONEPE_SALT_INDEX = "1" # Usually '1'
+
+# Sandbox URL for testing
+PHONEPE_API_URL = "https://api-preprod.phonepe.com/apis/pg-sandbox/v1/pay"

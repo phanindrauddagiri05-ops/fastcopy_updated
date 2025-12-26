@@ -1,11 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 # --- 1. USER PROFILE MODEL ---
 class UserProfile(models.Model):
     """
     Extends the base Django User. 
-    Stores custom User ID in format: FC_USER_0000
+    Stores: User ID, Name, Mobile, Email (via User), and Address.
+    Format: FC_USER_0000000 (7 digits)
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     
@@ -18,18 +20,32 @@ class UserProfile(models.Model):
         blank=True
     )
     
+    # Database storage for specific profile details
     mobile = models.CharField(max_length=15)
     address = models.TextField(null=True, blank=True)
 
+    # Note: Name and Email are handled by the built-in Django User model
+    # linked via the OneToOneField. We use properties for easy access.
+
+    @property
+    def name(self):
+        """Returns the first_name from the Auth User table."""
+        return self.user.first_name
+
+    @property
+    def email(self):
+        """Returns the email from the Auth User table."""
+        return self.user.email
+
     def save(self, *args, **kwargs):
-        # Initial save to get the primary key ID
         is_new = self._state.adding
+        # Step 1: Initial save to get the primary key (id)
         super().save(*args, **kwargs)
         
-        # Generate FC_USER_0000 format after ID is available
+        # Step 2: Generate FC_USER_0000000 format after ID is available
         if is_new and not self.fc_user_id:
-            self.fc_user_id = f"FC_USER_{self.id:04d}"
-            # Use update to save specifically the fc_user_id without re-triggering save()
+            self.fc_user_id = f"FC_USER_{self.id:07d}"
+            # Use update to bypass re-triggering save() and recursion
             UserProfile.objects.filter(pk=self.pk).update(fc_user_id=self.fc_user_id)
 
     def __str__(self): 
@@ -43,7 +59,7 @@ class UserProfile(models.Model):
 # --- 2. SERVICE MODEL ---
 class Service(models.Model):
     """
-    Stores types of services offered (e.g., Printing, Binding).
+    Stores types of services offered (Printing, Binding, etc.).
     """
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -60,82 +76,86 @@ class Service(models.Model):
 # --- 3. ORDER MODEL (MASTER ENGINE) ---
 class Order(models.Model):
     """
-    Order ID format: FC_ORDER_0000000000
-    Stores transaction details and printing configurations.
+    Handles confirmation and tracking of all orders.
+    Format: FC_ORDER_0000000000 (10 digits)
     """
-    
-    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    order_id = models.CharField(max_length=30, unique=True, editable=False, null=True)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True, db_index=True)
+
+    ORDER_SOURCE_CHOICES = [
+        ('CART', 'Ordered from Cart Page'),
+        ('SERVICE', 'Ordered from Service Page'),
+    ]
+    order_source = models.CharField(
+        max_length=10, 
+        choices=ORDER_SOURCE_CHOICES, 
+        default='SERVICE'
+    )
+
+    service_name = models.CharField(max_length=100)
+    print_mode = models.CharField(max_length=50) 
+    side_type = models.CharField(max_length=20, default='single')
+    copies = models.IntegerField(default=1)
+    pages = models.IntegerField(default=1)
+    custom_color_pages = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=100, null=True, blank=True)
+
+    document = models.FileField(upload_to='orders/pdfs/', null=True, blank=True)
+    image_upload = models.ImageField(upload_to='orders/images/', null=True, blank=True)
+
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     payment_status = models.CharField(
         max_length=20, 
         choices=[('Pending', 'Pending'), ('Success', 'Success'), ('Failed', 'Failed')],
         default='Pending'
     )
-    
-    # Formatted Order ID
-    order_id = models.CharField(max_length=30, unique=True, editable=False, null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    
-    service_name = models.CharField(max_length=100)
-    
-    # Dual-purpose file support
-    document = models.FileField(upload_to='orders/documents/', null=True, blank=True)
-    image_upload = models.ImageField(upload_to='orders/images/', null=True, blank=True)
-    
-    # Printing Mode Logic (bw, color, or custom(pages))
-    print_mode = models.CharField(max_length=100, default='bw')
-    custom_color_pages = models.CharField(
-        max_length=255, 
-        null=True, 
-        blank=True, 
-        help_text="Stores raw page numbers before formatting"
+    status = models.CharField(
+        max_length=20, 
+        choices=[
+            ('Pending', 'Pending'), 
+            ('Confirmed', 'Confirmed'), 
+            ('Ready', 'Ready'), 
+            ('Delivered', 'Delivered'), 
+            ('Rejected', 'Rejected'),
+            ('Cancelled', 'Cancelled')
+        ],
+        default='Pending'
     )
-    
-    side_type = models.CharField(max_length=50, default='single')
-    copies = models.IntegerField(default=1)
-    location = models.CharField(max_length=100, null=True, blank=True)
-    
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Ready', 'Ready'),
-        ('Delivered', 'Delivered'),
-        ('Rejected', 'Rejected'),
-    ]
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
-    
+
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
-        # 1. Logic for Custom print_mode format
-        if self.print_mode == 'custom_split' and self.custom_color_pages:
-            self.print_mode = f"custom({self.custom_color_pages})"
-        elif self.print_mode and "(" not in self.print_mode:
-            self.print_mode = self.print_mode.lower()
-
-        # 2. Initial Save to get ID
         is_new = self._state.adding
+        if is_new and not self.order_id:
+            self.order_id = f"TMP_{uuid.uuid4().hex[:10].upper()}"
+
+        if self.print_mode == 'custom_split' and self.custom_color_pages:
+            self.print_mode = f"Custom Split ({self.custom_color_pages})"
+
+        if self.transaction_id:
+            if self.transaction_id.startswith("DIR"):
+                self.order_source = 'SERVICE'
+            elif self.transaction_id.startswith("TXN"):
+                self.order_source = 'CART'
+
         super().save(*args, **kwargs)
 
-        # 3. Update order_id with the 10-digit format
-        if is_new and not self.order_id:
-            self.order_id = f"FC_ORDER_{self.id:010d}"
-            Order.objects.filter(pk=self.pk).update(order_id=self.order_id)
+        if is_new and self.order_id.startswith('TMP_'):
+            formatted_id = f"FC_ORDER_{self.id:010d}"
+            Order.objects.filter(pk=self.pk).update(order_id=formatted_id)
+            self.order_id = formatted_id
 
-    def __str__(self):
-        return str(self.order_id if self.order_id else f"Temp_{self.id}")
+    def __str__(self): 
+        return f"[{self.order_source}] {self.order_id}"
 
     class Meta:
-        verbose_name = "Order"
-        verbose_name_plural = "Orders"
         ordering = ['-created_at']
 
 
 # --- 4. CART MODEL ---
 class CartItem(models.Model):
-    """
-    Persistence model to ensure cart items survive user logouts.
-    """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     service_name = models.CharField(max_length=255)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -151,4 +171,7 @@ class CartItem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.service_name}"
+        return f"Cart: {self.service_name} | {self.user.username}"
+
+    class Meta:
+        ordering = ['-created_at']
