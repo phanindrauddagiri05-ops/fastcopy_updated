@@ -50,8 +50,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+<<<<<<< HEAD
                 'core.context_processors.cart_count',
                 'core.context_processors.site_context', # Global site context (Holidays)
+=======
+                'core.context_processors.cart_count',  # Cart count globally available
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
             ],
         },
     },

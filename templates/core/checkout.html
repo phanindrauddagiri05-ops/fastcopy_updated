@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 {% extends 'base.html' %}
+=======
+{% extends 'base.html' %} 
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 {% load static %}
 
 {% block content %}
 <div class="container py-4 py-md-5 min-vh-100 d-flex flex-column justify-content-center">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
             <div class="d-flex justify-content-between mb-5 px-4 position-relative align-items-center" style="z-index: 1;">
                 <div class="text-center">
                     <div class="step-icon bg-primary text-white shadow-sm mb-2 mx-auto border-0">
@@ -13,6 +21,7 @@
                     </div>
                     <span class="text-[10px] font-black uppercase text-primary tracking-widest">Cart</span>
                 </div>
+<<<<<<< HEAD
 
                 <div class="step-line bg-primary"></div>
 
@@ -29,32 +38,63 @@
                     <div class="step-icon bg-slate-800 text-slate-500 mb-2 mx-auto border border-slate-700">
                         3
                     </div>
+=======
+                
+                <div class="step-line bg-primary"></div>
+                
+                <div class="text-center">
+                    <div class="step-icon bg-primary text-white shadow-lg mb-2 mx-auto ring-4 ring-primary ring-opacity-50 border-0">2</div>
+                    <span class="text-[10px] font-black uppercase text-primary tracking-widest">Review</span>
+                </div>
+                
+                <div class="step-line bg-slate-700"></div>
+                
+                <div class="text-center">
+                    <div class="step-icon bg-slate-800 text-white text-slate-500 mb-2 mx-auto border border-slate-700">3</div>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                     <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Payment</span>
                 </div>
             </div>
 
             <div class="card border-0 bg-dark text-white rounded-[2rem] shadow-2xl overflow-hidden border-top border-primary border-5" data-aos="zoom-in">
                 <div class="card-body p-4 p-md-5">
+<<<<<<< HEAD
 
                     <header class="text-center mb-5">
                         <h2 class="text-uppercase fw-black italic mb-1 tracking-tighter">Final <span class="text-primary">Summary</span></h2>
                         <p class="text-white-50 text-[10px] font-bold uppercase tracking-widest">Please verify your order details</p>
                     </header>
 
+=======
+                    
+                    <header class="text-center mb-5">
+                        <h2 class="text-uppercase fw-black italic mb-1 tracking-tighter">Order <span class="text-primary">Summary</span></h2>
+                        <p class="text-white-50 text-[10px] font-bold uppercase tracking-widest">Verify your details before proceeding</p>
+                    </header>
+                    
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                     <div class="amount-banner mb-4">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="text-uppercase text-[10px] fw-black text-primary tracking-widest d-block">Grand Total</span>
+<<<<<<< HEAD
                                 <small class="text-white-50 uppercase text-[9px]">
                                     {{ items_count }} Item{{ items_count|pluralize }} • Total Units: {{ total_pages }} Pgs
                                 </small>
                             </div>
                             <div class="text-end">
                                 <h1 class="fw-black mb-0 display-6 italic tracking-tighter text-white">₹{{ grand_total|floatformat:2 }}</h1>
+=======
+                                <small class="text-white-50 uppercase text-[9px]">{{ items_count }} Items • Inc. Delivery</small>
+                            </div>
+                            <div class="text-end">
+                                <h1 class="fw-black mb-0 display-6 italic tracking-tighter text-white">₹{{ grand_total }}</h1>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                             </div>
                         </div>
                     </div>
 
+<<<<<<< HEAD
                     <div class="alert mt-3 d-flex align-items-center border-0 shadow-sm rounded-4 p-3"
                         style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #b45309;">
                         <i class="fas fa-truck-clock fs-4 me-3"></i>
@@ -113,17 +153,72 @@
                             class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-3 px-5 py-3 rounded-pill no-underline transition-all shadow-xl hover-scale">
                             <span class="font-black text-[11px] text-uppercase tracking-widest">Confirm & Pay ₹{{ grand_total|floatformat:2 }}</span>
                             <i class="fas fa-shield-check small"></i>
+=======
+                    <div class="text-start mb-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="fas fa-list-ul text-primary small"></i>
+                            <h6 class="text-uppercase small fw-black m-0 tracking-widest text-white">Itemized Recap</h6>
+                        </div>
+                        
+                        <div class="checkout-scroll-area pe-2" style="max-height: 250px; overflow-y: auto;">
+                            <div class="d-grid gap-2">
+                                {% for item in cart_items %}
+                                <div class="item-card p-3 rounded-4 bg-white bg-opacity-5 border border-white border-opacity-5 transition-all">
+                                    <div class="row align-items-center g-2">
+                                        <div class="col-8 overflow-hidden pe-2">
+                                            <p class="small mb-1 fw-black text-uppercase italic text-truncate text-white">
+                                                {{ item.service_name }}
+                                            </p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="fas fa-file-pdf text-primary" style="font-size: 0.65rem;"></i>
+                                                <p class="mb-0 text-white-50 text-truncate font-bold" style="font-size: 0.65rem;">
+                                                    {{ item.document_name|default:"Document File" }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <span class="fw-black text-primary">₹{{ item.total_price }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-5 px-3 py-2 border-bottom border-white border-opacity-10">
+                        <span class="text-white-50 text-[10px] font-black uppercase tracking-widest">Campus Delivery</span>
+                        <span class="text-success fw-black uppercase tracking-widest" style="font-size: 11px;">
+                            <i class="fas fa-truck-loading me-1"></i> FREE
+                        </span>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <a href="{% url 'initiate_payment' %}" id="pay-btn"
+                           onclick="this.classList.add('disabled'); this.innerHTML='<i class=\'fas fa-spinner fa-spin me-2\'></i> Processing...';"
+                           class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-3 px-5 py-3 rounded-pill no-underline transition-all shadow-xl shadow-primary-500/20 hover-scale">
+                            <span class="font-black text-[11px] text-uppercase tracking-widest">Proceed to Pay ₹{{ grand_total }}</span>
+                            <i class="fas fa-credit-card small"></i>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                         </a>
                     </div>
 
                     <footer class="text-center mt-5">
                         <div class="d-flex flex-column align-items-center">
                             <p class="text-primary text-[9px] fw-black text-uppercase mb-2 tracking-widest d-flex align-items-center justify-content-center gap-2">
+<<<<<<< HEAD
                                 <i class="fas fa-lock"></i> 256-BIT ENCRYPTED GATEWAY
                             </p>
                             <p class="text-white-50 italic mb-0 px-4" style="font-size: 0.65rem; line-height: 1.6;">
                                 Proceeding will redirect you to <span class="text-info">Cashfree Payments</span>. 
                                 Your order is confirmed only upon successful gateway response.
+=======
+                                <i class="fas fa-shield-alt"></i> Secure Encrypted Transaction
+                            </p>
+                            <p class="text-white-50 italic mb-0 px-4" style="font-size: 0.65rem; line-height: 1.6;">
+                                Your order will be placed and the cart cleared 
+                                <span class="text-info fw-bold">only after</span> payment confirmation from the gateway.
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                             </p>
                         </div>
                     </footer>
@@ -132,8 +227,13 @@
 
             <div class="text-center mt-4">
                 <a href="{% url 'cart' %}" class="btn-back-cart no-underline transition-all d-inline-flex align-items-center gap-2">
+<<<<<<< HEAD
                     <i class="fas fa-arrow-left"></i>
                     <span class="font-black uppercase tracking-widest text-primary">Return to Cart</span>
+=======
+                    <i class="fas fa-chevron-left"></i> 
+                    <span class="font-black uppercase tracking-widest text-primary">Back to Cart</span>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                 </a>
             </div>
         </div>
@@ -143,6 +243,7 @@
 <style>
     .fw-black { font-weight: 900; }
     .italic { font-style: italic; }
+<<<<<<< HEAD
     .tracking-widest { letter-spacing: 0.18em; }
     .bg-dark { background-color: #0f172a !important; }
 
@@ -216,6 +317,22 @@
         .amount-banner h1 { font-size: 1.8rem; }
         .step-line { margin: 0 6px; }
         .card-body { padding: 1.5rem !important; }
+=======
+    .tracking-widest { letter-spacing: 0.15em; }
+    .bg-dark { background-color: #0f172a !important; }
+    .amount-banner {
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(15, 23, 42, 0) 100%);
+        padding: 1.5rem; border-radius: 1.5rem; border-left: 5px solid #2563eb;
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
     }
+    .step-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 12px; }
+    .step-line { height: 3px; flex-grow: 1; align-self: center; margin: 0 10px; transform: translateY(-8px); border-radius: 10px; }
+    .item-card { background-color: rgba(255, 255, 255, 0.04) !important; }
+    .item-card:hover { background-color: rgba(37, 99, 235, 0.1) !important; transform: translateX(5px); }
+    .btn-back-cart { color: #3b82f6; font-size: 10px; opacity: 0.8; }
+    .checkout-scroll-area::-webkit-scrollbar { width: 4px; }
+    .checkout-scroll-area::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+    .hover-scale:hover { transform: scale(1.03); }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
 </style>
 {% endblock %}

@@ -18,6 +18,7 @@ from .utils import calculate_delivery_date
 
 # --- 🚀 0. CORE LOGIC ENGINES (Success/Failure/Helper) ---
 
+<<<<<<< HEAD
 def get_user_pricing(user):
     """
     Get appropriate pricing configuration based on user type.
@@ -63,6 +64,13 @@ def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
     DATABASE UPDATE LOGIC:
     Targets specific records by txn_id.
     Uses zip to match items to orders since duplicate files are allowed.
+=======
+def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
+    """
+    DATABASE UPDATE LOGIC:
+    Targets specific records by txn_id and document name to update statuses.
+    Ensures 'Failed' and 'Cancelled' reflect in the database and user history.
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
     """
     if not txn_id:
         return None
@@ -71,6 +79,7 @@ def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
         # Get orders ordered by ID to match creation sequence
         db_orders = list(Order.objects.filter(transaction_id=txn_id).order_by('id'))
         last_order = None
+<<<<<<< HEAD
         
         for item, order in zip(items_list, db_orders):
             if not item or not order: continue
@@ -91,6 +100,32 @@ def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
             last_order = order
             
             # [STRICT] Restore to DB Cart if it was a Direct Order
+=======
+        for item in items_list:
+            if not item: 
+                continue
+                
+            # Update the existing Pending record or create a new Cancelled one if not found
+            last_order, created = Order.objects.update_or_create(
+                transaction_id=txn_id,
+                document=item.get('document_name'),
+                defaults={
+                    'user': user,
+                    'service_name': item.get('service_name'),
+                    'total_price': float(item.get('total_price', 0)),
+                    'location': item.get('location'),
+                    'print_mode': item.get('print_mode'),
+                    'side_type': item.get('side_type'),
+                    'copies': item.get('copies'),
+                    'pages': item.get('pages', 1),
+                    'custom_color_pages': item.get('custom_color_pages'),
+                    'payment_status': "Failed", # <-- Permanent DB Status
+                    'status': "Cancelled"       # <-- Permanent DB Status
+                }
+            )
+            
+            # [STRICT] Restore to DB Cart if it was a Direct Order so user doesn't lose progress
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
             if txn_id.startswith("DIR"):
                 CartItem.objects.get_or_create(
                     user=user,
@@ -113,6 +148,7 @@ def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
 def process_successful_order(user, items_list, txn_id):
     """
     DATABASE UPDATE LOGIC:
+<<<<<<< HEAD
     Updates records to 'Success' and 'Pending'.
     Uses zip to match items to orders.
     """
@@ -121,6 +157,13 @@ def process_successful_order(user, items_list, txn_id):
         
         for item, order in zip(items_list, db_orders):
             if not item or not order: continue
+=======
+    Updates records to 'Success' and 'Pending' (for admin processing).
+    """
+    with transaction.atomic():
+        for item in items_list:
+            if not item: continue
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                 
             saved_pdf, saved_img = None, None
             path = item.get('temp_path') or item.get('temp_image_path')
@@ -131,6 +174,7 @@ def process_successful_order(user, items_list, txn_id):
                     if item.get('temp_path'): saved_pdf = content
                     else: saved_img = content
             
+<<<<<<< HEAD
             # Update order
             order.user = user
             order.service_name = item['service_name']
@@ -147,11 +191,32 @@ def process_successful_order(user, items_list, txn_id):
             if saved_img: order.image_upload = saved_img
             
             order.save()
+=======
+            Order.objects.update_or_create(
+                transaction_id=txn_id,
+                document=item.get('document_name'),
+                defaults={
+                    'user': user,
+                    'service_name': item['service_name'],
+                    'total_price': float(item['total_price']),
+                    'location': item['location'],
+                    'print_mode': item['print_mode'],
+                    'side_type': item['side_type'],
+                    'copies': item['copies'],
+                    'custom_color_pages': item.get('custom_color_pages', ''),
+                    'payment_status': "Success",
+                    'status': "Pending",
+                    'document': saved_pdf,
+                    'image_upload': saved_img,
+                }
+            )
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
             
             if item.get('temp_path') and default_storage.exists(item['temp_path']):
                 default_storage.delete(item['temp_path'])
             if item.get('temp_image_path') and default_storage.exists(item['temp_image_path']):
                 default_storage.delete(item['temp_image_path'])
+<<<<<<< HEAD
 
 # ... (Auth views skipped) ...
 
@@ -210,6 +275,8 @@ def initiate_payment(request):
                 status="Pending",
                 document_name=item.get('document_name') # Explicitly save name
             )
+=======
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 
 # --- 👤 1. AUTHENTICATION & PROFILE ---
 
@@ -239,7 +306,11 @@ def login_view(request):
         user = authenticate(request, username=mobile, password=pw)
         if user:
             login(request, user)
+<<<<<<< HEAD
             return redirect('home') 
+=======
+            return redirect('cart') 
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
         messages.error(request, "Invalid login credentials.")
     return render(request, 'core/login.html')
 
@@ -389,6 +460,7 @@ def cart_checkout_summary(request):
         items = request.session.get('cart', [])
     if not items or None in items: return redirect('services')
     grand_total = sum(float(i.get('total_price', 0)) for i in items)
+<<<<<<< HEAD
     pricing = get_user_pricing(request.user)
     delivery_charge = pricing.get('delivery_charge', 0.0)
     grand_total += delivery_charge
@@ -400,6 +472,9 @@ def cart_checkout_summary(request):
         'delivery_charge': delivery_charge,
         'est_delivery_date': est_date
     })
+=======
+    return render(request, 'core/checkout.html', {'cart_items': items, 'grand_total': round(grand_total, 2), 'items_count': len(items)})
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 
 # --- 💳 4. CASHFREE GATEWAY INTEGRATION ---
 
@@ -419,6 +494,7 @@ def initiate_payment(request):
     if not items_to_process: return redirect('cart')
 
     unique_order_id = f"{batch_txn_id}_{int(time.time())}"
+<<<<<<< HEAD
     est_date = calculate_delivery_date()
     
     with transaction.atomic():
@@ -444,6 +520,19 @@ def initiate_payment(request):
     pricing = get_user_pricing(request.user)
     grand_total += pricing.get('delivery_charge', 0.0)
     
+=======
+    with transaction.atomic():
+        for item in items_to_process:
+            Order.objects.update_or_create(
+                transaction_id=unique_order_id, document=item.get('document_name'),
+                defaults={'user': request.user, 'service_name': item.get('service_name'), 'total_price': float(item.get('total_price', 0)), 
+                          'location': item.get('location'), 'print_mode': item.get('print_mode'), 'side_type': item.get('side_type'),
+                          'copies': item.get('copies'), 'pages': item.get('pages', 1), 'custom_color_pages': item.get('custom_color_pages', ''), 
+                          'payment_status': "Pending", 'status': "Pending"}
+            )
+
+    grand_total = sum(float(i.get('total_price', 0)) for i in items_to_process)
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
     callback_url = f"{request.scheme}://{request.get_host()}/payment/callback/"
     user_mobile = request.user.profile.mobile if hasattr(request.user, 'profile') else "9999999999"
     if not user_mobile.startswith('91'): user_mobile = f"91{user_mobile}"
@@ -466,6 +555,7 @@ def initiate_payment(request):
         return redirect('cart')
     except: return redirect('cart')
 
+<<<<<<< HEAD
 
 # Ensure you import your helper functions
 # from .views import process_successful_order, handle_failed_order 
@@ -475,12 +565,18 @@ def payment_callback(request):
     """STRICT CALLBACK: Updates DB to Success or Failed/Cancelled."""
     
     # 1. Safely retrieve the Order ID from GET params or Session
+=======
+@csrf_exempt
+def payment_callback(request):
+    """STRICT CALLBACK: Updates DB to Success or Failed/Cancelled."""
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
     order_id = (request.GET.get('order_id') or 
                 request.GET.get('orderId') or 
                 request.session.get('cashfree_order_id'))
 
     if not order_id:
         messages.error(request, "Payment session not found. Returning to cart.")
+<<<<<<< HEAD
         return redirect('cart')
     
     txn_id = order_id
@@ -564,6 +660,45 @@ def payment_callback(request):
 
         messages.warning(request, "Payment was canceled or failed. Your items are safe in the cart.")
         return redirect('cart')
+=======
+        return redirect('cart')
+    
+    txn_id = order_id
+    is_direct = txn_id.startswith("DIR")
+    direct_item = request.session.get('direct_item')
+    items_involved = [direct_item] if is_direct else request.session.get('cart', [])
+
+    headers = {"Content-Type": "application/json", "x-api-version": settings.CASHFREE_API_VERSION, "x-client-id": settings.CASHFREE_APP_ID, "x-client-secret": settings.CASHFREE_SECRET_KEY}
+    
+    try:
+        response = requests.get(f"{settings.CASHFREE_API_URL}/orders/{order_id}", headers=headers)
+        order_status = response.json().get('order_status', 'FAILED')
+    except: order_status = 'FAILED'
+
+    if order_status == 'PAID':
+        process_successful_order(request.user, items_involved, txn_id)
+        if is_direct: 
+            CartItem.objects.filter(user=request.user, document_name=direct_item.get('document_name')).delete()
+            if 'direct_item' in request.session: del request.session['direct_item']
+        else: 
+            CartItem.objects.filter(user=request.user).delete()
+            request.session['cart'] = []
+        messages.success(request, "Payment successful! Order placed.")
+        return redirect('history')
+    else:
+        # LOG FAILED PAYMENT TO DATABASE
+        handle_failed_order(request.user, items_involved, txn_id)
+        
+        # Restore session context for retry
+        if is_direct and direct_item:
+            db_cart = CartItem.objects.filter(user=request.user)
+            request.session['cart'] = [{'id': i.id, 'service_name': i.service_name, 'total_price': str(i.total_price), 'document_name': i.document_name} for i in db_cart]
+            if 'direct_item' in request.session: del request.session['direct_item']
+
+        messages.warning(request, "Payment was canceled or failed. Items are safe in your cart.")
+        return redirect('cart')
+
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 @login_required(login_url='login')
 def cashfree_checkout(request):
     context = {'payment_session_id': request.session.get('cashfree_payment_session_id'), 'cashfree_env': 'sandbox'}

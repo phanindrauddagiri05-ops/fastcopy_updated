@@ -28,11 +28,14 @@ class UserProfile(models.Model):
     # Database storage for specific profile details
     mobile = models.CharField(max_length=15)
     address = models.TextField(null=True, blank=True)
+<<<<<<< HEAD
     
     # Dealer-specific fields
     is_dealer = models.BooleanField(default=False)
     price_per_page = models.DecimalField(max_digits=5, decimal_places=2, default=1.50)
     dealer_locations = models.ManyToManyField(Location, blank=True, help_text="Select assigned locations for this dealer.")
+=======
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 
     @property
     def name(self):

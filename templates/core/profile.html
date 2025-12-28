@@ -5,6 +5,7 @@
 <style>
     /* --- 📱 MOBILE-FIRST RESPONSIVE ENGINE --- */
     @media (max-width: 991px) {
+<<<<<<< HEAD
         .profile-section {
             padding-top: 10px !important;
         }
@@ -20,6 +21,29 @@
         .table-responsive {
             border: none !important;
             overflow-x: hidden !important;
+=======
+        .profile-section { padding-top: 10px !important; }
+        .row.g-5 { --bs-gutter-y: 1.5rem; }
+        h2 { font-size: 1.6rem !important; }
+        .table-responsive { border: none !important; }
+        .table thead { display: none; }
+        .table tbody tr {
+            display: block;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+            margin-bottom: 1rem;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 !important;
+            border: none !important;
+            font-size: 11px !important;
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
         }
 
         .table thead {
@@ -82,6 +106,11 @@
         z-index: 0;
         pointer-events: none;
     }
+<<<<<<< HEAD
+=======
+    .fa-spin-slow { animation: spin 4s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 </style>
 
 <section class="profile-section relative overflow-hidden py-10 md:py-24 min-h-screen bg-slate-50/50">
@@ -163,9 +192,13 @@
                     <div class="flex justify-between items-center mb-8">
                         <h3 class="text-xl font-black italic text-slate-900">Recent Logs</h3>
                         {% if recent_bookings %}
+<<<<<<< HEAD
                         <a href="{% url 'history' %}" class="text-[9px] font-black text-blue-600 uppercase no-underline border-b-2 border-blue-600 pb-1 hover:text-blue-800 hover:border-blue-800 transition-all">
                             Full History →
                         </a>
+=======
+                        <a href="{% url 'history' %}" class="text-[9px] font-black text-blue-600 uppercase no-underline border-b-2 border-blue-600 pb-1 hover:text-blue-800 hover:border-blue-800 transition-all">Full History →</a>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                         {% else %}
                         <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest opacity-50">Log Empty</span>
                         {% endif %}
@@ -181,12 +214,17 @@
                                     <th class="pb-4">Configuration</th>
                                     <th class="pb-4">Date</th>
                                     <th class="pb-4 text-center">Payment</th>
+<<<<<<< HEAD
                                     <th class="pb-4 text-end">Order Status</th>
+=======
+                                    <th class="pb-4 text-end">Status</th>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                                 </tr>
                             </thead>
                             <tbody class="text-xs font-bold text-slate-600">
                                 {% for order in recent_bookings %}
                                 <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+<<<<<<< HEAD
                                     <td class="py-4 font-black text-blue-600" data-label="Order ID">
                                         #{{ order.order_id|default:order.id }}
                                     </td>
@@ -205,6 +243,22 @@
                                             {% if "custom" in order.print_mode|lower %}
                                                 <span class="px-2 py-0.5 bg-orange-50 text-orange-600 border border-orange-100 rounded text-[7px] font-black uppercase">Custom</span>
                                             {% elif order.print_mode|lower == 'bw' or order.print_mode|lower == 'black & white' %}
+=======
+                                    <td class="py-4 font-black text-blue-600" data-label="Order ID">#{{ order.order_id }}</td>
+                                    
+                                    <td class="py-4" data-label="Service">
+                                        <div class="flex flex-col">
+                                            <span class="text-slate-900 uppercase tracking-tight">{{ order.service_name }}</span>
+                                            <span class="text-[9px] text-slate-400 uppercase tracking-tighter">{{ order.location|default:"Main Campus" }}</span>
+                                        </div>
+                                    </td>
+
+                                    <td class="py-4" data-label="Config">
+                                        <div class="flex flex-wrap gap-1">
+                                            {% if "custom" in order.print_mode.lower %}
+                                                <span class="px-2 py-0.5 bg-orange-50 text-orange-600 border border-orange-100 rounded text-[7px] font-black uppercase">Custom</span>
+                                            {% elif order.print_mode == 'bw' or order.print_mode == 'black & white' %}
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                                                 <span class="px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[7px] font-black uppercase">B&W</span>
                                             {% else %}
                                                 <span class="px-2 py-0.5 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[7px] font-black uppercase">Color</span>
@@ -214,6 +268,7 @@
                                     </td>
 
                                     <td class="py-4 text-slate-400" data-label="Date">
+<<<<<<< HEAD
                                         <span class="text-slate-700">{{ order.created_at|date:"d M" }}</span><br class="d-none d-md-block">
                                         <span class="text-[8px] opacity-60">{{ order.created_at|date:"h:i A" }}</span>
                                         {% if order.estimated_delivery_date %}
@@ -225,6 +280,12 @@
                                         {% endif %}
                                     </td>
 
+=======
+                                        {{ order.created_at|date:"d M" }}<br>
+                                        <span class="text-[8px] opacity-60">{{ order.created_at|date:"h:i A" }}</span>
+                                    </td>
+                                    
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                                     <td class="py-4 text-center" data-label="Payment">
                                         <div class="flex flex-col items-center">
                                             <span class="font-black text-slate-900">₹{{ order.total_price }}</span>
@@ -237,6 +298,7 @@
                                         </div>
                                     </td>
 
+<<<<<<< HEAD
                                     <td class="py-4 text-end" data-label="Order Status">
                                         <div class="flex justify-end">
                                             <span class="px-3 py-1 rounded-full text-[8px] uppercase font-black 
@@ -248,6 +310,16 @@
                                                 {{ order.status }}
                                             </span>
                                         </div>
+=======
+                                    <td class="py-4 text-end" data-label="Status">
+                                        <span class="px-3 py-1 rounded-lg text-[8px] uppercase font-black 
+                                            {% if order.status == 'Delivered' %} bg-green-50 text-green-600 
+                                            {% elif order.status == 'Rejected' or order.status == 'Cancelled' %} bg-red-50 text-red-600
+                                            {% elif order.status == 'Ready' %} bg-orange-50 text-orange-600
+                                            {% else %} bg-slate-100 text-slate-500 {% endif %}">
+                                            {{ order.status }}
+                                        </span>
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
                                     </td>
                                 </tr>
                                 {% endfor %}

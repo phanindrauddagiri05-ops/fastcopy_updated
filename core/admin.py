@@ -52,7 +52,11 @@ class ServiceAdmin(admin.ModelAdmin):
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user_id_link', 'full_name_display', 'mobile', 'email_display', 'dealer_status', 'price_display', 'user_type', 'date_joined')
     search_fields = ('fc_user_id', 'user__username', 'mobile', 'user__email', 'user__first_name')
+<<<<<<< HEAD
     list_filter = ('is_dealer', 'user__is_staff', ('user__date_joined', admin.DateFieldListFilter))
+=======
+    list_filter = ('user__is_staff', ('user__date_joined', admin.DateFieldListFilter))
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
     readonly_fields = ('display_fc_id', 'user_type', 'date_joined', 'action_buttons')
     ordering = ('-id',)
     filter_horizontal = ('dealer_locations',)
@@ -60,10 +64,13 @@ class UserProfileAdmin(admin.ModelAdmin):
     fieldsets = (
         ('ID & Security Actions', {'fields': ('display_fc_id', 'user_type', 'action_buttons')}),
         ('Personal Information', {'fields': ('mobile', 'address')}),
+<<<<<<< HEAD
         ('Dealer Settings', {
             'fields': ('is_dealer', 'price_per_page', 'dealer_locations'),
             'description': 'Enable dealer status, set custom pricing, and assign locations (comma-separated).'
         }),
+=======
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
         ('System Metadata', {'fields': ('date_joined',)}),
     )
 
@@ -180,6 +187,7 @@ class OrderAdmin(admin.ModelAdmin):
         except: pass
         return res
 
+<<<<<<< HEAD
 
 # --- 💰 6. PRICING CONFIGURATION ADMIN ---
 @admin.register(PricingConfig, site=admin_site)
@@ -241,5 +249,8 @@ class PricingConfigAdmin(admin.ModelAdmin):
 # --- 🛠️ 7. REGISTER AUTH MODELS ---
 admin_site.register(PublicHoliday)
 admin_site.register(Location)
+=======
+# --- 🛠️ 7. REGISTER AUTH MODELS ---
+>>>>>>> 87798d27c0daccfb5675ed1a1ab427eb83bcc2fc
 admin_site.register(User, UserAdmin)
 admin_site.register(Group, GroupAdmin)
