@@ -870,7 +870,7 @@ def payment_callback(request):
         if 'applied_coupon_code' in request.session: del request.session['applied_coupon_code']
         
         messages.success(request, "Payment successful! Your order has been placed.")
-        return redirect('history')
+        return redirect('profile')
     
     else:
         # Handle Failed/Cancelled Payment
