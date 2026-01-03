@@ -29,6 +29,22 @@
             --fc-dark: #0f172a;
         }
 
+        /* --- ⚡ PERFORMANCE & TOUCH OPTIMIZATION --- */
+        html {
+            touch-action: manipulation;
+            /* REMOVES 300ms TAP DELAY */
+            scroll-behavior: smooth;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Immediate touch feedback */
+        a:active,
+        button:active,
+        .btn-3d:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
         .mobile-toggle {
             display: none;
             cursor: pointer;
@@ -67,7 +83,10 @@
 
             .nav-links-container.active {
                 display: flex !important;
-                animation: slideInDown 0.3s ease-out;
+                animation: slideInDown 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+                /* Faster, native-feel animation */
+                will-change: transform, opacity;
+                /* GPU Acceleration */
             }
 
             @keyframes slideInDown {
@@ -526,10 +545,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
+        // Detect Mobile for Performance
+        const isMobile = window.innerWidth < 992;
+
         AOS.init({
-            duration: 1000,
+            duration: isMobile ? 600 : 1000, // Slightly faster on mobile but still visible
             once: true,
-            easing: 'ease-out-back'
+            easing: 'ease-out-quad',
+            offset: isMobile ? 40 : 120, // Trigger sooner on mobile
+            // Removed 'disable' to ensure animations run on all devices
         });
 
         function toggleMenu() {
