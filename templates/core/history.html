@@ -34,12 +34,10 @@
                         <tbody class="text-xs font-bold text-slate-600">
                             {% for order in orders %}
                             <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
-                                <!-- Order ID -->
                                 <td class="py-5 font-black text-blue-600">
                                     #{{ order.order_id|default:order.id }}
                                 </td>
 
-                                <!-- Service & Location -->
                                 <td>
                                     <div class="flex flex-col">
                                         <span class="text-slate-900 uppercase tracking-tight">
@@ -51,11 +49,9 @@
                                     </div>
                                 </td>
 
-                                <!-- Configuration -->
                                 <td>
                                     <div class="flex flex-wrap gap-1">
-                                        {% if "split" in order.print_mode|lower %}
-                                        <!-- Custom Split Badge and Pages Info -->
+                                        {% if order.print_mode and "split" in order.print_mode|lower %}
                                         <div class="w-full flex flex-wrap gap-1 items-center">
                                             <span
                                                 class="px-2 py-1 bg-purple-50 text-purple-600 border border-purple-100 rounded text-[8px] font-black uppercase">
@@ -67,19 +63,13 @@
                                             </span>
                                             {% endif %}
                                         </div>
-                                        {% elif "custom" in order.print_mode|lower %}
+                                        {% elif order.print_mode and "custom" in order.print_mode|lower %}
                                         <span
                                             class="px-2 py-1 bg-orange-50 text-orange-600 border border-orange-100 rounded text-[8px] font-black uppercase">
                                             Custom Layout
                                         </span>
-                                        {% elif "b&w" in order.print_mode|lower or "bw" in order.print_mode|lower or
-                                        "black" in order.print_mode|lower %}
-                                        <span
-                                            class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[8px] font-black uppercase">
-                                            B&W
-                                        </span>
-                                        {% elif "color" in order.print_mode|lower or "colour" in order.print_mode|lower
-                                        %}
+                                        {% elif order.print_mode and "color" in order.print_mode|lower or "colour" in
+                                        order.print_mode|lower %}
                                         <span
                                             class="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[8px] font-black uppercase">
                                             Color
@@ -87,18 +77,17 @@
                                         {% else %}
                                         <span
                                             class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[8px] font-black uppercase">
-                                            {{ order.print_mode }}
+                                            {{ order.print_mode|default:"B&W" }}
                                         </span>
                                         {% endif %}
 
                                         <span
                                             class="px-2 py-1 bg-slate-50 text-slate-500 border border-slate-100 rounded text-[8px] font-black uppercase">
-                                            {{ order.copies }} Qty
+                                            {{ order.copies|default:1 }} Qty
                                         </span>
                                     </div>
                                 </td>
 
-                                <!-- Date -->
                                 <td class="text-slate-400">
                                     <span class="text-slate-700">
                                         {{ order.created_at|date:"d M Y" }}
@@ -116,55 +105,43 @@
                                     {% endif %}
                                 </td>
 
-                                <!-- Payment -->
                                 <td class="text-center">
                                     <div class="flex flex-col items-center gap-1">
                                         {% if order.coupon_code and order.discount_amount > 0 %}
-                                        <!-- Coupon Code Badge -->
                                         <div
                                             class="text-[8px] text-green-600 font-black uppercase tracking-tight mb-2 bg-green-50 px-2 py-1 rounded border border-green-100">
                                             <i class="fas fa-tag"></i> {{ order.coupon_code }}
                                         </div>
 
-                                        <!-- Pricing Breakdown -->
-                                        <div class="w-full text-left bg-slate-50 p-2 rounded border border-slate-100">
-                                            <!-- Original Price -->
+                                        <div
+                                            class="w-full text-left bg-slate-50 p-2 rounded border border-slate-100 min-w-[100px]">
                                             <div class="flex justify-between items-center mb-1">
-                                                <span class="text-[8px] text-slate-500 font-bold">Total Price:</span>
-                                                <span class="text-[9px] text-slate-600 font-bold"
-                                                    style="text-decoration: line-through;">
+                                                <span class="text-[8px] text-slate-500 font-bold">Total:</span>
+                                                <span class="text-[9px] text-slate-600 font-bold line-through">
                                                     ₹{{ order.original_price }}
                                                 </span>
                                             </div>
-
-                                            <!-- Discount -->
                                             <div class="flex justify-between items-center mb-1">
-                                                <span class="text-[8px] text-green-600 font-bold">Discount:</span>
+                                                <span class="text-[8px] text-green-600 font-bold">Disc:</span>
                                                 <span class="text-[9px] text-green-600 font-black">
                                                     -₹{{ order.discount_amount }}
                                                 </span>
                                             </div>
-
-                                            <!-- Divider -->
                                             <div class="border-t border-slate-200 my-1"></div>
-
-                                            <!-- Final Amount (Original - Discount) -->
                                             <div class="flex justify-between items-center">
-                                                <span class="text-[8px] text-slate-700 font-black">Amount Paid:</span>
+                                                <span class="text-[8px] text-slate-700 font-black">Paid:</span>
                                                 <span class="text-[10px] text-slate-900 font-black">
                                                     ₹{{ order|final_amount }}
                                                 </span>
                                             </div>
                                         </div>
                                         {% else %}
-                                        <!-- No Coupon - Simple Display -->
                                         <div class="text-[8px] text-slate-500 font-bold mb-1">Amount Paid:</div>
                                         <span class="font-black text-slate-900 text-sm">
-                                            ₹{{ order.total_price }}
+                                            ₹{{ order.total_price|default:"0" }}
                                         </span>
                                         {% endif %}
 
-                                        <!-- Payment Status Badge -->
                                         <span class="text-[7px] font-black uppercase tracking-tighter px-2 py-0.5 rounded mt-2
                                             {% if order.payment_status == 'Success' %}
                                                 text-green-600 bg-green-50 border border-green-100
@@ -173,12 +150,11 @@
                                             {% else %}
                                                 text-blue-600 bg-blue-50 border border-blue-100
                                             {% endif %}">
-                                            {{ order.payment_status }}
+                                            {{ order.payment_status|default:"Pending" }}
                                         </span>
                                     </div>
                                 </td>
 
-                                <!-- Order Status -->
                                 <td class="text-end">
                                     <div class="flex justify-end">
                                         <span class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase
@@ -193,7 +169,7 @@
                                             {% else %}
                                                 bg-blue-50 text-blue-600
                                             {% endif %}">
-                                            {{ order.status }}
+                                            {{ order.status|default:"Processing" }}
                                         </span>
                                     </div>
                                 </td>
@@ -235,15 +211,19 @@
 </section>
 
 <style>
-    /* Prevent table layout break on small screens */
+    /* Table Responsive Fixes */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
     @media (max-width: 768px) {
-        .table-responsive {
-            border: 0;
-        }
 
         .table td,
         .table th {
             white-space: nowrap;
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
     }
 
@@ -253,6 +233,11 @@
 
     .bg-slate-50\/50 {
         background-color: rgba(248, 250, 252, 0.5);
+    }
+
+    /* Utility to ensure text-decoration line-through shows correctly */
+    .line-through {
+        text-decoration: line-through;
     }
 </style>
 {% endblock content %}

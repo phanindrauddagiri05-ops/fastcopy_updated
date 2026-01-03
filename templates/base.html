@@ -32,12 +32,10 @@
         /* --- ⚡ PERFORMANCE & TOUCH OPTIMIZATION --- */
         html {
             touch-action: manipulation;
-            /* REMOVES 300ms TAP DELAY */
             scroll-behavior: smooth;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Immediate touch feedback */
         a:active,
         button:active,
         .btn-3d:active {
@@ -49,7 +47,6 @@
             display: none;
             cursor: pointer;
             z-index: 2100;
-            /* Increased to stay above nav-links */
         }
 
         @media (max-width: 991px) {
@@ -63,30 +60,23 @@
             .nav-links-container {
                 display: none;
                 position: fixed;
-                /* Fixed to avoid scroll issues */
                 top: 65px;
-                /* Height of navbar */
                 left: 0;
                 width: 100%;
-                max-height: calc(100vh - 65px);
-                /* Ensure it doesn't go off screen */
+                height: calc(100vh - 65px);
                 overflow-y: auto;
-                background: rgba(255, 255, 255, 0.99);
-                backdrop-filter: blur(20px);
+                background: rgba(255, 255, 255, 1);
                 flex-direction: column;
-                padding: 15px 20px 40px 20px;
+                padding: 10px 20px 60px 20px;
                 border-bottom: 1px solid #e2e8f0;
                 box-shadow: 0 25px 30px -10px rgba(0, 0, 0, 0.15);
                 z-index: 2001;
-                /* Above marquee but under toggle */
             }
 
             .nav-links-container.active {
                 display: flex !important;
                 animation: slideInDown 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
-                /* Faster, native-feel animation */
                 will-change: transform, opacity;
-                /* GPU Acceleration */
             }
 
             @keyframes slideInDown {
@@ -101,21 +91,56 @@
                 }
             }
 
+            /* --- Corrected Dropdown Behavior for Mobile --- */
             .nav-link-custom {
                 width: 100%;
-                padding: 16px 0;
+                padding: 16px 12px;
                 border-bottom: 1px solid #f1f5f9;
-                font-size: 13px !important;
+                font-size: 0.75rem !important;
                 display: flex;
                 align-items: center;
                 gap: 12px;
                 color: #475569;
-                font-weight: 700;
+                font-weight: 800;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
 
-            /* --- Updated Mobile Badge Styling --- */
+            /* Ensure dropdown item doesn't float but expands the list */
+            .nav-item.dropdown {
+                width: 100%;
+            }
+
+            .dropdown-menu {
+                position: relative !important;
+                /* Push contents down instead of floating over them */
+                transform: none !important;
+                width: 100% !important;
+                background: #f8fafc !important;
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 0 0 35px !important;
+                /* Indent sub-items */
+                display: none;
+                /* Controlled by Bootstrap/JS */
+            }
+
+            .dropdown-menu.show {
+                display: block !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+            }
+
+            .dropdown-item {
+                padding: 12px 15px !important;
+                font-size: 10px !important;
+                border-bottom: 1px solid #edf2f7;
+            }
+
+            .dropdown-item:last-child {
+                border-bottom: none;
+            }
+
             .mobile-cart-badge {
                 background-color: #2563eb;
                 color: white;
@@ -132,9 +157,10 @@
                 color: white !important;
                 padding: 14px 18px !important;
                 border-radius: 12px;
-                margin-top: 10px;
+                margin-top: 15px;
                 border-bottom: none !important;
                 box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+                justify-content: center;
             }
 
             .mobile-highlight-item i {
@@ -147,18 +173,6 @@
 
             .mobile-only-item {
                 display: flex !important;
-            }
-
-            /* Fix dropdown inside mobile menu */
-            .dropdown-menu {
-                position: static !important;
-                float: none;
-                width: 100%;
-                background: #f8fafc;
-                border: none;
-                box-shadow: none;
-                margin-top: 5px;
-                padding-left: 20px;
             }
 
             .marquee-wrapper {
@@ -199,7 +213,6 @@
                 display: none !important;
             }
 
-            /* Desktop Hover Dropdown */
             .dropdown:hover .dropdown-menu {
                 display: block;
                 margin-top: 0;
@@ -217,7 +230,7 @@
             }
         }
 
-        /* Dropdown UI Components */
+        /* UI Helpers */
         .dropdown-menu {
             border-radius: 12px;
             border: 1px solid #e2e8f0;
@@ -243,11 +256,6 @@
             padding-left: 1.2rem;
         }
 
-        .dropdown-toggle::after {
-            vertical-align: middle;
-            margin-left: 0.5rem;
-        }
-
         .btn-3d {
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -269,24 +277,11 @@
             margin-top: 65px;
         }
 
-        /* Modern Marquee Animation */
-        .marquee-wrapper {
-            overflow: hidden;
-            position: relative;
-            height: 35px;
-            display: flex;
-            align-items: center;
-        }
-
         .marquee-content {
             display: flex;
             white-space: nowrap;
             animation: marquee 30s linear infinite;
             will-change: transform;
-        }
-
-        .marquee-item {
-            display: inline-block;
         }
 
         @keyframes marquee {
@@ -301,10 +296,6 @@
 
         .marquee-wrapper:hover .marquee-content {
             animation-play-state: paused;
-        }
-
-        main {
-            padding-top: 0 !important;
         }
     </style>
 </head>
@@ -328,7 +319,7 @@
                         role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa-solid fa-layer-group lg:hidden text-blue-600"></i> Services
                     </a>
-                    <ul class="dropdown-menu bg-white border-slate-200" aria-labelledby="servicesDropdown">
+                    <ul class="dropdown-menu" aria-labelledby="servicesDropdown">
                         <li><a class="dropdown-item" href="{% url 'services' %}#Printing">Printing</a></li>
                         <li><a class="dropdown-item" href="{% url 'services' %}#Spiral">Spiral Binding</a></li>
                         <li><a class="dropdown-item" href="{% url 'services' %}#Soft">Soft Binding</a></li>
@@ -375,7 +366,6 @@
                         {% endif %}
                     </a>
                     {% if user.is_authenticated %}
-                    <div class="hidden sm:block h-6 w-[1px] bg-slate-200 mx-1"></div>
                     <a href="{% url 'profile' %}"
                         class="btn-3d flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-full no-underline shadow-sm">
                         <div
@@ -418,7 +408,6 @@
                 </div>
             </div>
         </div>
-
 
         {% if messages %}
         <div class="container mx-auto px-4 mb-4 pt-4">
@@ -489,7 +478,7 @@
 
                 <div class="col-6 col-md-3 col-lg-2" data-aos="fade-up" data-aos-delay="200">
                     <h6 class="footer-heading mb-8 font-black uppercase tracking-widest text-blue-500 text-xs">Legal
-                        Center center</h6>
+                        Center</h6>
                     <ul class="list-unstyled space-y-4">
                         <li><a href="{% url 'about' %}"
                                 class="footer-link text-slate-400 no-underline text-xs font-bold hover:text-white transition-colors uppercase tracking-tight">About
@@ -534,15 +523,12 @@
             <hr class="border-slate-800 my-12 opacity-30">
             <div class="flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="text-center text-md-start">
-                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mb-2">
-                        &copy; 2025 FASTCOPY PRINTING HUB. ALL RIGHTS RESERVED.
-                    </p>
-                    <p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mb-0">
-                        DESIGNED & ENCRYPTED BY <span class="text-blue-600/50">FASTCOPY TEAM</span>
-                    </p>
-                    <p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mb-0">
-                        <span class="text-white">Phani Uddagiri, Divakar Kolli, Sai Teja Kaki</span>
-                    </p>
+                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] mb-2">&copy; 2025
+                        FASTCOPY PRINTING HUB. ALL RIGHTS RESERVED.</p>
+                    <p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mb-0">DESIGNED & ENCRYPTED
+                        BY <span class="text-blue-600/50">FASTCOPY TEAM</span></p>
+                    <p class="text-[9px] text-slate-600 font-bold uppercase tracking-widest mb-0"><span
+                            class="text-white">Phani Uddagiri, Divakar Kolli, Sai Teja Kaki</span></p>
                 </div>
                 <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
                     class="group btn-3d flex items-center gap-5 bg-blue-600 text-white px-10 py-4 rounded-full shadow-2xl hover:shadow-blue-500/40 transition-all">
@@ -556,28 +542,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>
-        // Detect Mobile for Performance
         const isMobile = window.innerWidth < 992;
-
-        AOS.init({
-            duration: isMobile ? 600 : 1000, // Slightly faster on mobile but still visible
-            once: true,
-            easing: 'ease-out-quad',
-            offset: isMobile ? 40 : 120, // Trigger sooner on mobile
-            // Removed 'disable' to ensure animations run on all devices
-        });
+        AOS.init({ duration: isMobile ? 600 : 1000, once: true, easing: 'ease-out-quad', offset: isMobile ? 40 : 120 });
 
         function toggleMenu() {
             const nav = document.getElementById('navLinks');
             const icon = document.getElementById('menuIcon');
             const isClosing = nav.classList.contains('active');
-
             if (!isClosing) {
                 nav.style.display = 'flex';
-                // Small delay to trigger animation
                 setTimeout(() => nav.classList.add('active'), 10);
                 icon.classList.replace('fa-bars-staggered', 'fa-xmark');
-                document.body.style.overflow = 'hidden'; // Prevent background scroll
+                document.body.style.overflow = 'hidden';
             } else {
                 nav.classList.remove('active');
                 setTimeout(() => nav.style.display = 'none', 300);
@@ -586,16 +562,12 @@
             }
         }
 
-        // Close menu on click outside
         document.addEventListener('click', (e) => {
             const nav = document.getElementById('navLinks');
             const toggle = document.querySelector('.mobile-toggle');
-            if (nav.classList.contains('active') && !nav.contains(e.target) && !toggle.contains(e.target)) {
-                toggleMenu();
-            }
+            if (nav.classList.contains('active') && !nav.contains(e.target) && !toggle.contains(e.target)) toggleMenu();
         });
 
-        // Ensure menu closes on resize to desktop
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 992) {
                 const nav = document.getElementById('navLinks');

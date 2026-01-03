@@ -59,7 +59,7 @@
 
         .table-responsive {
             border: none !important;
-            overflow-x: hidden !important;
+            overflow-x: auto !important;
         }
 
         .table thead {
@@ -133,10 +133,13 @@
         pointer-events: none;
     }
 
-    /* Table Specifics for Pin-to-Pin Sync */
     .table td,
     .table th {
         white-space: nowrap;
+    }
+
+    .line-through {
+        text-decoration: line-through;
     }
 </style>
 
@@ -316,38 +319,40 @@
 
                                     <td class="py-5" data-label="Configuration">
                                         <div class="flex flex-wrap gap-1 justify-end md:justify-start">
-                                            {% if "custom" in order.print_mode|lower %}
+                                            {% if order.print_mode and "split" in order.print_mode|lower %}
+                                            <div class="w-full flex flex-wrap gap-1 items-center">
+                                                <span
+                                                    class="px-2 py-1 bg-purple-50 text-purple-600 border border-purple-100 rounded text-[8px] font-black uppercase">
+                                                    Custom Split
+                                                </span>
+                                                {% if order.custom_color_pages %}
+                                                <span class="text-[8px] text-purple-600 font-bold">
+                                                    (Pages: {{ order.custom_color_pages }})
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                            {% elif order.print_mode and "custom" in order.print_mode|lower %}
                                             <span
                                                 class="px-2 py-1 bg-orange-50 text-orange-600 border border-orange-100 rounded text-[8px] font-black uppercase">
-                                                Custom Split
+                                                Custom Layout
                                             </span>
-                                            {% elif order.print_mode|lower == "bw" or order.print_mode|lower == "black &
-                                            white" %}
-                                            <span
-                                                class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[8px] font-black uppercase">
-                                                B&amp;W
-                                            </span>
-                                            {% else %}
+                                            {% elif order.print_mode and "color" in order.print_mode|lower or "colour"
+                                            in order.print_mode|lower %}
                                             <span
                                                 class="px-2 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded text-[8px] font-black uppercase">
                                                 Color
                                             </span>
+                                            {% else %}
+                                            <span
+                                                class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-[8px] font-black uppercase">
+                                                {{ order.print_mode|default:"B&W" }}
+                                            </span>
                                             {% endif %}
 
                                             <span
-                                                class="px-2 py-1 bg-slate-50 text-slate-500 border border-slate-100 rounded text-[8px] font-black uppercase">
-                                                {{ order.copies }} Qty
+                                                class="px-2 py-1 bg-slate-50 text-slate-500 border border-slate-100 rounded text-[8px] font-black uppercase self-start">
+                                                {{ order.copies|default:1 }} Qty
                                             </span>
-
-                                            {% if order.custom_color_pages %}
-                                            <div class="w-full mt-1">
-                                                <p
-                                                    class="text-[8px] text-slate-400 font-bold uppercase tracking-tighter mb-0">
-                                                    Pages: <span class="text-orange-500">{{ order.custom_color_pages
-                                                        }}</span>
-                                                </p>
-                                            </div>
-                                            {% endif %}
                                         </div>
                                     </td>
 
@@ -372,24 +377,21 @@
                                     <td class="py-5 text-center" data-label="Payment">
                                         <div class="flex flex-col items-center gap-1">
                                             {% if order.coupon_code and order.discount_amount > 0 %}
-                                            <!-- Coupon Badge -->
                                             <div
                                                 class="text-[8px] text-green-600 font-black uppercase tracking-tight mb-1 bg-green-50 px-2 py-1 rounded border border-green-100">
                                                 <i class="fas fa-tag"></i> {{ order.coupon_code }}
                                             </div>
 
-                                            <!-- Pricing Box -->
                                             <div
-                                                class="w-full text-left bg-slate-50 p-2 rounded border border-slate-100 mb-1">
+                                                class="w-full text-left bg-slate-50 p-2 rounded border border-slate-100 mb-1 min-w-[100px]">
                                                 <div class="flex justify-between items-center mb-1">
                                                     <span class="text-[7px] text-slate-500 font-bold">Total:</span>
-                                                    <span class="text-[8px] text-slate-600 font-bold"
-                                                        style="text-decoration: line-through;">
+                                                    <span class="text-[8px] text-slate-600 font-bold line-through">
                                                         ₹{{ order.original_price|default:order.total_price }}
                                                     </span>
                                                 </div>
                                                 <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-[7px] text-green-600 font-bold">Discount:</span>
+                                                    <span class="text-[7px] text-green-600 font-bold">Disc:</span>
                                                     <span class="text-[8px] text-green-600 font-black">
                                                         -₹{{ order.discount_amount }}
                                                     </span>
@@ -405,7 +407,7 @@
                                             {% else %}
                                             <div class="text-[7px] text-slate-500 font-bold mb-1">Amount:</div>
                                             <span class="font-black text-slate-900">
-                                                ₹{{ order.total_price }}
+                                                ₹{{ order.total_price|default:"0" }}
                                             </span>
                                             {% endif %}
                                             <span class="text-[7px] font-black uppercase tracking-tighter px-2 py-0.5 rounded
@@ -416,7 +418,7 @@
                                                 {% else %}
                                                     text-blue-600 bg-blue-50 border border-blue-100
                                                 {% endif %}">
-                                                {{ order.payment_status }}
+                                                {{ order.payment_status|default:"Pending" }}
                                             </span>
                                         </div>
                                     </td>
@@ -435,7 +437,7 @@
                                                 {% else %}
                                                     bg-blue-50 text-blue-600
                                                 {% endif %}">
-                                                {{ order.status }}
+                                                {{ order.status|default:"Processing" }}
                                             </span>
                                         </div>
                                     </td>

@@ -100,24 +100,24 @@ def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
             order.save()
             last_order = order
             
-            # [STRICT] Restore to DB Cart if it was a Direct Order
-            if txn_id.startswith("DIR"):
-                CartItem.objects.get_or_create(
-                    user=user,
-                    document_name=item.get('document_name'),
-                    defaults={
-                        'service_name': item.get('service_name'),
-                        'total_price': item.get('total_price'),
-                        'temp_path': item.get('temp_path'),
-                        'temp_image_path': item.get('temp_image_path'),
-                        'copies': item.get('copies'),
-                        'pages': item.get('pages', 1),
-                        'location': item.get('location'),
-                        'print_mode': item.get('print_mode'),
-                        'side_type': item.get('side_type'),
-                        'custom_color_pages': item.get('custom_color_pages')
-                    }
-                )
+            # [ENHANCED] Restore to DB Cart for ALL cancelled/failed orders
+            # This ensures items are always available in cart after payment failure
+            CartItem.objects.get_or_create(
+                user=user,
+                document_name=item.get('document_name'),
+                defaults={
+                    'service_name': item.get('service_name'),
+                    'total_price': item.get('total_price'),
+                    'temp_path': item.get('temp_path'),
+                    'temp_image_path': item.get('temp_image_path'),
+                    'copies': item.get('copies'),
+                    'pages': item.get('pages', 1),
+                    'location': item.get('location'),
+                    'print_mode': item.get('print_mode'),
+                    'side_type': item.get('side_type'),
+                    'custom_color_pages': item.get('custom_color_pages')
+                }
+            )
         return last_order
 
 def cleanup_payment_session(request):
@@ -1289,3 +1289,39 @@ def dealer_download_file(request, order_id):
         response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=f"{order.order_id}{ext}")
         return response
     except Exception as e: raise Http404(f"Error: {str(e)}")
+
+
+# ============================================================================
+# 🤖 SEO: robots.txt View
+# ============================================================================
+def robots_txt(request):
+    """
+    Serve robots.txt file for search engine crawlers
+    Includes sitemap reference and crawl rules
+    """
+    from django.conf import settings
+    from django.http import HttpResponse
+    
+    # Get the site domain from settings
+    site_url = settings.COMPANY_WEBSITE
+    if not site_url.endswith('/'):
+        site_url += '/'
+    
+    robots_content = f"""User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /payment/
+Disallow: /dealer/
+Disallow: /profile/
+Disallow: /login/
+Disallow: /register/
+Disallow: /logout/
+Disallow: /media/uploads/
+
+# Sitemap location
+Sitemap: {site_url}sitemap.xml
+"""
+    
+    return HttpResponse(robots_content, content_type="text/plain")
