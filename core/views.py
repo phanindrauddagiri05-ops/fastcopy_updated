@@ -120,6 +120,22 @@ def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
                 )
         return last_order
 
+def cleanup_payment_session(request):
+    """
+    Clean up all payment-related session variables.
+    Called after both successful and failed payment attempts.
+    """
+    session_keys = [
+        'pending_batch_id',
+        'cashfree_payment_session_id', 
+        'cashfree_order_id',
+        'payment_return_url'
+    ]
+    for key in session_keys:
+        if key in request.session:
+            del request.session[key]
+    request.session.modified = True
+
 def process_successful_order(user, items_list, txn_id):
     """
     DATABASE UPDATE LOGIC:
@@ -850,14 +866,25 @@ def payment_callback(request):
                 request.session.get('cashfree_order_id'))
 
     if not order_id:
-        messages.error(request, "Payment session not found. Returning to cart.")
+        print("⚠️ Payment callback: No order_id found in request or session")
+        cleanup_payment_session(request)
+        messages.error(request, "Payment session not found. Please try again.")
         return redirect('cart')
+    
+    print(f"📋 Payment callback received for order: {order_id}")
     
     txn_id = order_id
     is_direct = str(txn_id).startswith("DIR")
     direct_item = request.session.get('direct_item')
     session_cart = request.session.get('cart', [])
     items_involved = [direct_item] if is_direct else session_cart
+    
+    # Validate items_involved - handle edge case where session data is missing
+    if not items_involved or (is_direct and not direct_item):
+        print("⚠️ Payment callback: No items found in session")
+        cleanup_payment_session(request)
+        messages.warning(request, "Payment session expired. Please add items to cart and try again.")
+        return redirect('cart')
 
     headers = {
         "Content-Type": "application/json",
@@ -867,16 +894,34 @@ def payment_callback(request):
     }
     
     order_status = 'FAILED'
+    payment_details = None
+    
     try:
+        print(f"🔍 Checking payment status with Cashfree API...")
         response = requests.get(f"{settings.CASHFREE_API_URL}/orders/{order_id}", headers=headers, timeout=10)
+        
         if response.status_code == 200:
             json_data = response.json()
             if json_data:
                 order_status = json_data.get('order_status', 'FAILED')
-    except:
+                payment_details = json_data
+                print(f"✅ Cashfree API Response: Status = {order_status}")
+        else:
+            print(f"⚠️ Cashfree API returned status code: {response.status_code}")
+            print(f"Response: {response.text}")
+    except requests.exceptions.Timeout:
+        print("⚠️ Cashfree API timeout")
+        order_status = 'FAILED'
+    except requests.exceptions.RequestException as e:
+        print(f"⚠️ Cashfree API request error: {str(e)}")
+        order_status = 'FAILED'
+    except Exception as e:
+        print(f"⚠️ Unexpected error checking payment status: {str(e)}")
         order_status = 'FAILED'
 
     if order_status == 'PAID':
+        print(f"✅ Payment SUCCESSFUL for order {order_id}")
+        
         # 1. Finalize the order in the database
         process_successful_order(request.user, items_involved, txn_id)
         
@@ -895,27 +940,86 @@ def payment_callback(request):
         # 3. Session and Cart Cleanup
         if is_direct: 
             CartItem.objects.filter(user=request.user, document_name=direct_item.get('document_name')).delete()
-            if 'direct_item' in request.session: del request.session['direct_item']
+            if 'direct_item' in request.session: 
+                del request.session['direct_item']
         else: 
             CartItem.objects.filter(user=request.user).delete()
             request.session['cart'] = []
         
-        if 'cashfree_order_id' in request.session: del request.session['cashfree_order_id']
-        if 'applied_coupon_code' in request.session: del request.session['applied_coupon_code']
+        # Clean up payment session variables
+        cleanup_payment_session(request)
+        
+        if 'applied_coupon_code' in request.session: 
+            del request.session['applied_coupon_code']
+        
+        request.session.modified = True
         
         messages.success(request, "Payment successful! Your order has been placed.")
         return redirect('profile')
     
     else:
         # Handle Failed/Cancelled Payment
+        print(f"❌ Payment FAILED/CANCELLED for order {order_id}. Status: {order_status}")
+        
+        # Mark orders as failed in database
         handle_failed_order(request.user, items_involved, txn_id)
+        
+        # Restore items to cart for direct orders
         if is_direct and direct_item:
+            print(f"🔄 Restoring direct order item to cart...")
+            # Synchronize session cart with database cart
             db_cart = CartItem.objects.filter(user=request.user)
-            request.session['cart'] = [{'id': i.id, 'service_name': i.service_name, 'total_price': str(i.total_price), 'document_name': i.document_name} for i in db_cart]
-            if 'direct_item' in request.session: del request.session['direct_item']
+            request.session['cart'] = [{
+                'id': i.id, 
+                'service_name': i.service_name, 
+                'total_price': str(i.total_price), 
+                'document_name': i.document_name,
+                'temp_path': i.temp_path,
+                'temp_image_path': i.temp_image_path,
+                'copies': i.copies,
+                'pages': i.pages,
+                'location': i.location,
+                'print_mode': i.print_mode,
+                'side_type': i.side_type,
+                'custom_color_pages': i.custom_color_pages
+            } for i in db_cart]
+            
+            if 'direct_item' in request.session: 
+                del request.session['direct_item']
+        else:
+            # For cart-based orders, ensure session cart is synced with DB
+            print(f"🔄 Synchronizing cart with database...")
+            db_cart = CartItem.objects.filter(user=request.user)
+            request.session['cart'] = [{
+                'id': i.id, 
+                'service_name': i.service_name, 
+                'total_price': str(i.total_price), 
+                'document_name': i.document_name,
+                'temp_path': i.temp_path,
+                'temp_image_path': i.temp_image_path,
+                'copies': i.copies,
+                'pages': i.pages,
+                'location': i.location,
+                'print_mode': i.print_mode,
+                'side_type': i.side_type,
+                'custom_color_pages': i.custom_color_pages
+            } for i in db_cart]
+        
+        # Clean up payment session variables
+        cleanup_payment_session(request)
+        request.session.modified = True
+        
+        # Provide user-friendly message
+        if order_status == 'CANCELLED':
+            messages.warning(request, "Payment was cancelled. Your items are safe in your cart.")
+        else:
+            messages.warning(request, "Payment failed. Your items are safe in your cart. Please try again.")
+        
+        print(f"✅ Items restored to cart. Redirecting to cart page.")
+        return redirect('cart')
 
-        messages.warning(request, "Payment was canceled or failed. Items are safe in your cart.")
-        return redirect('cart')@login_required(login_url='login')
+
+@login_required(login_url='login')
 def cashfree_checkout(request):
     context = {'payment_session_id': request.session.get('cashfree_payment_session_id'), 'cashfree_env': 'production'}
     return render(request, 'core/cashfree_checkout.html', context)

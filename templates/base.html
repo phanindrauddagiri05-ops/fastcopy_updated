@@ -115,6 +115,18 @@
                 letter-spacing: 0.5px;
             }
 
+            /* --- Updated Mobile Badge Styling --- */
+            .mobile-cart-badge {
+                background-color: #2563eb;
+                color: white;
+                font-size: 10px;
+                font-weight: 900;
+                padding: 2px 7px;
+                border-radius: 99px;
+                margin-left: auto;
+                box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            }
+
             .mobile-highlight-item {
                 background: #2563eb !important;
                 color: white !important;
@@ -334,8 +346,7 @@
                 <a href="{% url 'cart' %}" class="nav-link-custom no-underline mobile-only-item">
                     <i class="fa-solid fa-cart-shopping text-blue-600"></i> My Cart
                     {% if cart_item_count %}
-                    <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full ml-auto">{{ cart_item_count
-                        }}</span>
+                    <span class="mobile-cart-badge">{{ cart_item_count }}</span>
                     {% endif %}
                 </a>
 

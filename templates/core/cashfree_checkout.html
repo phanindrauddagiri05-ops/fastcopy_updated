@@ -97,11 +97,32 @@
     const paymentSessionId = "{{ payment_session_id }}";
     const returnUrl = "{{ request.session.payment_return_url|default:'' }}";
 
+    // Track if checkout has been triggered to prevent multiple attempts
+    let checkoutTriggered = false;
+
+    // Timeout handler - redirect to cart if payment takes too long
+    let timeoutHandler = setTimeout(function () {
+        if (!checkoutTriggered) {
+            console.error("Payment session timeout - no response from Cashfree");
+            alert("Payment session timed out. Please try again.");
+            window.location.href = "{% url 'cart' %}";
+        }
+    }, 30000); // 30 second timeout
+
     function triggerCheckout() {
+        if (checkoutTriggered) {
+            console.log("Checkout already triggered, ignoring duplicate call");
+            return;
+        }
+
         if (!paymentSessionId || paymentSessionId === "" || paymentSessionId === "None") {
+            console.error("Invalid payment session ID");
             window.location.href = "{% url 'cart' %}";
             return;
         }
+
+        checkoutTriggered = true;
+        clearTimeout(timeoutHandler); // Clear the timeout once checkout starts
 
         const checkoutOptions = {
             paymentSessionId: paymentSessionId,
@@ -110,28 +131,84 @@
             returnUrl: returnUrl || undefined
         };
 
+        console.log("Initiating Cashfree checkout...");
+
         cashfree.checkout(checkoutOptions).then(function (result) {
+            console.log("Cashfree checkout result:", result);
+
             if (result.error) {
+                // Payment initiation error
                 console.error("Payment error:", result.error);
-                alert("Payment initiation failed: " + result.error.message);
+
+                let errorMessage = "Payment initiation failed";
+                if (result.error.message) {
+                    errorMessage += ": " + result.error.message;
+                }
+                console.error(errorMessage);
                 window.location.href = "{% url 'cart' %}";
+                return;
             }
+
             if (result.redirect) {
-                console.log("Payment redirect");
+                // User is being redirected to payment page
+                console.log("Redirecting to payment gateway...");
+                // No action needed, Cashfree handles the redirect
             }
+
             if (result.paymentDetails) {
+                // Payment completed (success or failure)
                 console.log("Payment completed:", result.paymentDetails);
-                // Redirect to callback after payment
-                window.location.href = returnUrl || "{% url 'payment_callback' %}";
+
+                // Check if payment was successful
+                if (result.paymentDetails.payment_status === 'SUCCESS') {
+                    console.log("Payment successful, redirecting to callback...");
+                } else if (result.paymentDetails.payment_status === 'CANCELLED') {
+                    console.log("Payment cancelled by user");
+                } else {
+                    console.log("Payment failed with status:", result.paymentDetails.payment_status);
+                }
+
+                // Redirect to callback URL to verify payment status
+                const callbackUrl = returnUrl || "{% url 'payment_callback' %}";
+                const orderId = result.paymentDetails.order_id || paymentSessionId;
+
+                // Add order_id as query parameter
+                const separator = callbackUrl.includes('?') ? '&' : '?';
+                window.location.href = callbackUrl + separator + "order_id=" + orderId;
             }
         }).catch(function (error) {
+            // Checkout error (network, SDK issues, etc.)
             console.error("Checkout error:", error);
+
+            let errorMessage = "An error occurred during payment";
+            if (error && error.message) {
+                errorMessage += ": " + error.message;
+            }
+
+            // Check if it's a user cancellation
+            if (error && (error.code === 'USER_CANCELLED' || error.message.includes('cancel'))) {
+                console.log("Payment cancelled by user");
+                
+            } else {
+                console.error(errorMessage);
+            }
+
             window.location.href = "{% url 'cart' %}";
         });
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+        // Trigger checkout after a short delay to ensure page is fully loaded
         setTimeout(triggerCheckout, 1500);
+    });
+
+    // Handle page visibility changes (user switching tabs, etc.)
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            console.log("Page hidden - user may have switched tabs");
+        } else {
+            console.log("Page visible again");
+        }
     });
 </script>
 
