@@ -1,7 +1,106 @@
-staticfiles/
-db.sqlite3
-__pycache__/
-*.pyc
-venv/
+# 🔐 FastCopy - Git Ignore File
+# Prevents sensitive and unnecessary files from being committed
+
+# ============================================
+# 🚨 CRITICAL: Never commit these!
+# ============================================
 .env
+*.env
+.env.local
+.env.production
+
+# ============================================
+# 🗄️ Database Files
+# ============================================
+*.sqlite3
+*.db
+db.sqlite3
+fast_copy_duplic_db.sqlite3
+
+# ============================================
+# 📁 Django Generated Files
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3-journal
+
+# Media files (uploaded by users)
 media/
+uploads/
+
+# Static files (collected)
+staticfiles/
+static_root/
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# ============================================
+# 🐍 Python Virtual Environment
+# ============================================
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# ============================================
+# 💻 IDE & Editor Files
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================
+# 📦 Node modules (if using any frontend tools)
+# ============================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ============================================
+# 🔧 OS Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# ============================================
+# 📊 Coverage & Testing
+# ============================================
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# ============================================
+# 🔑 Security & Credentials
+# ============================================
+*.pem
+*.key
+*.cert
+secrets.json
+credentials.json
