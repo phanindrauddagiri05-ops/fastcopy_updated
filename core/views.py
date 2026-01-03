@@ -391,11 +391,48 @@ def history_view(request):
 # --- 🛒 2. CART & PDF ENGINE ---
 
 def calculate_pages(request):
+    """
+    Optimized page counter.
+    1. Tries PyMuPDF (fitz) - Extremely fast, handles large files instantly.
+    2. Falls back to PyPDF2 (Optimized) - Reads stream directly without loading full file to RAM.
+    """
     if request.method == 'POST' and request.FILES.get('document'):
+        uploaded_file = request.FILES['document']
+        
+        # METHOD 1: PyMuPDF (Fastest)
         try:
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(request.FILES['document'].read()))
+            import fitz  # PyMuPDF
+            # Open directly from the uploaded file buffer
+            doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+            page_count = doc.page_count
+            doc.close()
+            return JsonResponse({'success': True, 'pages': page_count})
+        except ImportError:
+            # PyMuPDF not installed, falling back...
+            pass
+        except Exception as e:
+            print(f"PyMuPDF Error: {e}")
+            pass
+
+        # METHOD 2: PyPDF2 (Optimized Fallback)
+        try:
+            import PyPDF2
+            # Reset file pointer to beginning after previous read attempt
+            uploaded_file.seek(0)
+            
+            # CRITICAL OPTIMIZATION: Pass the file object directly.
+            # Do NOT use io.BytesIO(uploaded_file.read()) as it doubles memory usage.
+            pdf_reader = PyPDF2.PdfReader(uploaded_file)
+            
+            # Check for encryption
+            if pdf_reader.is_encrypted:
+                return JsonResponse({'success': False, 'error': 'File is encrypted'})
+                
             return JsonResponse({'success': True, 'pages': len(pdf_reader.pages)})
-        except: return JsonResponse({'success': False})
+        except Exception as e:
+            print(f"PyPDF2 Error: {e}")
+            return JsonResponse({'success': False, 'error': 'Invalid PDF file'})
+            
     return JsonResponse({'success': False})
 
 def add_to_cart(request):
@@ -845,11 +882,11 @@ def payment_callback(request):
         
         # 2. Email notifications (Async)
         successful_orders = Order.objects.filter(transaction_id=txn_id, payment_status='Success')
-        from .utils import send_order_notification_emails
+        from .notifications import send_all_order_notifications
         
         for order in successful_orders:
             try:
-                send_order_notification_emails(order)
+                send_all_order_notifications(order)
             except Exception as e:
                 print(f"⚠️ Email notification error for order {order.order_id}: {str(e)}")
         
