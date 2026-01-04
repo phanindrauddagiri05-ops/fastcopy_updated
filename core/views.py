@@ -1165,7 +1165,6 @@ def dealer_login_view(request):
             except: messages.error(request, "Dealer profile not found.")
         else: messages.error(request, "Invalid credentials.")
     return render(request, 'dealer/dealer_login.html')
-
 @dealer_required
 def dealer_dashboard_view(request):
     pricing = get_user_pricing(request.user)
@@ -1181,35 +1180,21 @@ def dealer_dashboard_view(request):
             sheets = -(-pages // divisor)
             cost = sheets * rate * copies
         else:
-            # Determine if it's single or double-sided
             is_double_sided = hasattr(order, 'side_type') and order.side_type == 'double'
-            
-            # Check for custom split mode (some pages color, some B&W)
             if 'custom' in str(order.print_mode).lower() and 'split' in str(order.print_mode).lower():
                 from .utils import count_color_pages
-                
-                # Count how many pages are color vs B&W
                 color_page_count = count_color_pages(order.custom_color_pages, pages)
                 bw_page_count = pages - color_page_count
-                
-                # Get rates for both types
                 color_rate = pricing['color_addition_double'] if is_double_sided else pricing['color_addition']
                 bw_rate = pricing['price_per_page_double'] if is_double_sided else pricing['price_per_page']
-                
-                # Calculate split cost: (color pages × color rate) + (B&W pages × B&W rate)
                 cost = ((color_page_count * color_rate) + (bw_page_count * bw_rate)) * copies
             elif order.print_mode == 'color':
-                # All pages are color
-                # Use ONLY color price from configuration (not B&W + color)
                 print_rate = pricing['color_addition_double'] if is_double_sided else pricing['color_addition']
                 cost = pages * copies * print_rate
             else:
-                # All pages are B&W
-                # Use B&W price for black and white prints
                 print_rate = pricing['price_per_page_double'] if is_double_sided else pricing['price_per_page']
                 cost = pages * copies * print_rate
 
-        
         if "Spiral" in order.service_name:
             t1, t2, t3 = pricing['spiral_tier1_limit'], pricing['spiral_tier2_limit'], pricing['spiral_tier3_limit']
             if pages <= t1: binding = pricing['spiral_tier1_price']
@@ -1221,42 +1206,74 @@ def dealer_dashboard_view(request):
             cost += (pricing['soft_binding'] * copies)
         return cost
 
-    date_filter = request.GET.get('date_filter', 'all')
+    # --- 1. SET DEFAULTS & GET PARAMETERS ---
+    date_filter = request.GET.get('date_filter')
+    # If first load, default to 'today'
+    if not date_filter:
+        date_filter = 'today'
+        
     status_filter = request.GET.get('status', 'all')
     service_filter = request.GET.get('service', 'all')
     
+    # --- 2. BASE QUERYSET ---
     orders = Order.objects.filter(payment_status='Success')
+    
+    # Filter by dealer's assigned locations
     if hasattr(request.user, 'profile') and request.user.profile.dealer_locations.exists():
         loc_names = list(request.user.profile.dealer_locations.values_list('name', flat=True))
         orders = orders.filter(location__in=loc_names)
-    else: orders = orders.none()
+    else: 
+        orders = orders.none()
     
-    today = datetime.now().date()
-    if date_filter == 'today': orders = orders.filter(created_at__date=today)
-    elif date_filter == 'last_7_days': orders = orders.filter(created_at__date__gte=today - timedelta(days=7))
-    elif date_filter == 'last_30_days': orders = orders.filter(created_at__date__gte=today - timedelta(days=30))
+    # --- 3. APPLY DATE FILTERING (STRICT RANGE LOGIC) ---
+    now = timezone.now()
+    start_of_today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     
-    if status_filter != 'all': orders = orders.filter(status=status_filter)
-    if service_filter != 'all': orders = orders.filter(service_name__icontains=service_filter)
+    if date_filter == 'today': 
+        # From 00:00:00 today until now
+        orders = orders.filter(created_at__gte=start_of_today)
+    elif date_filter == 'last_7_days': 
+        # From 7 days ago 00:00:00 until now
+        seven_days_ago = start_of_today - timedelta(days=7)
+        orders = orders.filter(created_at__gte=seven_days_ago)
+    elif date_filter == 'last_30_days': 
+        # From 30 days ago 00:00:00 until now
+        thirty_days_ago = start_of_today - timedelta(days=30)
+        orders = orders.filter(created_at__gte=thirty_days_ago)
+    # if 'all', no date filter applied
     
-    display_orders = orders.filter(Q(status='Pending') | Q(status='Ready')).order_by('-created_at')
-    item_revenue = sum(calculate_dealer_price(o) for o in orders)
+    # --- 4. APPLY STATUS & SERVICE FILTERS ---
+    if status_filter != 'all': 
+        orders = orders.filter(status=status_filter)
+    else:
+        # Default view (if all status) shows Pending/Ready to keep dashboard clean
+        orders = orders.filter(Q(status='Pending') | Q(status='Ready'))
+    
+    if service_filter != 'all': 
+        orders = orders.filter(service_name__icontains=service_filter)
+    
+    # --- 5. CALCULATE METRICS & PREPARE DATA ---
+    # Convert to list to iterate once and attach dealer_amount
+    orders_list = list(orders.order_by('-created_at'))
+    
+    item_revenue = 0.0
+    for o in orders_list:
+        o.dealer_amount = calculate_dealer_price(o)
+        item_revenue += float(o.dealer_amount)
+
     unique_txns_count = orders.values('transaction_id').distinct().count()
-    delivery_revenue = unique_txns_count * pricing['delivery_charge']
+    delivery_revenue = unique_txns_count * float(pricing['delivery_charge'])
     
-    final_display_orders = []
-    for order in display_orders:
-        order.dealer_amount = calculate_dealer_price(order)
-        final_display_orders.append(order)
-        
     context = {
-        'total_orders': orders.count(), 'total_revenue': item_revenue + delivery_revenue,
-        'orders': final_display_orders, 'date_filter': date_filter,
-        'status_filter': status_filter, 'service_filter': service_filter,
+        'total_orders': len(orders_list), 
+        'total_revenue': item_revenue + delivery_revenue,
+        'orders': orders_list, 
+        'date_filter': date_filter,
+        'status_filter': status_filter, 
+        'service_filter': service_filter,
         'dealer_name': request.user.first_name or request.user.username,
     }
     return render(request, 'dealer/dealer_dashboard.html', context)
-
 @dealer_required
 def dealer_logout_view(request):
     logout(request); return redirect('dealer_login')

@@ -73,11 +73,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'fastCopyConfig.wsgi.application'
 
-# 5. DATABASE (SQLite Configuration - For Testing)
+# 5. DATABASE (MySQL Configuration)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'fast_copy_duplic_db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'fastcopy_database',
+        'USER': 'root',
+        'PASSWORD': 'PhaniUddagiri@2005',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

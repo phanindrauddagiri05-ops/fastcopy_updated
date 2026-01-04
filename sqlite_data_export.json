@@ -1,0 +1,723 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rOpcVWTQcB5iXkW3RNPlLo$6rPI/4Ko4ri9IiQVnGsZ0e/ghcCQtn2cVmFW2jf8GwU=",
+    "last_login": "2026-01-03T05:47:33.675Z",
+    "is_superuser": true,
+    "username": "admin1",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-01-03T05:47:22.277Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ptWVHZfO4Y7xtEJjUrHoxL$TqjOgg54I6zFQJV9TKJfpsUmcoMI25JIuQUx7CiMg+Q=",
+    "last_login": "2026-01-03T18:52:05.919Z",
+    "is_superuser": false,
+    "username": "9441055486",
+    "first_name": "Phanindra Uddagiri",
+    "last_name": "",
+    "email": "phanindrauddagiri05@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-03T05:48:50.804Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$IIHmd9PFzP1aWZtbcX4bLp$pIv3XkO2ZbkhMqz/TswjHljNatIWrx0V+xOAzc1MSpk=",
+    "last_login": "2026-01-03T05:54:13.847Z",
+    "is_superuser": false,
+    "username": "8688954688",
+    "first_name": "sai teja",
+    "last_name": "",
+    "email": "th8688954688@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-03T05:50:19.510Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "02asujjuoauooj9ua9bs8ey0bnhgm0gj",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGln-J0tJzxms3bWNA8iR4qRC3B0ipYD2zcx7iYjbWuPW8xKnJM5Ci9PvRsiP3HaQ7thus-S5rctEclfkQbu8zik_L4f7d1Cx12_NwZhBjRodOAg5ExRvC1vQaNiSxsGDLoWdssowZQ6eGMYALrgApMT7A9TVN3s:1vbuU9:TiVdrn6r-vA1z0qxxGeh_Ptyb1MXxzsYQNqJFHSlWHE",
+    "expire_date": "2026-01-17T05:47:33.684Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "8ljqaneklge0tisydx3d15drjtbpg9mv",
+  "fields": {
+    "session_data": ".eJyFUMtOxCAU_RfWbaVTymOWvnZGM1tjCL0wLdoCoVRjJv67kNREV7K6OS_OvRck1ZYmua0mSqvRER1Q9RsbFLwZVwj9qtzoG_AuRTs0RdLs7No8eG3m6137J2BS65TdHZC2E5QLYJRijntNBWGU4RZ3DEMv2ICpZkKrlmjSMUOxYS1RcDCc9QTnUFAxoePzBZWepEI5_d2CkU4tJv_wFK1L1o1ZmXxSswwxs5ngDS527WFbjEs_-vsb-Xi6vTtJvD-Cm6DPxW6WIINKpXeZr7SNBpJkuhW4433dd4OuSd_qWvQDq4UCDpyfAQYu_4m1ixrNHu62ec5r-WDNio5thULm8kQrNHtQyXqXG0Q1Tlu2h7KfXPKhMzh8ZGS12sj0GQqg_TbMplxpW5NfJPjZR7kHIvT18vUNcAKbkA:1vc6tw:OhH80BqrbHifnB35ZdTMIb2CQPm_jieQWm8GwLPVsAE",
+    "expire_date": "2026-01-17T19:03:00.764Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "fwmdrlwp3thtt0z99ovu1fx9a6p6wnuy",
+  "fields": {
+    "session_data": ".eJyFUMtOxCAU_RfWbYUphTJLXzujma0x5BaYFm2BUKoxE_9dSGqiK1ndnBfn3guSsKVJbquJ0mp0RAdU_cYGUG_GFUK_ght9o7xL0Q5NkTQ7uzYPXpv5etf-CZhgnbK7VZS0gvVCccZwjzvNBOWMY4JbjlUn-ICZ5kIDoZq23DBsOKGgDqbnHcU5VEFM6Ph8QaVnW6Gc_m6VkQ4Wk394itYl68asTD7BLEPMbCb6Bhe79mpbjEs_-vsb-Xi6vTtJvD-Km6DPxW6WIAOk0rvMV9pGo5IEChxjAXV77klNO6FrQQSuCXRaE8w7dhjkP7F2gdHs4W6b57yWD9as6EgqFDKXJ1ah2StI1rvcIMI4bdkeyn5yyYfO4PCRkdVqI9NnKID22zCbcqVtTX6Rys8-yj0Qoa-Xr28Gq5rh:1vbvgA:m4NVY0qHFoFaQC4sCqrCsyxp4lJKWkHvZbCI2AXJQxw",
+    "expire_date": "2026-01-17T07:04:02.178Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "gh26goazayz55jb0b1zzggbkk89t53te",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pDOFCi4dO8ZCMMMUjVtUtqV8e7apAvd_vfef6mYtrXGrckSR1Zn1avT70YpP2TaAd_TdJt1nqd1GUnvij5o09eZ5Xk53L-Dmlr91o5xINMBWmOL70XIZSypGEDoUIDFozBCAdP7gYGMp-AlBHCWyaN6fwDWIjdz:1vbuab:Mr3ocYM8S_S-DQtgze7cpC821h57HFN102LDFchKNzE",
+    "expire_date": "2026-01-17T05:54:13.852Z"
+  }
+},
+{
+  "model": "core.location",
+  "pk": 1,
+  "fields": {
+    "name": "raghu"
+  }
+},
+{
+  "model": "core.location",
+  "pk": 2,
+  "fields": {
+    "name": "lendi"
+  }
+},
+{
+  "model": "core.location",
+  "pk": 3,
+  "fields": {
+    "name": "nsrit"
+  }
+},
+{
+  "model": "core.userprofile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "fc_user_id": "FC_USER_0000001",
+    "mobile": "9441055486",
+    "address": "cheepurupalli, seethanagaram, east godavari, ap",
+    "is_dealer": false,
+    "price_per_page": "1.50",
+    "dealer_locations": []
+  }
+},
+{
+  "model": "core.userprofile",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "8688954688"
+    ],
+    "fc_user_id": "FC_USER_0000002",
+    "mobile": "8688954688",
+    "address": "sai teja",
+    "is_dealer": true,
+    "price_per_page": "1.50",
+    "dealer_locations": [
+      1
+    ]
+  }
+},
+{
+  "model": "core.order",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000001",
+    "transaction_id": "DIR_420A9FF7A7_1767419923",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "8.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "6.80",
+    "original_price": "8.00",
+    "payment_status": "Pending",
+    "status": "Pending",
+    "created_at": "2026-01-03T05:58:43.527Z",
+    "updated_at": "2026-01-03T05:58:43.527Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000002",
+    "transaction_id": "DIR_C5C714399B_1767419966",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "orders/pdfs/FC_ORDER_0000000040.pdf",
+    "image_upload": "",
+    "total_price": "8.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "6.00",
+    "original_price": "8.00",
+    "payment_status": "Success",
+    "status": "Pending",
+    "created_at": "2026-01-03T05:59:26.365Z",
+    "updated_at": "2026-01-03T06:00:02.031Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000003",
+    "transaction_id": "DIR_F3E2683761_1767420269",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "single",
+    "copies": 1,
+    "pages": 46,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "69.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "51.75",
+    "original_price": "69.00",
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T06:04:29.439Z",
+    "updated_at": "2026-01-03T06:13:30.292Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000004",
+    "transaction_id": "TXN_E5FB48C428_1767420878",
+    "order_source": "CART",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "single",
+    "copies": 1,
+    "pages": 46,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "69.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "51.75",
+    "original_price": "69.00",
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T06:14:39.006Z",
+    "updated_at": "2026-01-03T06:14:51.909Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000005",
+    "transaction_id": "DIR_2625B5E9B8_1767421330",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 46,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "58.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "43.50",
+    "original_price": "58.00",
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T06:22:10.962Z",
+    "updated_at": "2026-01-03T06:22:34.482Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000006",
+    "transaction_id": "DIR_C8722159B1_1767421379",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 46,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "58.00",
+    "coupon_code": null,
+    "discount_amount": "0.00",
+    "original_price": null,
+    "payment_status": "Pending",
+    "status": "Pending",
+    "created_at": "2026-01-03T06:22:59.799Z",
+    "updated_at": "2026-01-03T06:22:59.799Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000007",
+    "transaction_id": "DIR_C8722159B1_1767421750",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 46,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "58.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "43.50",
+    "original_price": "58.00",
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T06:29:10.199Z",
+    "updated_at": "2026-01-03T06:29:22.551Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000008",
+    "transaction_id": "DIR_08A30136C9_1767421800",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "8.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "6.00",
+    "original_price": "8.00",
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T06:30:00.739Z",
+    "updated_at": "2026-01-03T06:30:13.939Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000009",
+    "transaction_id": "TXN_1256655A8E_1767421847",
+    "order_source": "CART",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "orders/pdfs/FC_ORDER_0000000040_0qXntoT.pdf",
+    "image_upload": "",
+    "total_price": "8.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "6.00",
+    "original_price": "8.00",
+    "payment_status": "Success",
+    "status": "Pending",
+    "created_at": "2026-01-03T06:30:47.224Z",
+    "updated_at": "2026-01-03T06:31:23.848Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000010",
+    "transaction_id": "DIR_F2D58348D3_1767422868",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "8.00",
+    "coupon_code": "SAVE50",
+    "discount_amount": "6.00",
+    "original_price": "8.00",
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T06:47:48.896Z",
+    "updated_at": "2026-01-03T06:48:24.003Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000011",
+    "transaction_id": "DIR_259DBBA5F5_1767465477",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "Custom Split (1,3-5)",
+    "side_type": "single",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "1,3-5",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "23.00",
+    "coupon_code": null,
+    "discount_amount": "0.00",
+    "original_price": null,
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T18:37:57.077Z",
+    "updated_at": "2026-01-03T18:38:07.580Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.order",
+  "pk": 12,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "order_id": "FC_ORDER_0000000012",
+    "transaction_id": "DIR_8712840BD6_1767466458",
+    "order_source": "SERVICE",
+    "service_name": "Printing",
+    "print_mode": "bw",
+    "side_type": "double",
+    "copies": 1,
+    "pages": 6,
+    "custom_color_pages": "",
+    "location": "raghu",
+    "document": "",
+    "image_upload": "",
+    "total_price": "8.00",
+    "coupon_code": null,
+    "discount_amount": "0.00",
+    "original_price": null,
+    "payment_status": "Failed",
+    "status": "Cancelled",
+    "created_at": "2026-01-03T18:54:18.810Z",
+    "updated_at": "2026-01-03T18:54:44.223Z",
+    "estimated_delivery_date": "2026-01-05"
+  }
+},
+{
+  "model": "core.cartitem",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "9441055486"
+    ],
+    "service_name": "Printing",
+    "total_price": "8.00",
+    "document_name": "FC_ORDER_0000000040.pdf",
+    "temp_path": "temp/direct_7d190385-53bd-451d-95b7-9ac8c88fccb8_FC_ORDER_0000000040.pdf",
+    "temp_image_path": null,
+    "copies": 1,
+    "pages": 6,
+    "location": "raghu",
+    "print_mode": "bw",
+    "side_type": "double",
+    "custom_color_pages": "",
+    "created_at": "2026-01-03T18:54:44.229Z"
+  }
+},
+{
+  "model": "core.pricingconfig",
+  "pk": 1,
+  "fields": {
+    "admin_price_per_page": "1.50",
+    "dealer_price_per_page": "1.20",
+    "admin_price_per_page_double": "2.50",
+    "dealer_price_per_page_double": "2.00",
+    "spiral_binding_price_admin": "20.00",
+    "spiral_binding_price_dealer": "15.00",
+    "soft_binding_price_admin": "30.00",
+    "soft_binding_price_dealer": "25.00",
+    "custom_1_4_price_admin": "2.00",
+    "custom_1_4_price_dealer": "1.50",
+    "custom_1_8_price_admin": "4.00",
+    "custom_1_8_price_dealer": "3.00",
+    "custom_1_9_price_admin": "4.00",
+    "custom_1_9_price_dealer": "3.00",
+    "custom_1_8_price_double_admin": "5.00",
+    "custom_1_8_price_double_dealer": "4.00",
+    "custom_1_9_price_double_admin": "5.00",
+    "custom_1_9_price_double_dealer": "4.00",
+    "spiral_tier1_limit": 40,
+    "spiral_tier2_limit": 60,
+    "spiral_tier3_limit": 90,
+    "spiral_tier1_price_admin": "20.00",
+    "spiral_tier1_price_dealer": "20.00",
+    "spiral_tier2_price_admin": "25.00",
+    "spiral_tier2_price_dealer": "25.00",
+    "spiral_tier3_price_admin": "30.00",
+    "spiral_tier3_price_dealer": "30.00",
+    "spiral_extra_price_admin": "5.00",
+    "spiral_extra_price_dealer": "5.00",
+    "color_price_addition_admin": "5.00",
+    "color_price_addition_dealer": "3.00",
+    "color_price_addition_admin_double": "8.00",
+    "color_price_addition_dealer_double": "6.00",
+    "delivery_price_admin": "0.00",
+    "delivery_price_dealer": "0.00",
+    "updated_at": "2026-01-03T05:58:18.517Z",
+    "created_at": "2026-01-03T05:54:13.871Z"
+  }
+},
+{
+  "model": "core.coupon",
+  "pk": 1,
+  "fields": {
+    "code": "SAVE50",
+    "discount_percentage": "75.00",
+    "valid_from": "2026-01-03T05:55:04Z",
+    "valid_until": "2026-01-04T12:30:00Z",
+    "minimum_order_amount": "0.00",
+    "max_usage_count": 0,
+    "current_usage_count": 9,
+    "is_active": true,
+    "description": "",
+    "created_at": "2026-01-03T05:55:11.970Z",
+    "updated_at": "2026-01-03T06:47:48.910Z"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-01-03T05:52:31.580Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "userprofile"
+    ],
+    "object_id": "2",
+    "object_repr": "FC_USER_0000002 | 8688954688",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Is dealer\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-01-03T05:53:01.649Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "location"
+    ],
+    "object_id": "1",
+    "object_repr": "raghu",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-01-03T05:53:06.988Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "location"
+    ],
+    "object_id": "2",
+    "object_repr": "lendi",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-01-03T05:53:11.298Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "location"
+    ],
+    "object_id": "3",
+    "object_repr": "nsrit",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-01-03T05:53:25.221Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "userprofile"
+    ],
+    "object_id": "2",
+    "object_repr": "FC_USER_0000002 | 8688954688",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Dealer locations\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-01-03T05:55:11.970Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "coupon"
+    ],
+    "object_id": "1",
+    "object_repr": "SAVE50 (85% off)",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-01-03T05:58:18.519Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "pricingconfig"
+    ],
+    "object_id": "1",
+    "object_repr": "Pricing Config (Updated: 2026-01-03 05:58)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Delivery price admin\", \"Delivery price dealer\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-01-03T05:58:55.971Z",
+    "user": [
+      "admin1"
+    ],
+    "content_type": [
+      "core",
+      "coupon"
+    ],
+    "object_id": "1",
+    "object_repr": "SAVE50 (75% off)",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Discount percentage\"]}}]"
+  }
+}
+]

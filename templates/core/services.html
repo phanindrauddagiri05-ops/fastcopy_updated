@@ -354,9 +354,6 @@
     const CUSTOM_1_9 = 4.0;
     {% endif %}
 
-    // NOTE: Color prices from panel already include correct full price per page
-    // No need to add B&W price to color price
-
     const priceCards = {
         "Printing": `<div class="col-6 text-muted">B&W: ₹${PRICE_PER_PAGE_BW}/p</div><div class="col-6 text-muted">BW(D): ₹${PRICE_PER_PAGE_BW_DOUBLE}/p</div><div class="col-6 text-primary">Color: ₹${PRICE_PER_PAGE_COLOR}/p</div><div class="col-6 text-primary">Color(D): ₹${PRICE_PER_PAGE_COLOR_DOUBLE}/p</div>`,
         "Spiral Binding": `<div class="col-6 text-muted">1-40p: ₹${SPIRAL_BINDING}</div><div class="col-6 text-muted">41-60p: ₹${SPIRAL_TIER2}</div><div class="col-6 text-muted">61-90p: ₹${SPIRAL_TIER3}</div><div class="col-6 text-info">90+: +₹${SPIRAL_EXTRA}/20p</div>`,
@@ -364,17 +361,10 @@
         "Custom Printing": `<div class="col-6 text-muted">1/4: ₹${CUSTOM_1_4}/s</div><div class="col-6 text-muted">1/8: ₹${CUSTOM_1_8}/s</div><div class="col-6 text-muted">1/8(D): ₹${CUSTOM_1_8_DOUBLE}/s</div><div class="col-6 text-muted">1/9: ₹${CUSTOM_1_9}/s</div><div class="col-6 text-muted">1/9(D): ₹${CUSTOM_1_9_DOUBLE}/s</div>`,
     };
 
-    // Debug: Log pricing to console
-    console.log('FastCopy Pricing Loaded:', {
-        bw: PRICE_PER_PAGE_BW,
-        bw_double: PRICE_PER_PAGE_BW_DOUBLE,
-        color: PRICE_PER_PAGE_COLOR,
-        color_double: PRICE_PER_PAGE_COLOR_DOUBLE,
-        spiral_tier1: SPIRAL_BINDING,
-        spiral_tier2: SPIRAL_TIER2,
-        spiral_tier3: SPIRAL_TIER3
+    // New restriction: Allow only numbers, commas, and hyphens in custom split input
+    $('#custom_color_input').on('input', function() {
+        this.value = this.value.replace(/[^0-9,-]/g, '');
     });
-
 
     function checkLoginBeforeUpload(event) {
         const isAuth = $('#is-user-authenticated').val() === 'true';
@@ -427,8 +417,6 @@
         else if (hash === '#Soft') selectService($('#tab-Soft')[0], 'Soft Binding', '#d63384', 'fa-book');
         else if (hash === '#Custom') selectService($('#tab-Custom')[0], 'Custom Printing', '#fd7e14', 'fa-sliders-h');
         else selectService($('#tab-Printing')[0], 'Printing', '#0d6efd', 'fa-print');
-
-        // Remove automatic scrolling on initial page load
     }
 
     function processCart(isDirectOrder) {
@@ -485,19 +473,15 @@
 
     function handleNupRules() {
         const L = $('#layout_type').val();
-
         if (L === "1/4") {
-            // 1/4 page: Auto double-side, hide selector
             $('#side_type').val('double');
             $('#side-type-container').addClass('d-none');
         }
         else if (L === "1/8" || L === "1/9") {
-            // 1/8 and 1/9: Default to single-side, show selector
             $('#side_type').val('single');
             $('#side-type-container').removeClass('d-none');
         }
         else {
-            // Other layouts: Show selector
             $('#side-type-container').removeClass('d-none');
         }
     }
@@ -593,7 +577,6 @@
             if (L === "1/9") divisor = 9;
             let sides = Math.ceil(T / divisor);
 
-            // Use dynamic custom print pricing
             if (L === "1/4") {
                 printingCostPerSet = sides * CUSTOM_1_4;
             } else {
@@ -641,7 +624,6 @@
                         return;
                     }
 
-                    // Use only color price from configuration (not B&W + color)
                     colorPart = uniquePages.size * PRICE_PER_PAGE_COLOR;
                     bwPart = (T - uniquePages.size) * PRICE_PER_PAGE_BW;
                     printingCostPerSet = colorPart + bwPart;
@@ -649,7 +631,6 @@
             } else if (P === 'bw') {
                 printingCostPerSet = (S === 'single') ? (T * PRICE_PER_PAGE_BW) : (Math.ceil(T / 2) * PRICE_PER_PAGE_BW_DOUBLE); bwPart = printingCostPerSet;
             } else if (P === 'color') {
-                // Use only color price from configuration (not B&W + color)
                 printingCostPerSet = (S === 'single') ? (T * PRICE_PER_PAGE_COLOR) : (Math.ceil(T / 2) * PRICE_PER_PAGE_COLOR_DOUBLE);
                 colorPart = printingCostPerSet;
             }
@@ -678,7 +659,6 @@
         handleHashNavigation();
         window.addEventListener('hashchange', function () {
             handleHashNavigation();
-            // Scroll to form only if hash changes manually after load
             $('html, body').animate({ scrollTop: $("#form-container").offset().top - 100 }, 500);
         });
     });
