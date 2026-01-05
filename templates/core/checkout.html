@@ -1,11 +1,9 @@
-{% extends "base.html" %}
+{% extends "base.html"%}
 {% load static %}
-
 {% block content %}
 <div class="container py-4 py-md-5 min-vh-100 d-flex flex-column justify-content-center">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-7 col-xl-6">
-
             <!-- Step indicator -->
             <div class="d-flex justify-content-between mb-5 px-4 position-relative align-items-center"
                 style="z-index: 1;">
@@ -15,9 +13,7 @@
                     </div>
                     <span class="text-[10px] font-black uppercase text-primary tracking-widest">Cart</span>
                 </div>
-
                 <div class="step-line bg-primary"></div>
-
                 <div class="text-center">
                     <div
                         class="step-icon bg-primary text-white shadow-lg mb-2 mx-auto ring-4 ring-primary ring-opacity-50 border-0">
@@ -25,9 +21,7 @@
                     </div>
                     <span class="text-[10px] font-black uppercase text-primary tracking-widest">Review</span>
                 </div>
-
                 <div class="step-line bg-slate-700"></div>
-
                 <div class="text-center">
                     <div class="step-icon bg-slate-800 text-white text-slate-500 mb-2 mx-auto border border-slate-700">
                         3
@@ -35,12 +29,10 @@
                     <span class="text-[10px] font-black uppercase text-slate-500 tracking-widest">Payment</span>
                 </div>
             </div>
-
             <!-- Main card -->
             <div class="card border-0 bg-dark text-white rounded-[2rem] shadow-2xl overflow-hidden border-top border-primary border-5"
                 data-aos="zoom-in">
                 <div class="card-body p-4 p-md-5">
-
                     <!-- Header -->
                     <header class="text-center mb-5">
                         <h2 class="text-uppercase fw-black italic mb-1 tracking-tighter">
@@ -50,7 +42,6 @@
                             Please verify your order details
                         </p>
                     </header>
-
                     <!-- Amount banner -->
                     <div class="amount-banner mb-4">
                         <div class="d-flex justify-content-between align-items-center">
@@ -70,7 +61,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Estimated arrival -->
                     <div class="alert mt-3 d-flex align-items-center border-0 shadow-sm rounded-4 p-3"
                         style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #b45309;">
@@ -85,7 +75,6 @@
                             </span>
                         </div>
                     </div>
-
                     <!-- Items in order -->
                     <div class="text-start mt-5 mb-4">
                         <div class="d-flex align-items-center gap-2 mb-3">
@@ -94,7 +83,6 @@
                                 Items in Order
                             </h6>
                         </div>
-
                         <div class="checkout-scroll-area pe-2" style="max-height: 220px; overflow-y: auto;">
                             <div class="d-grid gap-2">
                                 {% for item in cart_items %}
@@ -237,7 +225,6 @@
                     </footer>
                 </div>
             </div>
-
             <!-- Back to cart -->
             <div class="text-center mt-4">
                 <a href="{% url 'cart' %}"
@@ -249,7 +236,6 @@
         </div>
     </div>
 </div>
-
 <style>
     .fw-black {
         font-weight: 900;

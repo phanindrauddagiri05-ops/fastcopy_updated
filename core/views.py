@@ -1245,9 +1245,8 @@ def dealer_dashboard_view(request):
     # --- 4. APPLY STATUS & SERVICE FILTERS ---
     if status_filter != 'all': 
         orders = orders.filter(status=status_filter)
-    else:
-        # Default view (if all status) shows Pending/Ready to keep dashboard clean
-        orders = orders.filter(Q(status='Pending') | Q(status='Ready'))
+    # When 'all' is selected, show ALL orders (including Delivered, Rejected, etc.)
+    # This allows dealers to see complete order history for amount calculation
     
     if service_filter != 'all': 
         orders = orders.filter(service_name__icontains=service_filter)

@@ -13,6 +13,14 @@ sitemaps = {
 }
 
 urlpatterns = [
+    # 🗑️ Cleanup Dashboard URLs (MUST be before admin/)
+    path('admin/cleanup/', include([
+        path('', __import__('core.admin_views', fromlist=['cleanup_dashboard']).cleanup_dashboard, name='cleanup_dashboard'),
+        path('run/', __import__('core.admin_views', fromlist=['run_cleanup_ajax']).run_cleanup_ajax, name='run_cleanup_ajax'),
+        path('refresh-stats/', __import__('core.admin_views', fromlist=['refresh_storage_stats']).refresh_storage_stats, name='refresh_storage_stats'),
+        path('download-report/', __import__('core.admin_views', fromlist=['download_cleanup_report']).download_cleanup_report, name='download_cleanup_report'),
+    ])),
+    
     # 🛠️ Custom Admin Site
     path('admin/', admin_site.urls),
     

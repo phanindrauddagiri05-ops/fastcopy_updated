@@ -1,57 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dealer Dashboard - FastCopy</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
-        .header { background: white; padding: 20px 40px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; }
-        .header h1 { font-size: 24px; font-weight: 700; color: #1e293b; }
-        .header p { font-size: 14px; color: #64748b; margin-top: 4px; }
-        .logout-btn { padding: 10px 24px; background: #ef4444; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.2s ease; }
-        .logout-btn:hover { background: #dc2626; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 32px 40px; }
-        .metrics-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 32px; }
-        .metric-card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        .metric-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .metric-label { font-size: 14px; color: #64748b; font-weight: 500; }
-        .date-filter { display: flex; gap: 8px; }
-        .date-filter-btn { padding: 6px 12px; font-size: 12px; border: 1px solid #e2e8f0; background: white; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; text-decoration: none; color: #64748b; }
-        .date-filter-btn:hover { background: #f1f5f9; }
-        .date-filter-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
-        .metric-value { font-size: 32px; font-weight: 700; color: #1e293b; }
-        .metric-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; float: right; margin-top: -8px; }
-        .icon-blue { background: #dbeafe; }
-        .icon-green { background: #d1fae5; }
-        .filters-section { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 24px; }
-        .filters-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; }
-        .filters-title::before { content: '⚙️'; margin-right: 8px; }
-        .filters-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .filter-group label { display: block; font-size: 13px; color: #64748b; margin-bottom: 8px; font-weight: 500; }
-        .filter-group select { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; background: white; cursor: pointer; transition: border-color 0.2s ease; }
-        .filter-group select:focus { outline: none; border-color: #3b82f6; }
-        .orders-section { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-        .orders-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .orders-title { font-size: 18px; font-weight: 600; }
-        .refresh-btn { padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s ease; }
-        .refresh-btn:hover { background: #2563eb; }
-        .orders-table { width: 100%; border-collapse: collapse; }
-        .orders-table thead { background: #f8fafc; }
-        .orders-table th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; }
-        .orders-table td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
-        .orders-table tbody tr:hover { background: #f8fafc; }
-        .status-select { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; cursor: pointer; }
-        .download-btn { display: inline-block; padding: 6px 12px; background: #10b981; color: white; text-decoration: none; border-radius: 6px; font-size: 12px; font-weight: 600; transition: background 0.2s ease; }
-        .download-btn:hover { background: #059669; }
-        .no-orders { text-align: center; padding: 60px 20px; color: #94a3b8; }
-        .no-orders-icon { font-size: 48px; margin-bottom: 16px; }
-        .messages { max-width: 1400px; margin: 20px auto 0; padding: 0 40px; }
-        .alert { padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
-        .alert-error { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        .alert-success { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .logout-btn {
+            padding: 10px 24px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        .metrics-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .date-filter-btn {
+            padding: 6px 12px;
+            font-size: 11px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .date-filter-btn:hover {
+            color: #1e293b;
+        }
+
+        .date-filter-btn.active {
+            background: white;
+            color: #3b82f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: absolute;
+            bottom: 24px;
+            right: 24px;
+        }
+
+        .icon-blue {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .icon-green {
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+
+        .filters-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .filters-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fff;
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            ring: 2px solid #3b82f6;
+        }
+
+        .orders-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .orders-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .orders-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .orders-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-select {
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background: #059669;
+        }
+
+        .messages {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 0 40px;
+        }
+
+        .alert {
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fee2e2;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #dcfce7;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
     </style>
 </head>
 
@@ -59,9 +343,11 @@
     <div class="header">
         <div>
             <h1>Dealer Dashboard</h1>
-            <p>Welcome, {{ dealer_name }}</p>
+            <p>Welcome back, <strong>{{ dealer_name }}</strong></p>
         </div>
-        <a href="{% url 'dealer_logout' %}" class="logout-btn">🚪 Logout</a>
+        <a href="{% url 'dealer_logout' %}" class="logout-btn">
+            <span>🚪</span> Logout
+        </a>
     </div>
 
     {% if messages %}
@@ -85,45 +371,55 @@
                         <a href="?date_filter=today&status={{ status_filter }}&service={{ service_filter }}"
                             class="date-filter-btn {% if date_filter == 'today' %}active{% endif %}">Today</a>
                         <a href="?date_filter=last_7_days&status={{ status_filter }}&service={{ service_filter }}"
-                            class="date-filter-btn {% if date_filter == 'last_7_days' %}active{% endif %}">Last 7 Days</a>
+                            class="date-filter-btn {% if date_filter == 'last_7_days' %}active{% endif %}">7D</a>
                         <a href="?date_filter=last_30_days&status={{ status_filter }}&service={{ service_filter }}"
-                            class="date-filter-btn {% if date_filter == 'last_30_days' %}active{% endif %}">Last Month</a>
+                            class="date-filter-btn {% if date_filter == 'last_30_days' %}active{% endif %}">30D</a>
                     </div>
                 </div>
-                <div class="metric-icon icon-blue">📊</div>
                 <div class="metric-value">{{ total_orders }}</div>
+                <div class="metric-icon icon-blue">📊</div>
             </div>
 
             <div class="metric-card">
                 <div class="metric-header">
                     <span class="metric-label">Total Revenue</span>
                 </div>
-                <div class="metric-icon icon-green">💰</div>
                 <div class="metric-value">₹{{ total_revenue|floatformat:2 }}</div>
+                <div class="metric-icon icon-green">💰</div>
             </div>
         </div>
 
         <div class="filters-section">
-            <div class="filters-title">Filters</div>
+            <div class="filters-title"><span>⚙️</span> Quick Filters</div>
             <form method="GET" class="filters-grid">
                 <input type="hidden" name="date_filter" value="{{ date_filter }}">
                 <div class="filter-group">
-                    <label for="status">All Status</label>
+                    <label for="status">Order Status</label>
                     <select name="status" id="status" onchange="this.form.submit()">
-                        <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Status</option>
+                        <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Statuses</option>
                         <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
+                        <option value="Confirmed" {% if status_filter == "Confirmed" %}selected{% endif %}>Confirmed
+                        </option>
                         <option value="Ready" {% if status_filter == "Ready" %}selected{% endif %}>Ready</option>
+                        <option value="Delivered" {% if status_filter == "Delivered" %}selected{% endif %}>Delivered
+                        </option>
+                        <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
+                        <option value="Cancelled" {% if status_filter == "Cancelled" %}selected{% endif %}>Cancelled
+                        </option>
                     </select>
                 </div>
 
                 <div class="filter-group">
-                    <label for="service">All Services</label>
+                    <label for="service">Service Type</label>
                     <select name="service" id="service" onchange="this.form.submit()">
                         <option value="all" {% if service_filter == "all" %}selected{% endif %}>All Services</option>
-                        <option value="printing" {% if service_filter == "printing" %}selected{% endif %}>Printing</option>
-                        <option value="spiral" {% if service_filter == "spiral" %}selected{% endif %}>Spiral Binding</option>
+                        <option value="printing" {% if service_filter == "printing" %}selected{% endif %}>Printing
+                        </option>
+                        <option value="spiral" {% if service_filter == "spiral" %}selected{% endif %}>Spiral Binding
+                        </option>
                         <option value="soft" {% if service_filter == "soft" %}selected{% endif %}>Soft Binding</option>
-                        <option value="custom" {% if service_filter == "custom" %}selected{% endif %}>Custom Print</option>
+                        <option value="custom" {% if service_filter == "custom" %}selected{% endif %}>Custom Print
+                        </option>
                     </select>
                 </div>
             </form>
@@ -131,8 +427,8 @@
 
         <div class="orders-section">
             <div class="orders-header">
-                <h2 class="orders-title">Orders ({{ total_orders }})</h2>
-                <button onclick="location.reload()" class="refresh-btn">🔄 Refresh</button>
+                <h2 class="orders-title">Orders List ({{ total_orders }})</h2>
+                <button onclick="window.location.reload()" class="refresh-btn">🔄 Refresh</button>
             </div>
 
             {% if orders %}
@@ -143,43 +439,60 @@
                         <th>Date & Time</th>
                         <th>Service</th>
                         <th>Copies</th>
-                        <th>Print Type</th>
-                        <th>Sides</th>
+                        <th>Mode</th>
                         <th>Amount</th>
                         <th>Delivery</th>
-                        <th>Download</th>
-                        <th>Status</th>
+                        <th>File</th>
+                        <th style="width: 150px;">Status Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for order in orders %}
                     <tr>
-                        <td><strong>{{ order.order_id }}</strong></td>
-                        <td style="font-size: 0.85rem; color: #64748b;">
-                            {{ order.created_at|date:"d M Y" }}<br>
-                            <span style="font-size: 0.75rem;">{{ order.created_at|time:"h:i A" }}</span>
+                        <td><strong>#{{ order.order_id }}</strong></td>
+                        <td>
+                            <div style="font-weight: 500;">{{ order.created_at|date:"d M Y" }}</div>
+                            <div style="font-size: 12px; color: #94a3b8;">{{ order.created_at|time:"h:i A" }}</div>
                         </td>
-                        <td>{{ order.service_name|default:"N/A" }}</td>
-                        <td><strong>{{ order.copies }}</strong></td>
-                        <td>{{ order.print_mode|upper }}</td>
-                        <td>{{ order.side_type|title }}</td>
-                        <td><strong>₹{{ order.dealer_amount|floatformat:2 }}</strong></td>
-                        <td style="color: #ea580c; font-weight: bold; font-size: 0.85rem;">{{ order.estimated_delivery_date|date:"d M" }}</td>
+                        <td>{{ order.service_name|default:"General" }}</td>
+                        <td><span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">{{ order.copies }}</span></td>
+                        <td>{{ order.print_mode|upper }} ({{ order.side_type|title }})</td>
+                        <td><strong style="color: #0f172a;">₹{{ order.dealer_amount|floatformat:2 }}</strong></td>
+                        <td>
+                            <span style="color: #ea580c; font-weight: 600; font-size: 13px;">
+                                {{ order.estimated_delivery_date|date:"d M" }}
+                            </span>
+                        </td>
                         <td>
                             {% if order.document or order.image_upload %}
-                            <a href="{% url 'dealer_download_file' order.id %}" class="download-btn" target="_blank">📥 Download File</a>
+                            <a href="{% url 'dealer_download_file' order.id %}" class="download-btn" target="_blank">
+                                📥 Download
+                            </a>
                             {% else %}
-                            <span style="color: #94a3b8;">No file</span>
+                            <span style="color: #cbd5e1; font-size: 12px;">No File</span>
                             {% endif %}
                         </td>
                         <td>
-                            <form method="POST" action="{% url 'update_order_status' order.id %}" style="display: inline;">
+                            {% if order.status == "Pending" or order.status == "Ready" %}
+                            <form method="POST" action="{% url 'update_order_status' order.id %}">
                                 {% csrf_token %}
                                 <select name="status" class="status-select" onchange="this.form.submit()">
-                                    <option value="Pending" {% if order.status == "Pending" %}selected{% endif %}>Pending</option>
-                                    <option value="Ready" {% if order.status == "Ready" %}selected{% endif %}>Ready</option>
+                                    <option value="Pending" {% if order.status == "Pending" %}selected{% endif %}>Pending
+                                    </option>
+                                    <option value="Ready" {% if order.status == "Ready" %}selected{% endif %}>Ready
+                                    </option>
                                 </select>
                             </form>
+                            {% else %}
+                            <span class="status-badge" style="
+                                {% if order.status == 'Delivered' %}background: #d1fae5; color: #065f46;
+                                {% elif order.status == 'Rejected' %}background: #fee2e2; color: #991b1b;
+                                {% elif order.status == 'Cancelled' %}background: #f1f5f9; color: #475569;
+                                {% elif order.status == 'Confirmed' %}background: #dbeafe; color: #1e40af;
+                                {% else %}background: #f3f4f6; color: #374151;{% endif %}">
+                                {{ order.status }}
+                            </span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -187,11 +500,12 @@
             </table>
             {% else %}
             <div class="no-orders">
-                <div class="no-orders-icon">📦</div>
-                <p>No orders found matching your filters</p>
+                <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+                <p>No orders found matching the current filters.</p>
             </div>
             {% endif %}
         </div>
     </div>
 </body>
+
 </html>
