@@ -204,103 +204,121 @@ main {
 
 /* --- 📱 RESPONSIVE & UTILITIES --- */
 
-/* ===== LARGE SCREEN CONSTRAINTS ===== */
-/* Ensures content doesn't stretch too wide on large monitors */
+/* ===== 🖥️ LARGE SCREEN LAYOUT ENGINE ===== */
+/* Corrects layout stretching on screens larger than 1600px */
 
-/* Standard Large Monitors (1600px - 1920px) */
-@media (min-width: 1600px) and (max-width: 1919px) {
-    .container {
-        max-width: 1400px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    /* Constrain rows within containers */
-    .container .row {
-        max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
-/* Full HD and larger (1920px - 2560px) */
-@media (min-width: 1920px) and (max-width: 2559px) {
-    .container {
-        max-width: 1600px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    /* Constrain hero section for better visual balance */
-    .section-highlight .container {
-        max-width: 1500px !important;
-    }
-
-    /* Constrain rows within containers */
-    .container .row {
-        max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Limit service cards container */
-    .row.max-w-7xl {
-        max-width: 1400px !important;
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
-/* Ultra-Wide Monitors (2560px+) */
+/* 1. Global Centering Wrapper for Ultra-Wide Screens */
 @media (min-width: 2560px) {
-    .container {
-        max-width: 1800px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f1f5f9;
+        /* Light gray background for outer space */
     }
 
-    .section-highlight .container {
-        max-width: 1600px !important;
+    body>nav,
+    body>main,
+    body>footer {
+        width: 100%;
+        max-width: 1920px !important;
+        /* Cap entire site width */
+        margin: 0 auto;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+        /* Subtle shadow for boxed look */
+        background-color: #fff;
+        /* Ensure content background is white */
     }
 
-    /* Prevent excessive spacing */
-    .row {
-        max-width: 100%;
-    }
-
-    /* Constrain rows within containers */
-    .container .row {
-        max-width: 100%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    /* Limit service cards container */
-    .row.max-w-7xl {
-        max-width: 1600px !important;
-        margin-left: auto;
-        margin-right: auto;
+    body>nav {
+        position: sticky;
+        /* Keep nav sticky but constrained */
+        top: 0;
     }
 }
 
-/* ===== ADDITIONAL LARGE SCREEN FIXES ===== */
+/* 2. Container Constraints - Cascading & Specific */
+/* Applied to all container variants to ensure no leaks */
+
 @media (min-width: 1600px) {
 
-    /* Ensure all sections stay centered */
-    section .container {
-        margin-left: auto;
-        margin-right: auto;
+    .container,
+    .container-fluid,
+    .container-lg,
+    .container-md,
+    .container-sm,
+    .container-xl,
+    .container-xxl {
+        max-width: 1400px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
     }
 
-    /* Prevent cards from stretching too wide */
-    .card,
-    .unique-service-card {
+    /* Lock row width to prevent overflow */
+    .row {
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+}
+
+@media (min-width: 1921px) {
+
+    .container,
+    .container-fluid,
+    .container-lg,
+    .container-md,
+    .container-sm,
+    .container-xl,
+    .container-xxl {
+        max-width: 1550px !important;
+    }
+
+    /* Allow Hero section slightly more breathing room */
+    .section-highlight .container {
+        max-width: 1650px !important;
+    }
+}
+
+/* 3. Component Specific Fixes for Large Screens */
+@media (min-width: 1600px) {
+
+    /* Form inputs shouldn't stretch infinitely */
+    form .form-control,
+    form .form-select,
+    form input,
+    form select,
+    form textarea {
         max-width: 100%;
     }
 
-    /* Limit form container widths */
-    form {
+    /* Service Page Form Container Cap */
+    #form-container {
+        max-width: 1000px !important;
+        /* Force a reasonable width for the form card */
+        margin: 0 auto !important;
+    }
+
+    /* prevent service cards from becoming too wide */
+    .unique-service-card .card-inner {
         max-width: 100%;
+        margin: 0 auto;
+    }
+
+    /* Footer Content Fixes */
+    .dark-footer .container {
+        max-width: 1400px !important;
+    }
+
+    .footer-heading {
+        white-space: nowrap;
+        /* Prevent heading break */
+    }
+
+    .dark-footer p {
+        max-width: 400px;
+        /* Readability improvement */
     }
 }
 
