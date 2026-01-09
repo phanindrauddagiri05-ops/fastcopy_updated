@@ -24,7 +24,7 @@ body {
     background-color: #f8fafc;
     color: #0f172a;
     display: flex;
-    flex-col: column;
+    flex-direction: column;
     min-height: 100vh;
 }
 
@@ -182,9 +182,17 @@ main {
 
 /* --- 🌀 BACKGROUND ANIMATIONS --- */
 @keyframes floating {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    50% { transform: translate(15px, -25px) rotate(5deg); }
-    100% { transform: translate(0, 0) rotate(0deg); }
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    50% {
+        transform: translate(15px, -25px) rotate(5deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
 }
 
 .floating-blob {
@@ -195,22 +203,97 @@ main {
 }
 
 /* --- 📱 RESPONSIVE & UTILITIES --- */
-@media (max-width: 768px) {
-    .glass-nav { padding: 0.5rem 0; }
-    .dark-footer { text-align: center; }
-    .contact-card-mini { justify-content: center; }
-    .footer-heading { margin-top: 1.5rem; }
-    
-    /* Mobile Scale Refinements */
-    .display-5 { font-size: 2rem; }
-    .text-3xl { font-size: 1.7rem; }
+
+/* ===== LARGE SCREEN CONSTRAINTS ===== */
+/* Ensures content doesn't stretch too wide on large monitors */
+
+/* Standard Large Monitors (1600px - 1920px) */
+@media (min-width: 1600px) and (max-width: 1919px) {
+    .container {
+        max-width: 1400px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
 }
 
-.fw-black { font-weight: 900; }
-.tracking-tighter { letter-spacing: -0.05em; }
-.tracking-widest { letter-spacing: 0.25em; }
-.italic { font-style: italic; }
-.uppercase { text-transform: uppercase; }
+/* Full HD and larger (1920px - 2560px) */
+@media (min-width: 1920px) and (max-width: 2559px) {
+    .container {
+        max-width: 1600px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    /* Constrain hero section for better visual balance */
+    .section-highlight .container {
+        max-width: 1500px !important;
+    }
+}
+
+/* Ultra-Wide Monitors (2560px+) */
+@media (min-width: 2560px) {
+    .container {
+        max-width: 1800px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .section-highlight .container {
+        max-width: 1600px !important;
+    }
+
+    /* Prevent excessive spacing */
+    .row {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .glass-nav {
+        padding: 0.5rem 0;
+    }
+
+    .dark-footer {
+        text-align: center;
+    }
+
+    .contact-card-mini {
+        justify-content: center;
+    }
+
+    .footer-heading {
+        margin-top: 1.5rem;
+    }
+
+    /* Mobile Scale Refinements */
+    .display-5 {
+        font-size: 2rem;
+    }
+
+    .text-3xl {
+        font-size: 1.7rem;
+    }
+}
+
+.fw-black {
+    font-weight: 900;
+}
+
+.tracking-tighter {
+    letter-spacing: -0.05em;
+}
+
+.tracking-widest {
+    letter-spacing: 0.25em;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
 
 /* --- 🛠️ MODAL & FORM FIXES --- */
 .modal-content {
@@ -219,7 +302,9 @@ main {
     overflow: hidden;
 }
 
-input:focus, textarea:focus, .form-control:focus {
+input:focus,
+textarea:focus,
+.form-control:focus {
     outline: none !important;
     border-color: var(--primary-blue) !important;
     box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;

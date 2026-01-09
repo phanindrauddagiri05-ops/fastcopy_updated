@@ -184,3 +184,4 @@ Run actual cleanup from the admin dashboard.
     response = HttpResponse(report, content_type='text/plain')
     response['Content-Disposition'] = f'attachment; filename="cleanup_report_{timezone.now().strftime("%Y%m%d_%H%M%S")}.txt"'
     return response
+
