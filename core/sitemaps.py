@@ -1,5 +1,5 @@
 """
-Sitemap Configuration for FastCopy
+Sitemap Configuration for AishwaryaXerox
 Defines URL structure for search engines to crawl public pages
 """
 
@@ -10,8 +10,8 @@ from django.urls import reverse
 class StaticViewSitemap(Sitemap):
     """
     Sitemap for static/public pages
-    Includes: Home, Services, About, Contact, Privacy, Terms
-    Excludes: Auth pages, Cart, Checkout, Payments, Dealer Dashboard
+    Includes: Home, Services, About, Contact, Privacy, Terms, Maintenance
+    Excludes: Auth pages, Cart, Checkout, Payments, Dealer Dashboard, Profile
     """
     
     # How often pages change (always, hourly, daily, weekly, monthly, yearly, never)
@@ -29,6 +29,7 @@ class StaticViewSitemap(Sitemap):
             'contact',           # Contact page
             'privacy_policy',    # Privacy Policy
             'terms_conditions',  # Terms & Conditions
+            'maintenance',       # Maintenance page
         ]
 
     def location(self, item):
@@ -44,6 +45,7 @@ class StaticViewSitemap(Sitemap):
             'contact': 0.6,        # Medium priority
             'privacy_policy': 0.4, # Lower priority
             'terms_conditions': 0.4, # Lower priority
+            'maintenance': 0.3,    # Low priority (typically not active)
         }
         return priorities.get(item, 0.5)
     
@@ -56,5 +58,6 @@ class StaticViewSitemap(Sitemap):
             'contact': 'monthly',      # Contact info rarely changes
             'privacy_policy': 'yearly', # Legal docs change rarely
             'terms_conditions': 'yearly', # Legal docs change rarely
+            'maintenance': 'yearly',   # Rarely accessed
         }
         return frequencies.get(item, 'monthly')
