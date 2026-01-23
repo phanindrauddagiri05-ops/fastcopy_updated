@@ -152,5 +152,16 @@
         p1.type = type;
         p2.type = type;
     }
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const password = document.getElementById('id_password');
+        const confirmPassword = document.getElementById('id_confirm_password');
+
+        if (password.value !== confirmPassword.value) {
+            e.preventDefault();
+            alert("Passwords do not match! Please enter the same password in both fields.");
+            confirmPassword.focus();
+        }
+    });
 </script>
 {% endblock %}
