@@ -740,136 +740,154 @@ def remove_coupon(request):
 
 @login_required(login_url='login')
 def initiate_payment(request):
-    batch_txn_id = request.session.get('pending_batch_id')
-    direct_item = request.session.get('direct_item')
-    cart_items = request.session.get('cart', [])
-
-    if not batch_txn_id: return redirect('cart')
-
-    if batch_txn_id.startswith("DIR"):
-        items_to_process = [direct_item] if direct_item else []
-    else:
-        items_to_process = cart_items
-
-    if not items_to_process: return redirect('cart')
-
-    unique_order_id = f"{batch_txn_id}_{int(time.time())}"
-    est_date = calculate_delivery_date()
-    
-    # Calculate totals and handle coupon
-    items_total = sum(float(i.get('total_price', 0)) for i in items_to_process)
-    pricing = get_user_pricing(request.user)
-    delivery_charge = pricing.get('delivery_charge', 0.0)
-    original_total = items_total + delivery_charge
-    
-    # Apply coupon if available
-    applied_coupon_code = request.session.get('applied_coupon_code')
-    discount_amount = 0
-    coupon_obj = None
-    
-    if applied_coupon_code:
-        try:
-            coupon_obj = Coupon.objects.get(code=applied_coupon_code.upper())
-            can_apply, message = coupon_obj.can_apply_to_order(original_total)
-            if can_apply:
-                discount_amount, _ = coupon_obj.calculate_discount(original_total)
-        except Coupon.DoesNotExist:
-            pass
-    
-    final_total = original_total - discount_amount
-    
-    final_total = original_total - discount_amount
-    
-    with transaction.atomic():
-        for item in items_to_process:
-            # Create the order object
-            order_obj = Order.objects.create(
-                transaction_id=unique_order_id, 
-                user=request.user,
-                service_name=item.get('service_name'),
-                total_price=float(item.get('total_price', 0)), 
-                original_price=original_total if applied_coupon_code else None,
-                coupon_code=applied_coupon_code if applied_coupon_code else None,
-                discount_amount=discount_amount if discount_amount > 0 else 0,
-                location=item.get('location'), 
-                print_mode=item.get('print_mode'), 
-                side_type=item.get('side_type'),
-                copies=item.get('copies'), 
-                pages=item.get('pages', 1), 
-                custom_color_pages=item.get('custom_color_pages', ''), 
-                estimated_delivery_date=est_date,
-                payment_status="Pending", 
-                status="Pending"
-            )
-
-            # [CRITICAL] SAVE FILE IMMEDIATELY
-            # We intentionally duplicate the file from temp to the Order object NOW.
-            # This ensures that even if the session is lost during payment (which holds the temp_path),
-            # the Order has the file physically attached.
-            try:
-                path = item.get('temp_path') or item.get('temp_image_path')
-                if path and default_storage.exists(path):
-                    with default_storage.open(path) as f:
-                        file_content = ContentFile(f.read(), name=item.get('document_name'))
-                        if item.get('temp_path'):
-                            order_obj.document.save(item.get('document_name'), file_content, save=True)
-                        else:
-                            order_obj.image_upload.save(item.get('document_name'), file_content, save=True)
-            except Exception as e:
-                print(f"⚠️ Error attaching file to order at init: {e}")
-                # Continue anyway, don't block payment. We might recover later or manual intervention.
-        
-        # Increment coupon usage if applied
-        if coupon_obj and discount_amount > 0:
-            coupon_obj.increment_usage()
-            # Clear coupon from session after use
-            if 'applied_coupon_code' in request.session:
-                del request.session['applied_coupon_code']
-                request.session.modified = True
-    
-    
-    # Cashfree URL Handling
-    # Cashfree Production requires HTTPS for return_url in the API.
-    # We use a dummy HTTPS URL for the API validation, but the Frontend SDK will use 'payment_return_url' session var to redirect correctly.
-    current_host = request.get_host()
-    if 'localhost' in current_host or '127.0.0.1' in current_host:
-        return_url_for_api = "https://www.cashfree.com/return" # Dummy HTTPS
-        actual_return_url = f"http://{current_host}/payment/callback/"
-    else:
-        # Production/HTTPS
-        return_url_for_api = f"https://{current_host}/payment/callback/?order_id={unique_order_id}"
-        actual_return_url = f"https://{current_host}/payment/callback/"
-    
-    user_mobile = request.user.profile.mobile if hasattr(request.user, 'profile') else "9999999999"
-    if not user_mobile.startswith('91'): user_mobile = f"91{user_mobile}"
-
-    payload = {
-        "order_id": unique_order_id,
-        "order_amount": float(final_total),
-        "order_currency": "INR",
-        "customer_details": {
-            "customer_id": f"CUST_{request.user.id}",
-            "customer_name": request.user.username,
-            "customer_email": request.user.email or "test@fastcopy.in",
-            "customer_phone": user_mobile
-        },
-        "order_meta": {
-            "return_url": return_url_for_api
-        }
-    }
-    headers = {"Content-Type": "application/json", "x-api-version": settings.CASHFREE_API_VERSION, "x-client-id": settings.CASHFREE_APP_ID, "x-client-secret": settings.CASHFREE_SECRET_KEY}
-    
-    # Debug logging
-    print(f"=== Cashfree Payment Initiation ===")
-    print(f"Order ID: {unique_order_id}")
-    print(f"Amount: {final_total}")
-    print(f"Return URL (API): {return_url_for_api}")
-    
-    # Store the actual return URL in session for frontend to use
-    request.session['payment_return_url'] = actual_return_url
-    request.session.modified = True
-    
     try:
+        batch_txn_id = request.session.get('pending_batch_id')
+        direct_item = request.session.get('direct_item')
+        cart_items = request.session.get('cart', [])
+
+        if not batch_txn_id: return redirect('cart')
+
+        if batch_txn_id.startswith("DIR"):
+            items_to_process = [direct_item] if direct_item else []
+        else:
+            items_to_process = cart_items
+
+        if not items_to_process: return redirect('cart')
+
+        unique_order_id = f"{batch_txn_id}_{int(time.time())}"
+        
+        # Safe delivery date calculation
+        try:
+            est_date = calculate_delivery_date()
+        except:
+            est_date = timezone.now().date() + timedelta(days=2)
+        
+        # Calculate totals and handle coupon
+        items_total = 0.0
+        for i in items_to_process:
+            try:
+                items_total += float(i.get('total_price', 0))
+            except (ValueError, TypeError):
+                continue
+
+        pricing = get_user_pricing(request.user)
+        delivery_charge = pricing.get('delivery_charge', 0.0)
+        original_total = items_total + delivery_charge
+        
+        # Apply coupon if available
+        applied_coupon_code = request.session.get('applied_coupon_code')
+        discount_amount = 0
+        coupon_obj = None
+        
+        if applied_coupon_code:
+            try:
+                coupon_obj = Coupon.objects.get(code=applied_coupon_code.upper())
+                can_apply, message = coupon_obj.can_apply_to_order(original_total)
+                if can_apply:
+                    discount_amount, _ = coupon_obj.calculate_discount(original_total)
+            except Coupon.DoesNotExist:
+                pass
+            except Exception as e:
+                print(f"Coupon Error: {e}")
+        
+        final_total = original_total - discount_amount
+        
+        with transaction.atomic():
+            for item in items_to_process:
+                # Validation: Ensure critical fields exist
+                service_name = item.get('service_name', 'Printing')
+                try:
+                    total_price = float(item.get('total_price', 0))
+                except:
+                    total_price = 0.0
+
+                # Create the order object
+                order_obj = Order.objects.create(
+                    transaction_id=unique_order_id, 
+                    user=request.user,
+                    service_name=service_name,
+                    total_price=total_price, 
+                    original_price=original_total if applied_coupon_code else None,
+                    coupon_code=applied_coupon_code if applied_coupon_code else None,
+                    discount_amount=discount_amount if discount_amount > 0 else 0,
+                    location=item.get('location', ''), 
+                    print_mode=item.get('print_mode', 'bw'), 
+                    side_type=item.get('side_type', 'single'),
+                    copies=int(item.get('copies', 1)), 
+                    pages=int(item.get('pages', 1)), 
+                    custom_color_pages=item.get('custom_color_pages', ''), 
+                    estimated_delivery_date=est_date,
+                    payment_status="Pending", 
+                    status="Pending"
+                )
+
+                # [CRITICAL] SAVE FILE IMMEDIATELY
+                # We intentionally duplicate the file from temp to the Order object NOW.
+                # This ensures that even if the session is lost during payment (which holds the temp_path),
+                # the Order has the file physically attached.
+                try:
+                    path = item.get('temp_path') or item.get('temp_image_path')
+                    if path and default_storage.exists(path):
+                        with default_storage.open(path) as f:
+                            file_content = ContentFile(f.read(), name=item.get('document_name', 'document'))
+                            if item.get('temp_path'):
+                                order_obj.document.save(item.get('document_name', 'document.pdf'), file_content, save=True)
+                            else:
+                                order_obj.image_upload.save(item.get('document_name', 'image.jpg'), file_content, save=True)
+                except Exception as e:
+                    print(f"⚠️ Error attaching file to order at init: {e}")
+                    # Continue anyway, don't block payment. We might recover later or manual intervention.
+            
+            # Increment coupon usage if applied
+            if coupon_obj and discount_amount > 0:
+                coupon_obj.increment_usage()
+                # Clear coupon from session after use
+                if 'applied_coupon_code' in request.session:
+                    del request.session['applied_coupon_code']
+                    request.session.modified = True
+        
+        
+        # Cashfree URL Handling
+        # Cashfree Production requires HTTPS for return_url in the API.
+        # We use a dummy HTTPS URL for the API validation, but the Frontend SDK will use 'payment_return_url' session var to redirect correctly.
+        current_host = request.get_host()
+        if 'localhost' in current_host or '127.0.0.1' in current_host:
+            return_url_for_api = "https://www.cashfree.com/return" # Dummy HTTPS
+            actual_return_url = f"http://{current_host}/payment/callback/"
+        else:
+            # Production/HTTPS
+            return_url_for_api = f"https://{current_host}/payment/callback/?order_id={unique_order_id}"
+            actual_return_url = f"https://{current_host}/payment/callback/"
+        
+        user_mobile = request.user.profile.mobile if hasattr(request.user, 'profile') else "9999999999"
+        if not user_mobile.startswith('91'): user_mobile = f"91{user_mobile}"
+
+        payload = {
+            "order_id": unique_order_id,
+            "order_amount": float(final_total),
+            "order_currency": "INR",
+            "customer_details": {
+                "customer_id": f"CUST_{request.user.id}",
+                "customer_name": request.user.username,
+                "customer_email": request.user.email or "test@fastcopy.in",
+                "customer_phone": user_mobile
+            },
+            "order_meta": {
+                "return_url": return_url_for_api
+            }
+        }
+        headers = {"Content-Type": "application/json", "x-api-version": settings.CASHFREE_API_VERSION, "x-client-id": settings.CASHFREE_APP_ID, "x-client-secret": settings.CASHFREE_SECRET_KEY}
+        
+        # Debug logging
+        print(f"=== Cashfree Payment Initiation ===")
+        print(f"Order ID: {unique_order_id}")
+        print(f"Amount: {final_total}")
+        print(f"Return URL (API): {return_url_for_api}")
+        
+        # Store the actual return URL in session for frontend to use
+        request.session['payment_return_url'] = actual_return_url
+        request.session.modified = True
+        
         response = requests.post(f"{settings.CASHFREE_API_URL}/orders", json=payload, headers=headers, timeout=10)
         res_json = response.json()
         
@@ -887,19 +905,12 @@ def initiate_payment(request):
             print(f"Cashfree Error: {error_msg}")
             messages.error(request, f"Payment initiation failed: {error_msg}")
             return redirect('cart')
-    except requests.exceptions.Timeout:
-        print("Cashfree API Timeout")
-        messages.error(request, "Payment gateway timeout. Please try again.")
-        return redirect('cart')
-    except requests.exceptions.RequestException as e:
-        print(f"Cashfree API Request Error: {str(e)}")
-        messages.error(request, "Unable to connect to payment gateway. Please try again.")
-        return redirect('cart')
+
     except Exception as e:
-        print(f"Unexpected Error in initiate_payment: {str(e)}")
+        print(f"🔥 CRITICAL ERROR in initiate_payment: {str(e)}")
         import traceback
         traceback.print_exc()
-        messages.error(request, "An unexpected error occurred. Please try again.")
+        messages.error(request, "An internal error occurred while processing your request. Please try again or contact support.")
         return redirect('cart')
 
 @csrf_exempt

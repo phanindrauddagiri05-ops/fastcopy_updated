@@ -197,6 +197,16 @@
                                                 style="font-size: 0.6rem;">Select File</p>
                                         </label>
 
+                                        <div id="upload-loader"
+                                            class="d-none w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center">
+                                            <div class="spinner-border text-primary mb-2" role="status"
+                                                style="width: 2rem; height: 2rem;">
+                                                <span class="visually-hidden">Loading...</span>
+                                            </div>
+                                            <p class="small fw-bold text-primary text-uppercase mb-0 animate-bounce"
+                                                style="font-size: 0.65rem;">Analyzing...</p>
+                                        </div>
+
                                         <div id="preview-wrapper"
                                             class="d-none w-100 h-100 p-2 text-center position-relative">
                                             <canvas id="pdf-preview-canvas"
@@ -511,8 +521,11 @@
     $('#document').change(function (e) {
         let file = e.target.files[0];
         if (!file) return;
+
+        // Show Loader, Hide UI & Preview
         $('#upload-ui').addClass('d-none');
-        $('#preview-wrapper').removeClass('d-none');
+        $('#preview-wrapper').addClass('d-none');
+        $('#upload-loader').removeClass('d-none'); // Show Loader
 
         if (file.type === "application/pdf") {
             $('#pdf-preview-canvas').removeClass('d-none');
@@ -520,6 +533,7 @@
             let formData = new FormData();
             formData.append('document', file);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
             $.ajax({
                 url: "{% url 'calculate_pages' %}",
                 type: "POST", data: formData, processData: false, contentType: false,
@@ -534,9 +548,18 @@
                         }
                         $('#page-count-badge').removeClass('invisible');
                         calculateFinalPrice();
+
+                        // Hide Loader, Show Preview
+                        $('#upload-loader').addClass('d-none');
+                        $('#preview-wrapper').removeClass('d-none');
                     }
+                },
+                error: function () {
+                    alert("Error analyzing file.");
+                    resetUpload();
                 }
             });
+
             let reader = new FileReader();
             reader.onload = function () {
                 let typedarray = new Uint8Array(this.result);
@@ -558,10 +581,15 @@
             $('#page-num-display').text(T);
             $('#page_count_hidden').val(T);
             $('#page-count-badge').removeClass('invisible');
+
             let reader = new FileReader();
             reader.onload = function (e) {
                 $('#image-preview-tag').attr('src', e.target.result);
                 calculateFinalPrice();
+
+                // Hide Loader, Show Preview (Immediate for images)
+                $('#upload-loader').addClass('d-none');
+                $('#preview-wrapper').removeClass('d-none');
             };
             reader.readAsDataURL(file);
         }
@@ -573,6 +601,7 @@
         T = 0;
         $('#upload-ui').removeClass('d-none');
         $('#preview-wrapper').addClass('d-none');
+        $('#upload-loader').addClass('d-none'); // Ensure Loader is hidden
         $('#page-count-badge').addClass('invisible');
         calculateFinalPrice();
     }
