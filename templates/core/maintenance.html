@@ -6,10 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Optimization | FastCopy</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         :root {
             --primary: #3b82f6;
@@ -42,8 +42,23 @@
             opacity: 0.15;
             animation: float 10s infinite alternate;
         }
-        .orb-1 { width: 300px; height: 300px; background: var(--primary); top: 10%; left: 15%; }
-        .orb-2 { width: 400px; height: 400px; background: var(--secondary); bottom: 10%; right: 10%; animation-delay: -5s; }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            top: 10%;
+            left: 15%;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--secondary);
+            bottom: 10%;
+            right: 10%;
+            animation-delay: -5s;
+        }
 
         @keyframes float {
             0% { transform: translate(0, 0); }
@@ -60,13 +75,12 @@
             max-width: 500px;
             padding: 40px 25px;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 10;
             margin: 20px auto;
         }
 
-        /* Desktop Adjustments */
         @media (min-width: 768px) {
             .main-card {
                 padding: 50px 40px;
@@ -75,14 +89,12 @@
             h1 { font-size: 1.6rem; }
         }
 
-        .brand {
-            font-size: 1.3rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
+        .brand { margin-bottom: 25px; }
+        .brand img {
+            height: 40px;
+            width: auto;
+            filter: brightness(1.1);
         }
-        .brand span { color: var(--primary); }
 
         /* --- CPU ELEMENT ANIMATION --- */
         .cpu-container {
@@ -135,20 +147,19 @@
             50% { transform: translateY(-5px); }
         }
 
-        h1 { 
-            font-size: 1.3rem; 
-            font-weight: 800; 
-            margin-bottom: 12px; 
-            letter-spacing: 0.5px; 
-            line-height: 1.2; 
+        h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
         }
-        
-        /* Fixed height prevents the card from jumping when new lines are typed */
-        .subtitle { 
-            color: var(--text-p); 
-            font-size: 0.85rem; 
-            margin-bottom: 30px; 
-            height: 3.5rem; 
+
+        .subtitle {
+            color: var(--text-p);
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            height: 3.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -158,7 +169,11 @@
         }
 
         /* --- PROGRESS BAR --- */
-        .progress-container { margin-bottom: 25px; text-align: left; }
+        .progress-container {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
         .progress-info {
             display: flex;
             justify-content: space-between;
@@ -218,18 +233,15 @@
             box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
 
-        /* --- Responsive Contact Grid --- */
         .contact-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Stack on mobile */
+            grid-template-columns: 1fr;
             gap: 12px;
             margin-top: 25px;
         }
 
         @media (min-width: 480px) {
-            .contact-grid {
-                grid-template-columns: 1fr 1fr; /* Side-by-side on larger phones */
-            }
+            .contact-grid { grid-template-columns: 1fr 1fr; }
         }
 
         .contact-tile {
@@ -251,11 +263,28 @@
             transform: scale(1.02);
         }
 
-        .contact-tile i { color: var(--primary); margin-bottom: 6px; font-size: 1rem; }
-        .contact-tile .contact-label { font-size: 0.6rem; font-weight: 700; color: var(--text-p); text-transform: uppercase; margin-bottom: 2px; }
-        .contact-tile .contact-value { font-size: 0.65rem; font-weight: 600; color: white; word-break: break-all; }
+        .contact-tile i {
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
 
-        /* Floating Action Button */
+        .contact-tile .contact-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--text-p);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .contact-tile .contact-value {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: white;
+            word-break: break-all;
+        }
+
+        /* --- UPDATED WHATSAPP ICON ANIMATION --- */
         .whatsapp-fab {
             position: fixed;
             bottom: 20px;
@@ -270,13 +299,32 @@
             font-size: 1.4rem;
             color: white;
             box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
-            transition: 0.3s;
             text-decoration: none;
             z-index: 1000;
+            /* Floating and Pulse animation combined */
+            animation: whatsapp-float 3s ease-in-out infinite, whatsapp-pulse 2s infinite;
+            transition: 0.3s;
+        }
+
+        @keyframes whatsapp-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes whatsapp-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
         }
 
         @media (min-width: 768px) {
-            .whatsapp-fab { bottom: 30px; right: 30px; width: 60px; height: 60px; font-size: 1.8rem; }
+            .whatsapp-fab {
+                bottom: 30px;
+                right: 30px;
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
         }
 
         .footer-note {
@@ -296,7 +344,16 @@
 
     <div class="container d-flex align-items-center justify-content-center">
         <div class="main-card">
-            <div class="brand">FAST<span>COPY</span></div>
+            <div class="brand">
+                <div style="display: flex; align-items: center; gap: 12px; justify-content: center;">
+                    <img src="{% static 'images/fastcopies_logo.png' %}" 
+                        alt="FastCopy Logo" 
+                        style="height: 40px; width: auto; border-radius: 8px; object-fit: contain;">
+                    <span style="font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; text-transform: uppercase; color: white;">
+                        FAST<span style="color: var(--primary);">COPY</span>
+                    </span>
+                </div>
+            </div>
 
             <div class="cpu-container">
                 <div class="cpu-outer-ring"></div>
