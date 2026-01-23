@@ -166,8 +166,14 @@ def register_view(request):
             messages.error(request, "Mobile number already registered.")
             return redirect('register')
 
+        confirm_password = request.POST.get('confirm_password', '')
+
         if not request.POST.get('terms_accepted'):
             messages.error(request, "You must accept the Terms and Conditions and Privacy Policy.")
+            return redirect('register')
+            
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match!")
             return redirect('register')
 
         user = User.objects.create_user(username=mobile, password=password, first_name=full_name, email=email)
