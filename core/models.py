@@ -464,3 +464,40 @@ class PopupOffer(models.Model):
         
     def __str__(self):
         return f"{self.title} ({'Active' if self.is_active else 'Inactive'})"
+# --- 7. MAINTENANCE MODE SETTINGS ---
+
+class MaintenanceSettings(models.Model):
+    """
+    Singleton model to manage Maintenance Mode settings.
+    Only one instance should exist.
+    """
+    is_enabled = models.BooleanField(default=False, verbose_name="Maintenance Mode Enabled")
+    message = models.TextField(
+        default="We are upgrading our system to serve you better. We will be back shortly!",
+        help_text="Message to display to users on the maintenance page."
+    )
+    expected_duration = models.CharField(
+        max_length=100, 
+        default="2 hours", 
+        help_text="Expected duration text (e.g., '2 hours', '30 minutes')"
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Maintenance Settings"
+        verbose_name_plural = "Maintenance Settings"
+
+    def __str__(self):
+        status = "ON" if self.is_enabled else "OFF"
+        return f"Maintenance Mode: {status}"
+
+    def save(self, *args, **kwargs):
+        # Singleton logic: Ensure only one instance exists
+        if not self.pk and MaintenanceSettings.objects.exists():
+            return MaintenanceSettings.objects.first()
+        return super(MaintenanceSettings, self).save(*args, **kwargs)
+
+    @classmethod
+    def get_settings(cls):
+        obj, created = cls.objects.get_or_create(id=1)
+        return obj

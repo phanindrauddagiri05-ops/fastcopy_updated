@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.http import urlencode
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
-from .models import Service, Order, UserProfile, CartItem, PricingConfig, Location, PublicHoliday, Coupon, PopupOffer
+from .models import Service, Order, UserProfile, CartItem, PricingConfig, Location, PublicHoliday, Coupon, PopupOffer, MaintenanceSettings
 
 # --- 🛠️ 1. CUSTOM ADMIN SITE SETUP ---
 class FastCopyAdminSite(admin.AdminSite):
@@ -385,3 +385,15 @@ class PopupOfferAdmin(admin.ModelAdmin):
             return format_html('<span style="color: #be123c;">Expired</span>')
         else:
             return format_html('<span style="color: #15803d; font-weight: bold;">Matches Criteria</span>')
+# --- 🛠️ 10. MAINTENANCE SETTINGS ADMIN ---
+@admin.register(MaintenanceSettings, site=admin_site)
+class MaintenanceSettingsAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'is_enabled', 'expected_duration', 'updated_at')
+    readonly_fields = ('updated_at',)
+    
+    def has_add_permission(self, request):
+        # Singleton: Only allow add if no instance exists
+        return not MaintenanceSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False

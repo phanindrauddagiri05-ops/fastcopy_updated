@@ -81,6 +81,7 @@
                             <input type="hidden" name="service_name" id="service_name_input" value="Printing">
                             <input type="hidden" name="total_price_hidden" id="total_price_hidden" value="0">
                             <input type="hidden" name="page_count" id="page_count_hidden" value="0">
+                            <input type="hidden" name="temp_doc_path" id="temp_doc_path" value="">
 
                             <div class="row g-3">
                                 <div class="col-lg-6">
@@ -362,7 +363,7 @@
     };
 
     // New restriction: Allow only numbers, commas, and hyphens in custom split input
-    $('#custom_color_input').on('input', function() {
+    $('#custom_color_input').on('input', function () {
         this.value = this.value.replace(/[^0-9,-]/g, '');
     });
 
@@ -450,6 +451,11 @@
         let formData = new FormData($('#order-form')[0]);
         formData.set('page_count', T);
 
+        // [OPTIMIZATION] If we have a pre-uploaded file path, DO NOT send the file again.
+        if ($('#temp_doc_path').val()) {
+            formData.delete('document');
+        }
+
         let targetUrl = isDirectOrder ? "{% url 'order_now' %}" : "{% url 'add_to_cart' %}";
 
         $.ajax({
@@ -522,6 +528,10 @@
                         T = res.pages;
                         $('#page-num-display').text(T);
                         $('#page_count_hidden').val(T);
+                        // Store the temp path for final submission
+                        if (res.temp_path) {
+                            $('#temp_doc_path').val(res.temp_path);
+                        }
                         $('#page-count-badge').removeClass('invisible');
                         calculateFinalPrice();
                     }
@@ -558,7 +568,13 @@
     });
 
     function resetUpload() {
-        $('#document').val(''); T = 0; $('#upload-ui').removeClass('d-none'); $('#preview-wrapper').addClass('d-none'); $('#page-count-badge').addClass('invisible'); calculateFinalPrice();
+        $('#document').val('');
+        $('#temp_doc_path').val(''); // Clear temp path
+        T = 0;
+        $('#upload-ui').removeClass('d-none');
+        $('#preview-wrapper').addClass('d-none');
+        $('#page-count-badge').addClass('invisible');
+        calculateFinalPrice();
     }
 
     $('#print_type, #side_type, #copies, #custom_color_input, #layout_type').on('change input', calculateFinalPrice);

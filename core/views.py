@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from django.db.models import Q, Sum, Count
 
 from django.utils import timezone
-from .models import Service, Order, UserProfile, CartItem, PricingConfig, Location, Coupon, PopupOffer
+from .models import Service, Order, UserProfile, CartItem, PricingConfig, Location, Coupon, PopupOffer, MaintenanceSettings
 from .utils import calculate_delivery_date
 from .notifications import send_all_order_notifications
 
@@ -70,52 +70,46 @@ def get_user_pricing(user):
     }
     return base_dict
 
-def handle_failed_order(user, items_list, txn_id, reason="Payment Failed"):
+def handle_failed_order(user, txn_id, reason="Payment Failed"):
     """
     DATABASE UPDATE LOGIC:
-    Targets specific records by txn_id and document name to update statuses.
-    Ensures 'Failed' and 'Cancelled' reflect in the database and user history.
+    Targets specific records by txn_id to update statuses.
+    Ensures 'Failed' and 'Cancelled' reflect in the database.
+    Now resilient to session loss (doesn't require items_list).
     """
     if not txn_id:
         return None
 
     with transaction.atomic():
-        db_orders = list(Order.objects.filter(transaction_id=txn_id).order_by('id'))
+        # Clean up any potential duplicates or extra queries by filtering strictly
+        db_orders = Order.objects.filter(transaction_id=txn_id)
         last_order = None
         
-        for item, order in zip(items_list, db_orders):
-            if not item or not order: continue
-            
-            order.user = user
-            order.service_name = item.get('service_name')
-            order.total_price = float(item.get('total_price', 0))
-            order.location = item.get('location')
-            order.print_mode = item.get('print_mode')
-            order.side_type = item.get('side_type')
-            order.copies = item.get('copies')
-            order.pages = item.get('pages', 1)
-            order.custom_color_pages = item.get('custom_color_pages')
+        for order in db_orders:
+            # Update status
             order.payment_status = "Failed"
             order.status = "Cancelled"
             order.save()
             last_order = order
             
             # [ENHANCED] Restore to DB Cart for ALL cancelled/failed orders
-            # This ensures items are always available in cart after payment failure
+            # This allows the user to try again easily
+            # We use the order details to reconstruct the cart item
             CartItem.objects.get_or_create(
                 user=user,
-                document_name=item.get('document_name'),
+                service_name=order.service_name,
+                document_name=order.document.name.split('/')[-1] if order.document else (order.image_upload.name.split('/')[-1] if order.image_upload else "Restored Document"),
                 defaults={
-                    'service_name': item.get('service_name'),
-                    'total_price': item.get('total_price'),
-                    'temp_path': item.get('temp_path'),
-                    'temp_image_path': item.get('temp_image_path'),
-                    'copies': item.get('copies'),
-                    'pages': item.get('pages', 1),
-                    'location': item.get('location'),
-                    'print_mode': item.get('print_mode'),
-                    'side_type': item.get('side_type'),
-                    'custom_color_pages': item.get('custom_color_pages')
+                    'total_price': order.total_price,
+                    # Note: We can't easily recover the original temp_path if it was deleted, 
+                    # but if the file is in Order.document, we might strictly not need temp_path for valid cart items if logic handles it.
+                    # ideally we rely on the file being present.
+                    'copies': order.copies,
+                    'pages': order.pages,
+                    'location': order.location,
+                    'print_mode': order.print_mode,
+                    'side_type': order.side_type,
+                    'custom_color_pages': order.custom_color_pages
                 }
             )
         return last_order
@@ -136,46 +130,26 @@ def cleanup_payment_session(request):
             del request.session[key]
     request.session.modified = True
 
-def process_successful_order(user, items_list, txn_id):
+def process_successful_order(user, txn_id):
     """
     DATABASE UPDATE LOGIC:
     Updates records to 'Success' and 'Pending' (for admin processing).
+    Now simplified to iterate DB records directly, ensuring no session dependency.
     """
     with transaction.atomic():
-        db_orders = list(Order.objects.filter(transaction_id=txn_id).order_by('id'))
+        db_orders = Order.objects.filter(transaction_id=txn_id)
         
-        for item, order in zip(items_list, db_orders):
-            if not item or not order: continue
-                
-            saved_pdf, saved_img = None, None
-            path = item.get('temp_path') or item.get('temp_image_path')
-            
-            if path and default_storage.exists(path):
-                with default_storage.open(path) as f:
-                    content = ContentFile(f.read(), name=item['document_name'])
-                    if item.get('temp_path'): saved_pdf = content
-                    else: saved_img = content
-            
-            order.user = user
-            order.service_name = item['service_name']
-            order.total_price = float(item['total_price'])
-            order.location = item['location']
-            order.print_mode = item['print_mode']
-            order.side_type = item['side_type']
-            order.copies = item['copies']
-            order.custom_color_pages = item.get('custom_color_pages', '')
+        for order in db_orders:
+            # Critical: user might have changed if we recovered from session loss
+            order.user = user 
             order.payment_status = "Success"
             order.status = "Pending"
-            
-            if saved_pdf: order.document = saved_pdf
-            if saved_img: order.image_upload = saved_img
-            
             order.save()
             
-            if item.get('temp_path') and default_storage.exists(item['temp_path']):
-                default_storage.delete(item['temp_path'])
-            if item.get('temp_image_path') and default_storage.exists(item['temp_image_path']):
-                default_storage.delete(item['temp_image_path'])
+            # Note: File saving is now done in initiate_payment to allow early handling.
+            # We don't need to move files here anymore.
+            
+            # Cleanup temp files if possible/known (optional, low priority compared to reliability)
 
 # --- 👤 1. AUTHENTICATION & PROFILE ---
 
@@ -415,19 +389,31 @@ def calculate_pages(request):
     if request.method == 'POST' and request.FILES.get('document'):
         uploaded_file = request.FILES['document']
         
+        # [OPTIMIZATION] Save file immediately to avoid re-upload later
+        # We need to serve this path back to frontend
+        unique_filename = f"{uuid.uuid4()}_{uploaded_file.name}"
+        temp_path = default_storage.save(f'temp/pre_{unique_filename}', ContentFile(uploaded_file.read()))
+        
+        # Reset pointer for reading
+        uploaded_file.seek(0)
+        
         # METHOD 1: PyMuPDF (Fastest)
         try:
             import fitz  # PyMuPDF
             # Open directly from the uploaded file buffer
+            # Note: fitz.open can also take the file path we just saved, which might be even safer?
+            # But stream is fine since we have it in memory right now.
             doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
             page_count = doc.page_count
             doc.close()
-            return JsonResponse({'success': True, 'pages': page_count})
+            return JsonResponse({'success': True, 'pages': page_count, 'temp_path': temp_path})
         except ImportError:
             # PyMuPDF not installed, falling back...
+            uploaded_file.seek(0) # Reset
             pass
         except Exception as e:
             print(f"PyMuPDF Error: {e}")
+            uploaded_file.seek(0) # Reset
             pass
 
         # METHOD 2: PyPDF2 (Optimized Fallback)
@@ -444,7 +430,7 @@ def calculate_pages(request):
             if pdf_reader.is_encrypted:
                 return JsonResponse({'success': False, 'error': 'File is encrypted'})
                 
-            return JsonResponse({'success': True, 'pages': len(pdf_reader.pages)})
+            return JsonResponse({'success': True, 'pages': len(pdf_reader.pages), 'temp_path': temp_path})
         except Exception as e:
             print(f"PyPDF2 Error: {e}")
             return JsonResponse({'success': False, 'error': 'Invalid PDF file'})
@@ -453,15 +439,33 @@ def calculate_pages(request):
 
 def add_to_cart(request):
     if request.method == "POST" and request.user.is_authenticated:
-        uploaded_file = request.FILES.get('document')
-        if not uploaded_file: return JsonResponse({'success': False})
-        file_path = default_storage.save(f'temp/{uuid.uuid4()}_{uploaded_file.name}', ContentFile(uploaded_file.read()))
+        # Check if we have a pre-uploaded file path
+        temp_doc_path = request.POST.get('temp_doc_path')
+        file_path = None
+        doc_name = "Unknown Document"
+        is_pdf = True
+        
+        if temp_doc_path and default_storage.exists(temp_doc_path):
+            # Use pre-uploaded file
+            file_path = temp_doc_path
+            doc_name = temp_doc_path.split('_', 2)[-1] # Attempt to extract original name
+            if not doc_name: doc_name = "Document.pdf"
+            is_pdf = doc_name.lower().endswith('.pdf')
+        else:
+            # Fallback to standard upload
+            uploaded_file = request.FILES.get('document')
+            if not uploaded_file: return JsonResponse({'success': False})
+            doc_name = uploaded_file.name
+            file_path = default_storage.save(f'temp/{uuid.uuid4()}_{doc_name}', ContentFile(uploaded_file.read()))
+            is_pdf = doc_name.lower().endswith('.pdf')
+
         service_name = request.POST.get('service_name')
         print_mode = request.POST.get('print_mode', 'B&W')
         item = {
             'service_name': service_name, 'total_price': request.POST.get('total_price_hidden'),
-            'document_name': uploaded_file.name, 'temp_path': file_path if uploaded_file.name.endswith('.pdf') else None,
-            'temp_image_path': file_path if not uploaded_file.name.endswith('.pdf') else None, 
+            'document_name': doc_name, 
+            'temp_path': file_path if is_pdf else None,
+            'temp_image_path': file_path if not is_pdf else None, 
             'copies': int(request.POST.get('copies', 1)), 'pages': int(request.POST.get('page_count', 1)), 
             'location': request.POST.get('location'), 'print_mode': print_mode, 
             'side_type': request.POST.get('side_type', 'single'), 'custom_color_pages': request.POST.get('custom_color_pages', ''),
@@ -512,13 +516,30 @@ def order_all(request):
 @login_required(login_url='login')
 def order_now(request):
     if request.method == "POST":
-        uploaded_file = request.FILES.get('document')
-        if not uploaded_file: return redirect('services')
-        file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}_{uploaded_file.name}', ContentFile(uploaded_file.read()))
+        # Check if we have a pre-uploaded file path
+        temp_doc_path = request.POST.get('temp_doc_path')
+        file_path = None
+        doc_name = "Unknown Document"
+        is_pdf = True
+        
+        if temp_doc_path and default_storage.exists(temp_doc_path):
+            # Use pre-uploaded file
+            file_path = temp_doc_path
+            doc_name = temp_doc_path.split('_', 2)[-1]
+            if not doc_name: doc_name = "Document.pdf"
+            is_pdf = doc_name.lower().endswith('.pdf')
+        else:
+            uploaded_file = request.FILES.get('document')
+            if not uploaded_file: return redirect('services')
+            doc_name = uploaded_file.name
+            file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}_{doc_name}', ContentFile(uploaded_file.read()))
+            is_pdf = doc_name.lower().endswith('.pdf')
+
         request.session['direct_item'] = {
             'service_name': request.POST.get('service_name'), 'total_price': request.POST.get('total_price_hidden'),
-            'document_name': uploaded_file.name, 'temp_path': file_path if uploaded_file.name.endswith('.pdf') else None,
-            'temp_image_path': file_path if not uploaded_file.name.endswith('.pdf') else None, 
+            'document_name': doc_name, 
+            'temp_path': file_path if is_pdf else None,
+            'temp_image_path': file_path if not is_pdf else None, 
             'copies': int(request.POST.get('copies', 1)), 'pages': int(request.POST.get('page_count', 1)), 
             'location': request.POST.get('location'), 'print_mode': request.POST.get('print_mode', 'B&W'), 
             'side_type': request.POST.get('side_type', 'single'), 'custom_color_pages': request.POST.get('custom_color_pages', ''),
@@ -747,9 +768,12 @@ def initiate_payment(request):
     
     final_total = original_total - discount_amount
     
+    final_total = original_total - discount_amount
+    
     with transaction.atomic():
         for item in items_to_process:
-            Order.objects.create(
+            # Create the order object
+            order_obj = Order.objects.create(
                 transaction_id=unique_order_id, 
                 user=request.user,
                 service_name=item.get('service_name'),
@@ -767,6 +791,23 @@ def initiate_payment(request):
                 payment_status="Pending", 
                 status="Pending"
             )
+
+            # [CRITICAL] SAVE FILE IMMEDIATELY
+            # We intentionally duplicate the file from temp to the Order object NOW.
+            # This ensures that even if the session is lost during payment (which holds the temp_path),
+            # the Order has the file physically attached.
+            try:
+                path = item.get('temp_path') or item.get('temp_image_path')
+                if path and default_storage.exists(path):
+                    with default_storage.open(path) as f:
+                        file_content = ContentFile(f.read(), name=item.get('document_name'))
+                        if item.get('temp_path'):
+                            order_obj.document.save(item.get('document_name'), file_content, save=True)
+                        else:
+                            order_obj.image_upload.save(item.get('document_name'), file_content, save=True)
+            except Exception as e:
+                print(f"⚠️ Error attaching file to order at init: {e}")
+                # Continue anyway, don't block payment. We might recover later or manual intervention.
         
         # Increment coupon usage if applied
         if coupon_obj and discount_amount > 0:
@@ -777,18 +818,17 @@ def initiate_payment(request):
                 request.session.modified = True
     
     
-    # Cashfree production requires HTTPS for return_url
-    # Strategy: Use localhost for return but provide valid HTTPS for webhook
-    if 'localhost' in request.get_host() or '127.0.0.1' in request.get_host():
-        # For local development:
-        # - return_url: Where user comes back (can be HTTP for customer redirect)
-        # - We'll use a valid HTTPS URL in the API but override in SDK
-        return_url_for_api = "https://www.cashfree.com"  # Dummy HTTPS for API validation
-        actual_return_url = f"http://{request.get_host()}/payment/callback/"
+    # Cashfree URL Handling
+    # Cashfree Production requires HTTPS for return_url in the API.
+    # We use a dummy HTTPS URL for the API validation, but the Frontend SDK will use 'payment_return_url' session var to redirect correctly.
+    current_host = request.get_host()
+    if 'localhost' in current_host or '127.0.0.1' in current_host:
+        return_url_for_api = "https://www.cashfree.com/return" # Dummy HTTPS
+        actual_return_url = f"http://{current_host}/payment/callback/"
     else:
-        # For production: Use actual HTTPS domain
-        return_url_for_api = f"https://{request.get_host()}/payment/callback/"
-        actual_return_url = return_url_for_api
+        # Production/HTTPS
+        return_url_for_api = f"https://{current_host}/payment/callback/?order_id={unique_order_id}"
+        actual_return_url = f"https://{current_host}/payment/callback/"
     
     user_mobile = request.user.profile.mobile if hasattr(request.user, 'profile') else "9999999999"
     if not user_mobile.startswith('91'): user_mobile = f"91{user_mobile}"
@@ -813,9 +853,7 @@ def initiate_payment(request):
     print(f"=== Cashfree Payment Initiation ===")
     print(f"Order ID: {unique_order_id}")
     print(f"Amount: {final_total}")
-    print(f"API URL: {settings.CASHFREE_API_URL}/orders")
     print(f"Return URL (API): {return_url_for_api}")
-    print(f"Return URL (Actual): {actual_return_url}")
     
     # Store the actual return URL in session for frontend to use
     request.session['payment_return_url'] = actual_return_url
@@ -827,7 +865,6 @@ def initiate_payment(request):
         
         # Log the response for debugging
         print(f"Cashfree API Response Status: {response.status_code}")
-        print(f"Cashfree API Response: {res_json}")
         
         if response.status_code == 200 and res_json.get('payment_session_id'):
             request.session['cashfree_payment_session_id'] = res_json.get('payment_session_id')
@@ -856,10 +893,11 @@ def initiate_payment(request):
         return redirect('cart')
 
 @csrf_exempt
+@csrf_exempt
 def payment_callback(request):
     """
     STRICT CALLBACK: Updates DB and triggers specific email workflow.
-    Workflow: Sent FROM Admin TO Support Team and Dealer.
+    Resilient to session loss by re-fetching user from Order.
     """
     order_id = (request.GET.get('order_id') or 
                 request.GET.get('orderId') or 
@@ -867,24 +905,42 @@ def payment_callback(request):
 
     if not order_id:
         print("⚠️ Payment callback: No order_id found in request or session")
-        cleanup_payment_session(request)
-        messages.error(request, "Payment session not found. Please try again.")
-        return redirect('cart')
+        # cleanup_payment_session(request) # Don't cleanup yet, might be able to recover
+        return redirect('cart') # Can't do anything without order_id
     
     print(f"📋 Payment callback received for order: {order_id}")
     
     txn_id = order_id
-    is_direct = str(txn_id).startswith("DIR")
-    direct_item = request.session.get('direct_item')
-    session_cart = request.session.get('cart', [])
-    items_involved = [direct_item] if is_direct else session_cart
     
-    # Validate items_involved - handle edge case where session data is missing
-    if not items_involved or (is_direct and not direct_item):
-        print("⚠️ Payment callback: No items found in session")
-        cleanup_payment_session(request)
-        messages.warning(request, "Payment session expired. Please add items to cart and try again.")
-        return redirect('cart')
+    # [CRITICAL] RECOVER USER FROM ORDER
+    # If session is lost, request.user is AnonymousUser.
+    # We must fetch the original user from the Order record.
+    try:
+        # Get one order to find the user (all orders in batch have same user/txn_id)
+        existing_order = Order.objects.filter(transaction_id=txn_id).first()
+        if not existing_order:
+            print(f"❌ Order not found for ID {txn_id}")
+            messages.error(request, "Order not found.")
+            return redirect('cart')
+            
+        auth_user = existing_order.user
+        
+        # If current session user is not the order user (e.g. logged out), 
+        # use the auth_user for logic.
+        user_to_use = auth_user
+        
+        # Optional: Log them back in if they are anonymous?
+        # For now, we just ensure the backend logic uses `user_to_use`
+        
+    except Exception as e:
+        print(f"Error recovering user from order: {e}")
+        user_to_use = request.user
+
+    if not user_to_use.is_authenticated:
+        # Fallback if somehow order has no user (shouldn't happen)
+        print("⚠️ User is not authenticated and could not be recovered.")
+        return redirect('login')
+
 
     headers = {
         "Content-Type": "application/json",
@@ -894,7 +950,6 @@ def payment_callback(request):
     }
     
     order_status = 'FAILED'
-    payment_details = None
     
     try:
         print(f"🔍 Checking payment status with Cashfree API...")
@@ -904,26 +959,19 @@ def payment_callback(request):
             json_data = response.json()
             if json_data:
                 order_status = json_data.get('order_status', 'FAILED')
-                payment_details = json_data
                 print(f"✅ Cashfree API Response: Status = {order_status}")
         else:
             print(f"⚠️ Cashfree API returned status code: {response.status_code}")
-            print(f"Response: {response.text}")
-    except requests.exceptions.Timeout:
-        print("⚠️ Cashfree API timeout")
-        order_status = 'FAILED'
-    except requests.exceptions.RequestException as e:
-        print(f"⚠️ Cashfree API request error: {str(e)}")
-        order_status = 'FAILED'
     except Exception as e:
-        print(f"⚠️ Unexpected error checking payment status: {str(e)}")
-        order_status = 'FAILED'
+        print(f"⚠️ Error checking payment status: {str(e)}")
+        # Check DB status as fallback?
+        pass
 
     if order_status == 'PAID':
         print(f"✅ Payment SUCCESSFUL for order {order_id}")
         
-        # 1. Finalize the order in the database
-        process_successful_order(request.user, items_involved, txn_id)
+        # 1. Finalize the order in the database (Using RECOVERED USER)
+        process_successful_order(user_to_use, txn_id)
         
         # 2. Email notifications (Async)
         successful_orders = Order.objects.filter(transaction_id=txn_id, payment_status='Success')
@@ -937,23 +985,39 @@ def payment_callback(request):
         
         print(f"✅ Payment successful! Order processed and emails triggered.")
         
-        # 3. Session and Cart Cleanup
-        if is_direct: 
-            CartItem.objects.filter(user=request.user, document_name=direct_item.get('document_name')).delete()
-            if 'direct_item' in request.session: 
-                del request.session['direct_item']
-        else: 
-            CartItem.objects.filter(user=request.user).delete()
-            request.session['cart'] = []
+        # 3. Cleanup Cart for this User
+        # Logic: If this was a DIRECT order (DIR_), do NOT wipe the cart.
+        # If this was a CART order (TXN_), wipe the cart.
+        
+        is_direct = str(txn_id).startswith("DIR")
+        
+        if not is_direct:
+            # Cart Checkout -> Clear entire cart
+            CartItem.objects.filter(user=user_to_use).delete()
+            if 'cart' in request.session: request.session['cart'] = []
+        
+        # Always clear direct item from session if present
+        if 'direct_item' in request.session: del request.session['direct_item']
         
         # Clean up payment session variables
         cleanup_payment_session(request)
         
+        # Clear Coupon
         if 'applied_coupon_code' in request.session: 
             del request.session['applied_coupon_code']
         
         request.session.modified = True
         
+        # If user is not logged in to session, maybe redirect to login with message?
+        if not request.user.is_authenticated:
+             # Logic to auto-login if backend allows, or just redirect to login
+             from django.contrib.auth import login
+             if hasattr(user_to_use, 'backend'):
+                 login(request, user_to_use)
+             else:
+                 user_to_use.backend = 'django.contrib.auth.backends.ModelBackend'
+                 login(request, user_to_use)
+
         messages.success(request, "Payment successful! Your order has been placed.")
         return redirect('profile')
     
@@ -961,62 +1025,31 @@ def payment_callback(request):
         # Handle Failed/Cancelled Payment
         print(f"❌ Payment FAILED/CANCELLED for order {order_id}. Status: {order_status}")
         
-        # Mark orders as failed in database
-        handle_failed_order(request.user, items_involved, txn_id)
-        
-        # Restore items to cart for direct orders
-        if is_direct and direct_item:
-            print(f"🔄 Restoring direct order item to cart...")
-            # Synchronize session cart with database cart
-            db_cart = CartItem.objects.filter(user=request.user)
-            request.session['cart'] = [{
-                'id': i.id, 
-                'service_name': i.service_name, 
-                'total_price': str(i.total_price), 
-                'document_name': i.document_name,
-                'temp_path': i.temp_path,
-                'temp_image_path': i.temp_image_path,
-                'copies': i.copies,
-                'pages': i.pages,
-                'location': i.location,
-                'print_mode': i.print_mode,
-                'side_type': i.side_type,
-                'custom_color_pages': i.custom_color_pages
-            } for i in db_cart]
-            
-            if 'direct_item' in request.session: 
-                del request.session['direct_item']
-        else:
-            # For cart-based orders, ensure session cart is synced with DB
-            print(f"🔄 Synchronizing cart with database...")
-            db_cart = CartItem.objects.filter(user=request.user)
-            request.session['cart'] = [{
-                'id': i.id, 
-                'service_name': i.service_name, 
-                'total_price': str(i.total_price), 
-                'document_name': i.document_name,
-                'temp_path': i.temp_path,
-                'temp_image_path': i.temp_image_path,
-                'copies': i.copies,
-                'pages': i.pages,
-                'location': i.location,
-                'print_mode': i.print_mode,
-                'side_type': i.side_type,
-                'custom_color_pages': i.custom_color_pages
-            } for i in db_cart]
+        # Mark orders as failed in database (Using RECOVERED USER)
+        handle_failed_order(user_to_use, txn_id)
         
         # Clean up payment session variables
         cleanup_payment_session(request)
         request.session.modified = True
         
+         # If user is not logged in to session, login them back
+        if not request.user.is_authenticated:
+             from django.contrib.auth import login
+             if hasattr(user_to_use, 'backend'):
+                 login(request, user_to_use)
+             else:
+                 user_to_use.backend = 'django.contrib.auth.backends.ModelBackend'
+                 login(request, user_to_use)
+
         # Provide user-friendly message
         if order_status == 'CANCELLED':
-            messages.warning(request, "Payment was cancelled. Your items are safe in your cart.")
+            messages.warning(request, "Payment was cancelled. Your items have been restored to your cart.")
         else:
-            messages.warning(request, "Payment failed. Your items are safe in your cart. Please try again.")
+            messages.warning(request, "Payment failed. Your items have been restored to your cart. Please try again.")
         
         print(f"✅ Items restored to cart. Redirecting to cart page.")
         return redirect('cart')
+
 
 
 @login_required(login_url='login')
@@ -1341,3 +1374,26 @@ Sitemap: {site_url}sitemap.xml
 """
     
     return HttpResponse(robots_content, content_type="text/plain")
+
+# --- 🛠️ 10. MAINTENANCE UTILITIES ---
+
+def maintenance_view(request):
+    """
+    Renders the maintenance page.
+    Only accessible if maintenance is active (or testing).
+    Middleware normally handles the redirect logic.
+    """
+    try:
+        settings_obj = MaintenanceSettings.get_settings()
+        context = {
+            'message': settings_obj.message,
+            'duration': settings_obj.expected_duration,
+            'updated_at': settings_obj.updated_at
+        }
+    except Exception as e:
+        print(f"Maintenance View Error: {e}")
+        context = {
+            'message': 'We are upgrading our system. Back shortly!',
+            'duration': 'Unknown'
+        }
+    return render(request, 'core/maintenance.html', context)

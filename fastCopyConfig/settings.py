@@ -45,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.MaintenanceMiddleware', # Custom Maintenance Mode Middleware
 ]
 
 ROOT_URLCONF = 'fastCopyConfig.urls'

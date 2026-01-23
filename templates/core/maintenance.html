@@ -1,0 +1,368 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Optimization | FastCopy</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-p: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- Ambient Background --- */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.15;
+            animation: float 10s infinite alternate;
+        }
+        .orb-1 { width: 300px; height: 300px; background: var(--primary); top: 10%; left: 15%; }
+        .orb-2 { width: 400px; height: 400px; background: var(--secondary); bottom: 10%; right: 10%; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+
+        /* --- Main Card Responsive Logic --- */
+        .main-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            width: 95%;
+            max-width: 500px;
+            padding: 40px 25px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 10;
+            margin: 20px auto;
+        }
+
+        /* Desktop Adjustments */
+        @media (min-width: 768px) {
+            .main-card {
+                padding: 50px 40px;
+                border-radius: 40px;
+            }
+            h1 { font-size: 1.6rem; }
+        }
+
+        .brand {
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+        }
+        .brand span { color: var(--primary); }
+
+        /* --- CPU ELEMENT ANIMATION --- */
+        .cpu-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cpu-outer-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 25px;
+            animation: cpu-pulse 2s infinite ease-in-out;
+        }
+
+        .cpu-box {
+            width: 55px;
+            height: 55px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            animation: cpu-float 3s infinite ease-in-out;
+        }
+
+        .cpu-box i {
+            font-size: 1.5rem;
+            color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        @keyframes cpu-pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        @keyframes cpu-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        h1 { 
+            font-size: 1.3rem; 
+            font-weight: 800; 
+            margin-bottom: 12px; 
+            letter-spacing: 0.5px; 
+            line-height: 1.2; 
+        }
+        
+        /* Fixed height prevents the card from jumping when new lines are typed */
+        .subtitle { 
+            color: var(--text-p); 
+            font-size: 0.85rem; 
+            margin-bottom: 30px; 
+            height: 3.5rem; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        /* --- PROGRESS BAR --- */
+        .progress-container { margin-bottom: 25px; text-align: left; }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .custom-progress {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 85%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .btn-main {
+            background: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            color: var(--bg);
+            font-weight: 800;
+            width: 100%;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Responsive Contact Grid --- */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Stack on mobile */
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        @media (min-width: 480px) {
+            .contact-grid {
+                grid-template-columns: 1fr 1fr; /* Side-by-side on larger phones */
+            }
+        }
+
+        .contact-tile {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 12px 8px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .contact-tile:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .contact-tile i { color: var(--primary); margin-bottom: 6px; font-size: 1rem; }
+        .contact-tile .contact-label { font-size: 0.6rem; font-weight: 700; color: var(--text-p); text-transform: uppercase; margin-bottom: 2px; }
+        .contact-tile .contact-value { font-size: 0.65rem; font-weight: 600; color: white; word-break: break-all; }
+
+        /* Floating Action Button */
+        .whatsapp-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25d366;
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+            transition: 0.3s;
+            text-decoration: none;
+            z-index: 1000;
+        }
+
+        @media (min-width: 768px) {
+            .whatsapp-fab { bottom: 30px; right: 30px; width: 60px; height: 60px; font-size: 1.8rem; }
+        }
+
+        .footer-note {
+            margin-top: 30px;
+            font-size: 0.55rem;
+            color: #475569;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container d-flex align-items-center justify-content-center">
+        <div class="main-card">
+            <div class="brand">FAST<span>COPY</span></div>
+
+            <div class="cpu-container">
+                <div class="cpu-outer-ring"></div>
+                <div class="cpu-box">
+                    <i class="fas fa-microchip"></i>
+                </div>
+            </div>
+
+            <h1>Website is Under Maintenance</h1>
+            <p class="subtitle" id="typewriter"></p>
+
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span>DEPLOYMENT STATUS</span>
+                    <span>85%</span>
+                </div>
+                <div class="custom-progress">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="mb-4" style="font-size: 0.75rem; color: var(--primary); font-weight: 800; letter-spacing: 1px;">
+                <i class="far fa-clock me-2"></i> We will be back in: {{ duration|default:"1 HOUR" }}
+            </div>
+
+            <a href="javascript:location.reload()" class="btn-main mb-3">
+                <i class="fas fa-redo-alt me-2"></i> REFRESH STATUS
+            </a>
+
+            <div class="contact-grid">
+                <a href="mailto:fastcopy003@gmail.com" class="contact-tile">
+                    <i class="fas fa-envelope"></i>
+                    <div class="contact-label">Email Support</div>
+                    <div class="contact-value">fastcopy003@gmail.com</div>
+                </a>
+                <a href="tel:+918500290959" class="contact-tile">
+                    <i class="fas fa-phone-alt"></i>
+                    <div class="contact-label">Urgent Call</div>
+                    <div class="contact-value">+91 8500290959</div>
+                </a>
+            </div>
+
+            <div class="footer-note">
+                &copy; {% now "Y" %} FASTCOPY &bull; SYSTEM v2.0.4
+            </div>
+        </div>
+    </div>
+
+    <a href="https://wa.me/918500290959" class="whatsapp-fab" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const text = "{{ message|default:'Configuring infrastructure for v2.0 deployment...' }}";
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                document.getElementById("typewriter").innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 40);
+            }
+        }
+        window.onload = typeWriter;
+    </script>
+
+</body>
+
+</html>
