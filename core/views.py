@@ -166,6 +166,10 @@ def register_view(request):
             messages.error(request, "Mobile number already registered.")
             return redirect('register')
 
+        if not request.POST.get('terms_accepted'):
+            messages.error(request, "You must accept the Terms and Conditions and Privacy Policy.")
+            return redirect('register')
+
         user = User.objects.create_user(username=mobile, password=password, first_name=full_name, email=email)
         UserProfile.objects.create(user=user, mobile=mobile, address=address)
         messages.success(request, "Account created successfully! Please login.")
