@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dealer Login - FastCopy</title>
+    <title>Dealer Login - FastCopies</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -11,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -21,7 +22,7 @@
             justify-content: center;
             padding: 20px;
         }
-        
+
         .login-container {
             background: white;
             border-radius: 16px;
@@ -30,28 +31,28 @@
             width: 100%;
             max-width: 420px;
         }
-        
+
         .logo-section {
             text-align: center;
             margin-bottom: 32px;
         }
-        
+
         .logo-section h1 {
             font-size: 28px;
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 8px;
         }
-        
+
         .logo-section p {
             font-size: 14px;
             color: #64748b;
         }
-        
+
         .form-group {
             margin-bottom: 24px;
         }
-        
+
         .form-group label {
             display: block;
             font-size: 14px;
@@ -59,7 +60,7 @@
             color: #334155;
             margin-bottom: 8px;
         }
-        
+
         .form-group input {
             width: 100%;
             padding: 12px 16px;
@@ -70,12 +71,12 @@
             transition: all 0.3s ease;
             font-family: 'Inter', sans-serif;
         }
-        
+
         .form-group input:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        
+
         .login-btn {
             width: 100%;
             padding: 14px;
@@ -88,39 +89,39 @@
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .login-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
-        
+
         .login-btn:active {
             transform: translateY(0);
         }
-        
+
         .messages {
             margin-bottom: 20px;
         }
-        
+
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
             font-size: 14px;
             margin-bottom: 12px;
         }
-        
+
         .alert-error {
             background-color: #fee2e2;
             color: #991b1b;
             border: 1px solid #fca5a5;
         }
-        
+
         .alert-success {
             background-color: #d1fae5;
             color: #065f46;
             border: 1px solid #6ee7b7;
         }
-        
+
         .dealer-badge {
             display: inline-block;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -133,6 +134,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <div class="logo-section">
@@ -140,7 +142,7 @@
             <h1>Dealer Login</h1>
             <p>Access your dealer dashboard</p>
         </div>
-        
+
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -150,21 +152,22 @@
             {% endfor %}
         </div>
         {% endif %}
-        
+
         <form method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required placeholder="Enter your username">
             </div>
-            
+
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required placeholder="Enter your password">
             </div>
-            
+
             <button type="submit" class="login-btn">Login to Dashboard</button>
         </form>
     </div>
 </body>
+
 </html>

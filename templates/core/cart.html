@@ -45,7 +45,8 @@
             {% if cart_items %}
             <div class="d-grid gap-3">
                 {% for item in cart_items %}
-                <div class="card border-0 shadow-sm rounded-4 rounded-md-5 overflow-hidden hover-lift transition-all border-start border-primary border-5">
+                <div
+                    class="card border-0 shadow-sm rounded-4 rounded-md-5 overflow-hidden hover-lift transition-all border-start border-primary border-5">
                     <div class="card-body p-3 p-md-4">
                         <div class="row align-items-center g-3">
                             <div class="col-12 col-md-5">
@@ -80,14 +81,17 @@
                                     <div class="col-4 border-start ps-2">
                                         <small class="text-muted text-uppercase fw-bold d-block"
                                             style="font-size: 0.55rem;">Copies</small>
-                                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">&times; {{ item.copies }}</span>
+                                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">&times; {{
+                                            item.copies }}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-3 text-end border-start-md">
-                                <div class="d-flex flex-row flex-md-row align-items-center justify-content-between justify-content-md-end gap-3">
-                                    <h5 class="fw-black text-dark mb-0" style="font-size: 1.1rem;">₹{{ item.total_price }}</h5>
+                                <div
+                                    class="d-flex flex-row flex-md-row align-items-center justify-content-between justify-content-md-end gap-3">
+                                    <h5 class="fw-black text-dark mb-0" style="font-size: 1.1rem;">₹{{ item.total_price
+                                        }}</h5>
                                     <a href="{% url 'remove_from_cart' item.id %}"
                                         class="btn btn-soft-danger rounded-circle p-2 shadow-sm hover-rotate transition-all">
                                         <i class="fas fa-trash-alt" style="font-size: 0.75rem;"></i>
@@ -115,92 +119,113 @@
 
         <div class="col-lg-4">
             <div class="sticky-top" style="top: 100px; z-index: 10;">
-                <div class="card border-0 bg-dark text-white rounded-4 shadow-2xl overflow-hidden border-top border-primary border-5">
+                <div
+                    class="card border-0 bg-dark text-white rounded-4 shadow-2xl overflow-hidden border-top border-primary border-5">
                     <div class="card-body p-4">
-                        <h5 class="text-uppercase fw-black italic mb-4 tracking-tighter">Order <span class="text-primary">Summary</span></h5>
+                        <h5 class="text-uppercase fw-black italic mb-4 tracking-tighter">Order <span
+                                class="text-primary">Summary</span></h5>
 
-                        {% if total_pages < min_required %} 
-                        <div class="p-3 bg-secondary bg-opacity-10 rounded-3 mb-4 border border-secondary border-opacity-25">
+                        {% if total_pages < min_required %} <div
+                            class="p-3 bg-secondary bg-opacity-10 rounded-3 mb-4 border border-secondary border-opacity-25">
                             <div class="d-flex justify-content-between mb-2">
-                                <span class="text-uppercase small fw-bold opacity-75" style="font-size: 0.65rem;">Requirement Checklist</span>
+                                <span class="text-uppercase small fw-bold opacity-75"
+                                    style="font-size: 0.65rem;">Requirement Checklist</span>
                                 <span class="fw-black text-primary">{{ total_pages }} / {{ min_required }} Pgs</span>
                             </div>
 
                             <div class="progress bg-dark border border-secondary" style="height: 8px;">
                                 {% widthratio total_pages min_required 100 as width %}
-                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ width }}%"></div>
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                                    role="progressbar" style="width: {{ width }}%"></div>
                             </div>
 
-                            <div class="mt-3 p-2 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25">
-                                <small class="text-danger fw-bold d-block text-uppercase text-center" style="font-size: 0.6rem;">
+                            <div
+                                class="mt-3 p-2 bg-danger bg-opacity-10 rounded border border-danger border-opacity-25">
+                                <small class="text-danger fw-bold d-block text-uppercase text-center"
+                                    style="font-size: 0.6rem;">
                                     <i class="fas fa-plus-circle me-1"></i>
-                                    Add {{ min_required|add:"-total_pages" }} more page{{ min_required|add:"-total_pages"|pluralize }} to checkout
+                                    Add {{ min_required|add:"-total_pages" }} more page{{
+                                    min_required|add:"-total_pages"|pluralize }} to checkout
                                 </small>
                             </div>
-                        </div>
-                        {% endif %}
+                    </div>
+                    {% endif %}
 
-                        <div class="d-flex justify-content-between opacity-75 mb-2">
-                            <span class="text-uppercase small fw-bold" style="font-size: 0.65rem;">Total Documents</span>
-                            <span class="fw-bold small">{{ cart_items|length }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between opacity-75 mb-2">
-                            <span class="text-uppercase small fw-bold" style="font-size: 0.65rem;">Effective Pages</span>
-                            <span class="fw-bold small">{{ total_pages }} Units</span>
-                        </div>
-                        <div class="d-flex justify-content-between opacity-75 mb-4">
-                            <span class="text-uppercase small fw-bold" style="font-size: 0.65rem;">Campus Logistics</span>
-                            <span class="fw-bold text-success small">FREE DELIVERY</span>
-                        </div>
+                    <div class="d-flex justify-content-between opacity-75 mb-2">
+                        <span class="text-uppercase small fw-bold" style="font-size: 0.65rem;">Total Documents</span>
+                        <span class="fw-bold small">{{ cart_items|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between opacity-75 mb-2">
+                        <span class="text-uppercase small fw-bold" style="font-size: 0.65rem;">Effective Pages</span>
+                        <span class="fw-bold small">{{ total_pages }} Units</span>
+                    </div>
+                    <div class="d-flex justify-content-between opacity-75 mb-4">
+                        <span class="text-uppercase small fw-bold" style="font-size: 0.65rem;">Campus Logistics</span>
+                        <span class="fw-bold text-success small">FREE DELIVERY</span>
+                    </div>
 
-                        <hr class="border-secondary opacity-25">
+                    <hr class="border-secondary opacity-25">
 
-                        <div class="d-flex justify-content-between align-items-end my-4">
-                            <span class="text-uppercase fw-bold small text-primary" style="font-size: 0.7rem;">Cart Subtotal</span>
-                            <h3 class="fw-black mb-0">₹{{ total_bill|floatformat:2 }}</h3>
-                        </div>
+                    <div class="d-flex justify-content-between align-items-end my-4">
+                        <span class="text-uppercase fw-bold small text-primary" style="font-size: 0.7rem;">Cart
+                            Subtotal</span>
+                        <h3 class="fw-black mb-0">₹{{ total_bill|floatformat:2 }}</h3>
+                    </div>
 
-                        {% if cart_items %}
-                        <div class="d-grid gap-2">
-                            <form action="{% url 'order_all' %}" method="POST" class="w-100">
-                                {% csrf_token %}
-                                <button type="submit"
-                                    class="btn btn-primary w-100 py-3 rounded-pill fw-black text-uppercase tracking-widest shadow-lg hover-scale transition-all {% if total_pages < min_required %}disabled opacity-50{% endif %}"
-                                    style="font-size: 0.75rem;" 
-                                    {% if total_pages < min_required %}onclick="alert('Your cart must have at least 5 pages to place an order.'); return false;"{% endif %}>
-                                    Proceed to Checkout <i class="fas fa-arrow-right ms-2"></i>
-                                </button>
-                            </form>
+                    {% if cart_items %}
+                    <div class="d-grid gap-2">
+                        <form action="{% url 'order_all' %}" method="POST" class="w-100">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="btn btn-primary w-100 py-3 rounded-pill fw-black text-uppercase tracking-widest shadow-lg hover-scale transition-all {% if total_pages < min_required %}disabled opacity-50{% endif %}"
+                                style="font-size: 0.75rem;" {% if total_pages < min_required
+                                %}onclick="alert('Your cart must have at least 5 pages to place an order.'); return false;"
+                                {% endif %}>
+                                Proceed to Checkout <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </form>
 
-                            {% if total_pages < min_required %} 
-                            <a href="{% url 'services' %}"
-                                class="btn btn-outline-info w-100 py-3 rounded-pill fw-black text-uppercase tracking-widest mt-2 shadow-sm no-underline"
-                                style="font-size: 0.75rem;">
-                                <i class="fas fa-plus-circle me-2"></i> Add More Docs
+                        {% if total_pages < min_required %} <a href="{% url 'services' %}"
+                            class="btn btn-outline-info w-100 py-3 rounded-pill fw-black text-uppercase tracking-widest mt-2 shadow-sm no-underline"
+                            style="font-size: 0.75rem;">
+                            <i class="fas fa-plus-circle me-2"></i> Add More Docs
                             </a>
                             {% endif %}
-                        </div>
-                        {% endif %}
+                    </div>
+                    {% endif %}
 
-                        <div class="text-center mt-3">
-                            <p class="text-muted text-uppercase mb-0" style="font-size: 0.5rem; letter-spacing: 1.5px;">
-                                <i class="fas fa-shield-alt text-primary"> FastCopy Secure Gateway</i> 
-                            </p>
-                        </div>
+                    <div class="text-center mt-3">
+                        <p class="text-muted text-uppercase mb-0" style="font-size: 0.5rem; letter-spacing: 1.5px;">
+                            <i class="fas fa-shield-alt text-primary"> FastCopies Secure Gateway</i>
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+</div>
 
 <style>
-    .fw-black { font-weight: 900; }
-    .italic { font-style: italic; }
-    .bg-dark { background-color: #0f172a !important; }
-    
-    .bg-soft-primary { background-color: rgba(13, 110, 253, 0.1); }
-    .bg-soft-dark { background-color: rgba(33, 37, 41, 0.05); }
+    .fw-black {
+        font-weight: 900;
+    }
+
+    .italic {
+        font-style: italic;
+    }
+
+    .bg-dark {
+        background-color: #0f172a !important;
+    }
+
+    .bg-soft-primary {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+
+    .bg-soft-dark {
+        background-color: rgba(33, 37, 41, 0.05);
+    }
 
     .btn-soft-danger {
         background-color: #fff5f5;
@@ -222,13 +247,25 @@
         box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
     }
 
-    .hover-rotate i { transition: transform 0.3s ease; }
-    .hover-rotate:hover i { transform: rotate(15deg) scale(1.2); }
+    .hover-rotate i {
+        transition: transform 0.3s ease;
+    }
 
-    .hover-scale { transition: transform 0.2s; }
-    .hover-scale:hover { transform: scale(1.02); }
+    .hover-rotate:hover i {
+        transform: rotate(15deg) scale(1.2);
+    }
 
-    .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+    .hover-scale {
+        transition: transform 0.2s;
+    }
+
+    .hover-scale:hover {
+        transform: scale(1.02);
+    }
+
+    .shadow-2xl {
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
 
     @media (min-width: 768px) {
         .border-start-md {
@@ -238,10 +275,22 @@
     }
 
     @media (max-width: 767px) {
-        .card-body { padding: 1.25rem !important; }
-        .rounded-md-5 { border-radius: 1.5rem !important; }
-        .alert { border-radius: 1rem !important; }
-        .sticky-top { position: relative !important; top: 0 !important; }
+        .card-body {
+            padding: 1.25rem !important;
+        }
+
+        .rounded-md-5 {
+            border-radius: 1.5rem !important;
+        }
+
+        .alert {
+            border-radius: 1rem !important;
+        }
+
+        .sticky-top {
+            position: relative !important;
+            top: 0 !important;
+        }
     }
 </style>
 {% endblock %}
