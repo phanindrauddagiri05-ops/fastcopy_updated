@@ -38,7 +38,7 @@ Paste this and **replace with your actual values**:
 ```env
 SECRET_KEY=your-actual-secret-key-here
 DEBUG=False
-ALLOWED_HOSTS=fastcopy.pagexplore.com,64.227.174.109
+ALLOWED_HOSTS=fastcopies.in,www.fastcopies.in,64.227.174.109
 EMAIL_HOST_USER=fastcopyteam@gmail.com
 EMAIL_HOST_PASSWORD=your-gmail-app-password
 CASHFREE_APP_ID=your-cashfree-app-id
@@ -103,7 +103,7 @@ After fixing, verify these:
 - [ ] Database file exists: `ls -la fast_copy_duplic_db.sqlite3`
 - [ ] Directories exist: `media/`, `staticfiles/`, `temp/`
 - [ ] Web server restarted
-- [ ] Can access homepage: `https://fastcopy.pagexplore.com`
+- [ ] Can access homepage: `https://fastcopies.in`
 - [ ] Can login without 500 error
 
 ---

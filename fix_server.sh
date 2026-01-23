@@ -60,7 +60,7 @@ else
     cat > .env << 'EOF'
 SECRET_KEY=django-insecure-CHANGE-THIS-NOW
 DEBUG=False
-ALLOWED_HOSTS=fastcopy.pagexplore.com,64.227.174.109
+ALLOWED_HOSTS=fastcopies.in,www.fastcopies.in,64.227.174.109
 EMAIL_HOST_USER=fastcopyteam@gmail.com
 EMAIL_HOST_PASSWORD=your-gmail-app-password
 CASHFREE_APP_ID=your-cashfree-app-id
@@ -70,7 +70,7 @@ CASHFREE_API_URL=https://api.cashfree.com/pg
 ADMIN_EMAIL=fastcopyteam@gmail.com
 SUPPORT_EMAIL=fastcopy003@gmail.com
 SUPPORT_PHONE=+91 8500290959
-COMPANY_WEBSITE=https://fastcopy.pagexplore.com
+COMPANY_WEBSITE=https://fastcopies.in
 EOF
     echo -e "${YELLOW}⚠️  .env template created. PLEASE EDIT IT WITH ACTUAL VALUES!${NC}"
 fi

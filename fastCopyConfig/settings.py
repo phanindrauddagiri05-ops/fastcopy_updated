@@ -13,8 +13,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key-change-in-pro
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 CSRF_TRUSTED_ORIGINS = [
-    'https://fastcopy.pagexplore.com',
-    'http://fastcopy.pagexplore.com',
+    'https://fastcopies.in',
+    'http://fastcopies.in',
+    'https://www.fastcopies.in',
+    'http://www.fastcopies.in',
     'https://64.227.174.109',
     'http://64.227.174.109'
 ]

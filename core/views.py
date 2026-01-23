@@ -900,17 +900,44 @@ def initiate_payment(request):
             request.session.modified = True
             return redirect('cashfree_checkout')
         else:
-            # API call failed, show error message
+            # API call failed, handle failure properly (Cancel Order + Restore Cart)
             error_msg = res_json.get('message', 'Payment gateway error')
             print(f"Cashfree Error: {error_msg}")
-            messages.error(request, f"Payment initiation failed: {error_msg}")
+            
+            # Use the existing helper to cancel and restore
+            handle_failed_order(request.user, unique_order_id, reason=error_msg)
+            
+            # Check for specific insufficient balance messages
+            if "balance" in error_msg.lower() or "limit" in error_msg.lower() or "insufficient" in error_msg.lower():
+                messages.error(request, f"Payment Failed: Amount not sufficient or limit exceeded. ({error_msg})")
+            else:
+                messages.error(request, f"Payment initiation failed: {error_msg}")
+            
             return redirect('cart')
 
+    except requests.exceptions.Timeout:
+        print("Cashfree API Timeout")
+        handle_failed_order(request.user, unique_order_id, reason="Gateway Timeout")
+        messages.error(request, "Payment gateway timeout. Please try again.")
+        return redirect('cart')
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Cashfree API Request Error: {str(e)}")
+        handle_failed_order(request.user, unique_order_id, reason="Network Error")
+        messages.error(request, "Unable to connect to payment gateway. Please try again.")
+        return redirect('cart')
+        
     except Exception as e:
         print(f"🔥 CRITICAL ERROR in initiate_payment: {str(e)}")
         import traceback
         traceback.print_exc()
-        messages.error(request, "An internal error occurred while processing your request. Please try again or contact support.")
+        
+        # Try to clean up if order was created
+        try:
+            handle_failed_order(request.user, unique_order_id, reason=f"Internal Error: {str(e)}")
+        except: pass
+            
+        messages.error(request, "An internal error occurred while processing your payment. Your items have been restored to the cart.")
         return redirect('cart')
 
 @csrf_exempt

@@ -81,17 +81,19 @@
                                     <div class="col-4 border-start ps-2">
                                         <small class="text-muted text-uppercase fw-bold d-block"
                                             style="font-size: 0.55rem;">Copies</small>
-                                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">&times; {{
-                                            item.copies }}</span>
+                                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">
+                                            &times; {{ item.copies }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12 col-md-3 text-end border-start-md">
                                 <div
-                                    class="d-flex flex-row flex-md-row align-items-center justify-content-between justify-content-md-end gap-3">
-                                    <h5 class="fw-black text-dark mb-0" style="font-size: 1.1rem;">₹{{ item.total_price
-                                        }}</h5>
+                                    class="d-flex flex-row align-items-center justify-content-between justify-content-md-end gap-3">
+                                    <h5 class="fw-black text-dark mb-0" style="font-size: 1.1rem;">
+                                        ₹{{ item.total_price }}
+                                    </h5>
                                     <a href="{% url 'remove_from_cart' item.id %}"
                                         class="btn btn-soft-danger rounded-circle p-2 shadow-sm hover-rotate transition-all">
                                         <i class="fas fa-trash-alt" style="font-size: 0.75rem;"></i>
@@ -178,8 +180,8 @@
                             {% csrf_token %}
                             <button type="submit"
                                 class="btn btn-primary w-100 py-3 rounded-pill fw-black text-uppercase tracking-widest shadow-lg hover-scale transition-all {% if total_pages < min_required %}disabled opacity-50{% endif %}"
-                                style="font-size: 0.75rem;" {% if total_pages < min_required
-                                %}onclick="alert('Your cart must have at least 5 pages to place an order.'); return false;"
+                                style="font-size: 0.75rem;" {% if total_pages < min_required %}
+                                onclick="alert('Your cart must have at least 5 pages to place an order.'); return false;"
                                 {% endif %}>
                                 Proceed to Checkout <i class="fas fa-arrow-right ms-2"></i>
                             </button>

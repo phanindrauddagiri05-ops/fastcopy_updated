@@ -2,7 +2,7 @@
 
 ## ⚠️ Current Issue
 - **Error**: Server Error (500) when logging in
-- **URL**: `fastcopy.pagexplore.com/login/`
+- **URL**: `fastcopies.in/login/`
 - **Symptom**: Site opens but login fails
 
 ---
@@ -16,7 +16,7 @@ Your Django app loads environment variables from `.env` file. If this is missing
 ```env
 SECRET_KEY=your-secret-key-here
 DEBUG=False
-ALLOWED_HOSTS=fastcopy.pagexplore.com,64.227.174.109
+ALLOWED_HOSTS=fastcopies.in,www.fastcopies.in,64.227.174.109
 
 # Email Configuration
 EMAIL_HOST_USER=fastcopyteam@gmail.com
@@ -32,7 +32,7 @@ CASHFREE_API_URL=https://api.cashfree.com/pg
 ADMIN_EMAIL=fastcopyteam@gmail.com
 SUPPORT_EMAIL=fastcopy003@gmail.com
 SUPPORT_PHONE=+91 8500290959
-COMPANY_WEBSITE=https://fastcopy.pagexplore.com
+COMPANY_WEBSITE=https://fastcopies.in
 ```
 
 ### 2. **Database File Missing or No Write Permissions** (80% likely)

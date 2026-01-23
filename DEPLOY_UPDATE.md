@@ -93,7 +93,7 @@ nano .env
 ```env
 SECRET_KEY=django-insecure-CHANGE-THIS-TO-RANDOM-SECRET-KEY
 DEBUG=False
-ALLOWED_HOSTS=fastcopy.pagexplore.com,64.227.174.109,www.fastcopy.pagexplore.com
+ALLOWED_HOSTS=fastcopies.in,64.227.174.109,www.fastcopies.in
 
 # Email Configuration
 EMAIL_HOST_USER=fastcopyteam@gmail.com
@@ -109,7 +109,7 @@ CASHFREE_API_URL=https://api.cashfree.com/pg
 ADMIN_EMAIL=fastcopyteam@gmail.com
 SUPPORT_EMAIL=fastcopy003@gmail.com
 SUPPORT_PHONE=+91 8500290959
-COMPANY_WEBSITE=https://fastcopy.pagexplore.com
+COMPANY_WEBSITE=https://fastcopies.in
 ```
 
 **To save in nano:**
@@ -215,7 +215,7 @@ sudo systemctl status nginx
 ## 🧪 Step 12: Test the Fix
 
 1. **Open your browser**
-2. **Go to:** `https://fastcopy.pagexplore.com`
+2. **Go to:** `https://fastcopies.in`
 3. **Try to login**
 
 ### ✅ If it works:
@@ -316,7 +316,7 @@ python3 check_config.py
 sudo systemctl restart apache2  # or gunicorn + nginx
 
 # 10. Test in browser
-# Go to: https://fastcopy.pagexplore.com/login/
+# Go to: https://fastcopies.in/login/
 ```
 
 ---
