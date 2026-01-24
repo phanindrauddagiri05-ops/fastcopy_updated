@@ -562,13 +562,30 @@ def order_now(request):
 @login_required(login_url='login')
 def process_direct_order(request):
     if request.method == "POST":
-        uploaded_file = request.FILES.get('document')
-        if not uploaded_file: return JsonResponse({'success': False})
-        file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}', ContentFile(uploaded_file.read()))
+        # Check if we have a pre-uploaded file path (optimized flow)
+        temp_doc_path = request.POST.get('temp_doc_path')
+        file_path = None
+        doc_name = "Unknown Document"
+        is_pdf = True
+        
+        if temp_doc_path and default_storage.exists(temp_doc_path):
+            # Use pre-uploaded file
+            file_path = temp_doc_path
+            doc_name = temp_doc_path.split('_', 2)[-1] # Attempt to extract original name
+            if not doc_name: doc_name = "Document.pdf"
+            is_pdf = doc_name.lower().endswith('.pdf')
+        else:
+            # Fallback to standard upload
+            uploaded_file = request.FILES.get('document')
+            if not uploaded_file: return JsonResponse({'success': False})
+            doc_name = uploaded_file.name
+            file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}', ContentFile(uploaded_file.read()))
+            is_pdf = doc_name.lower().endswith('.pdf')
+
         direct_item = {
             'service_name': request.POST.get('service_name'), 'total_price': request.POST.get('total_price_hidden'),
-            'document_name': uploaded_file.name, 'temp_path': file_path if uploaded_file.name.endswith('.pdf') else None,
-            'temp_image_path': file_path if not uploaded_file.name.endswith('.pdf') else None, 
+            'document_name': doc_name, 'temp_path': file_path if is_pdf else None,
+            'temp_image_path': file_path if not is_pdf else None, 
             'copies': int(request.POST.get('copies', 1)), 'pages': int(request.POST.get('page_count', 1)), 
             'location': request.POST.get('location'), 'print_mode': request.POST.get('print_mode', 'B&W'), 
             'side_type': request.POST.get('side_type', 'single'), 'custom_color_pages': request.POST.get('custom_color_pages', ''),

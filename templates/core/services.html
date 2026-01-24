@@ -204,7 +204,8 @@
                                                 <span class="visually-hidden">Loading...</span>
                                             </div>
                                             <p class="small fw-bold text-primary text-uppercase mb-0 animate-bounce"
-                                                style="font-size: 0.65rem;">Analyzing...</p>
+                                                style="font-size: 0.65rem;">Uploading document...<br>Reading pages...
+                                            </p>
                                         </div>
 
                                         <div id="preview-wrapper"
@@ -539,6 +540,11 @@
         if (file.type === "application/pdf") {
             $('#pdf-preview-canvas').removeClass('d-none');
             $('#image-preview-tag').addClass('d-none');
+
+            // Set initial "Calculating..." state
+            $('#page-num-display').text("Calculating...");
+            $('#page-count-badge').removeClass('invisible');
+
             let formData = new FormData();
             formData.append('document', file);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
@@ -593,6 +599,7 @@
             T = 1;
             $('#page-num-display').text(T);
             $('#page_count_hidden').val(T);
+            // Badge is shown immediately for images
             $('#page-count-badge').removeClass('invisible');
 
             let reader = new FileReader();
@@ -727,6 +734,30 @@
         window.addEventListener('hashchange', function () {
             handleHashNavigation();
             $('html, body').animate({ scrollTop: $("#form-container").offset().top - 100 }, 500);
+        });
+
+        // [FIX] Reset state when page is shown (handles Back button from bfcache)
+        window.addEventListener('pageshow', function (event) {
+            // 1. Always reset processing flag and buttons
+            isProcessing = false;
+            $('#btn-add-to-cart, #btn-order-now').prop('disabled', false).removeClass('opacity-50');
+            $('#upload-loader').addClass('d-none');
+
+            // 2. Check if file input was cleared by browser but UI still shows "ready"
+            // If T > 0 (pages counted) but file input is empty, we have a mismatch.
+            // Exception: If we have a temp_path from server (pre-upload), that's fine.
+            let fileInput = document.getElementById('document');
+            let hasTempPath = $('#temp_doc_path').val().length > 0;
+
+            if (T > 0 && (!fileInput.files.length && !hasTempPath)) {
+                // UI says we have a file, but browser cleared input and no temp path. Reset.
+                resetUpload();
+            }
+            // 3. Conversely, if browser Kept the file but we lost state variables (unlikely in pageshow but good safety)
+            else if (T === 0 && fileInput.files.length > 0) {
+                // Force re-trigger of change event to re-calculate
+                $('#document').trigger('change');
+            }
         });
     });
 </script>
