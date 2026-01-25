@@ -77,16 +77,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'fastCopyConfig.wsgi.application'
 
 # 5. DATABASE (MySQL Configuration)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fastcopy_database',
-        'USER': 'root',
-        'PASSWORD': 'PhaniUddagiri@2005',
-        'HOST': 'localhost',
-        'PORT': '3306',
+# 5. DATABASE (SQLite by default, MySQL if configured)
+if os.getenv('USE_MYSQL') == 'True':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'fastcopy_database',
+            'USER': 'root',
+            'PASSWORD': 'PhaniUddagiri@2005',
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # 6. PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
