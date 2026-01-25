@@ -17,8 +17,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://fastcopies.in',
     'https://www.fastcopies.in',
     'http://www.fastcopies.in',
-    'https://64.227.174.109',
-    'http://64.227.174.109'
+    'https://194.163.173.57',
+    'http://194.163.173.57'
 ]
 
 # --- 💳 CASHFREE PAYMENT GATEWAY CONFIG (Production Environment) ---
