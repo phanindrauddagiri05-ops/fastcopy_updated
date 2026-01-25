@@ -1,0 +1,1 @@
+[{"model": "core.maintenancesettings", "pk": 1, "fields": {"is_enabled": false, "message": "We are upgrading our system to serve you better. We will be back shortly!", "expected_duration": "2 hours", "updated_at": "2026-01-25T14:30:39.614Z"}}]
