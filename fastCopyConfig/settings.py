@@ -22,8 +22,10 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Production Security Settings (Critical for Reverse Proxy/SSL)
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+# Production Security Settings (Critical for Reverse Proxy/SSL)
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 
 # --- 💳 CASHFREE PAYMENT GATEWAY CONFIG (Production Environment) ---
