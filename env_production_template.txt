@@ -1,0 +1,22 @@
+# --- SECURITY ---
+DEBUG=False
+SECRET_KEY=your-secret-key-here
+ALLOWED_HOSTS=fastcopies.in,www.fastcopies.in,194.163.173.57
+
+# --- GOOGLE AUTHENTICATION (NEW) ---
+GOOGLE_CLIENT_ID=your-google-client-id-here
+GOOGLE_CLIENT_SECRET=your-google-client-secret-here
+
+# --- DATABASE (If using MySQL) ---
+USE_MYSQL=True
+# Add DB credentials (DB_NAME, DB_USER, DB_PASSWORD) here if needed
+
+# --- PAYMENT GATEWAY ---
+CASHFREE_APP_ID=your-cashfree-app-id
+CASHFREE_SECRET_KEY=your-cashfree-secret-key
+CASHFREE_API_VERSION=2023-08-01
+CASHFREE_API_URL=https://api.cashfree.com/pg
+
+# --- EMAIL ---
+EMAIL_HOST_USER=fastcopyteam@gmail.com
+EMAIL_HOST_PASSWORD=your-email-app-password

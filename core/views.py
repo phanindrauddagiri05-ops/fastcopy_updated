@@ -209,18 +209,14 @@ def forgot_password_request(request):
         return redirect('home')
     
     if request.method == "POST":
-        mobile = request.POST.get('mobile', '').strip()
+        email = request.POST.get('email', '').strip()
         
-        if not mobile:
-            messages.error(request, "Please enter your mobile number.")
+        if not email:
+            messages.error(request, "Please enter your email address.")
             return render(request, 'core/forgot_password.html')
         
         try:
-            user = User.objects.get(username=mobile)
-            
-            if not user.email:
-                messages.error(request, "No email address is associated with this account. Please contact support.")
-                return render(request, 'core/forgot_password.html')
+            user = User.objects.get(email=email)
             
             # Generate password reset token
             from django.contrib.auth.tokens import default_token_generator
@@ -260,9 +256,12 @@ def forgot_password_request(request):
                 return render(request, 'core/forgot_password.html')
                 
         except User.DoesNotExist:
-            # Don't reveal if mobile exists or not (security)
-            messages.error(request, "If this mobile number is registered, you will receive a password reset email.")
+            # Don't reveal if email exists or not (security)
+            messages.error(request, "If this email address is registered, you will receive a password reset link.")
             return redirect('forgot_password_sent')
+        except User.MultipleObjectsReturned:
+             messages.error(request, "Multiple accounts found with this email. Please contact support.")
+             return render(request, 'core/forgot_password.html')
     
     return render(request, 'core/forgot_password.html')
 
