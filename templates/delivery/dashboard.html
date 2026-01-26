@@ -1,0 +1,299 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Dashboard - FastCopies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff7ed;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 40px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ea580c;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .logout-btn {
+            padding: 10px 24px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        .orders-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .orders-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .filters {
+            display: flex;
+            gap: 16px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .orders-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e2e8f0;
+            background: #fafaf9;
+        }
+
+        .orders-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .status-select {
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            background: #f8fafc;
+            width: 100%;
+        }
+
+        .contact-info {
+            font-size: 13px;
+        }
+
+        .contact-info strong {
+            display: block;
+            color: #334155;
+            margin-bottom: 2px;
+        }
+
+        .contact-info a {
+            color: #ea580c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .address-box {
+            font-size: 12px;
+            color: #64748b;
+            max-width: 250px;
+            line-height: 1.4;
+        }
+
+        .messages {
+            max-width: 1400px;
+            margin: 20px auto 0;
+            padding: 0 40px;
+        }
+
+        .alert {
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div>
+            <h1>Delivery Dashboard</h1>
+            <p>Welcome, <strong>{{ delivery_name }}</strong></p>
+        </div>
+        <a href="{% url 'delivery_logout' %}" class="logout-btn">
+            <span>🚪</span> Logout
+        </a>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <div class="orders-section">
+            <div class="orders-header">
+                <h2 class="orders-title">Assigned Orders ({{ total_orders }})</h2>
+                <div class="filters">
+                    <form method="GET">
+                        <select name="status" class="filter-select" onchange="this.form.submit()">
+                            <option value="all" {% if status_filter=='all' %}selected{% endif %}>All Orders</option>
+                            <option value="Ready" {% if status_filter=='Ready' %}selected{% endif %}>Ready for Pickup
+                            </option>
+                            <option value="Out for Delivery" {% if status_filter=='Out for Delivery' %}selected{% endif
+                                %}>Out for Delivery</option>
+                            <option value="Delivered" {% if status_filter=='Delivered' %}selected{% endif %}>Delivered
+                            </option>
+                        </select>
+                    </form>
+                    <button onclick="window.location.reload()" class="filter-select" style="cursor: pointer;">🔄
+                        Refresh</button>
+                </div>
+            </div>
+
+            {% if orders %}
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Order ID</th>
+                        <th style="width: 200px;">Customer</th>
+                        <th style="width: 120px;">Mobile</th>
+                        <th>Address</th>
+                        <th style="width: 160px;">Update Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>#{{ order.order_id }}</strong></td>
+                        <td>
+                            <div class="contact-info">
+                                <strong>{{ order.user.get_full_name|default:order.user.username }}</strong>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="contact-info">
+                                <a href="tel:{{ order.user.profile.mobile }}">{{ order.user.profile.mobile }}</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="address-box">
+                                {{ order.location|default:order.user.profile.address|default:"No address provided" }}
+                            </div>
+                        </td>
+                        <td>
+                            <form method="POST" action="{% url 'update_delivery_status' order.id %}">
+                                {% csrf_token %}
+                                <select name="status" class="status-select" onchange="this.form.submit()"
+                                    style="{% if order.status == 'Delivered' %}border-color: #22c55e; color: #15803d; background: #f0fdf4;{% endif %}">
+                                    <option value="Ready" {% if order.status=='Ready' %}selected{% endif %}>Ready
+                                    </option>
+                                    <option value="Out for Delivery" {% if order.status=='Out for Delivery' %}selected{%
+                                        endif %}>Out for Delivery</option>
+                                    <option value="Delivered" {% if order.status=='Delivered' %}selected{% endif %}>
+                                        Delivered</option>
+                                    <option value="Pending" {% if order.status=='Pending' %}selected{% endif %}>Pending
+                                    </option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                <p>No orders found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+
+</html>

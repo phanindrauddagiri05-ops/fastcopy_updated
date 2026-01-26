@@ -61,9 +61,9 @@ class UserProfileAdmin(admin.ModelAdmin):
     fieldsets = (
         ('ID & Security Actions', {'fields': ('display_fc_id', 'user_type', 'action_buttons')}),
         ('Personal Information', {'fields': ('mobile', 'address')}),
-        ('Dealer Settings', {
-            'fields': ('is_dealer', 'price_per_page', 'dealer_locations'),
-            'description': 'Enable dealer status, set custom pricing, and assign locations.'
+        ('Dealer & Delivery Settings', {
+            'fields': ('is_dealer', 'is_delivery_boy', 'price_per_page', 'dealer_locations'),
+            'description': 'Enable dealer status, delivery partner status, set custom pricing, and assign locations.'
         }),
         ('System Metadata', {'fields': ('date_joined',)}),
     )
@@ -89,6 +89,8 @@ class UserProfileAdmin(admin.ModelAdmin):
     def dealer_status(self, obj): 
         if obj.is_dealer:
             return format_html('<span style="background:#15803d; color:white; padding:3px 10px; border-radius:12px; font-size:10px; font-weight:bold;">DEALER</span>')
+        if obj.is_delivery_boy:
+            return format_html('<span style="background:#f97316; color:white; padding:3px 10px; border-radius:12px; font-size:10px; font-weight:bold;">DELIVERY</span>')
         return format_html('<span style="color:#64748b;">Customer</span>')
     def price_display(self, obj): 
         return format_html('<b style="color:#2563eb">₹{}</b>', f'{float(obj.price_per_page):.2f}')

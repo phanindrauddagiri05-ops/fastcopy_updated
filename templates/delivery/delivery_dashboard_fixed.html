@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Dashboard - FastCopies</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --accent-color: #ea580c;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Enhanced Header */
+        .header {
+            background: var(--card-bg);
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: #fee2e2;
+            color: #ef4444;
+            border-radius: 10px;
+            font-weight: 600;
+            padding: 8px 18px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Dashboard Container */
+        .orders-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Table UI */
+        .orders-table thead th {
+            background: #f1f5f9;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border: none;
+            padding: 15px;
+        }
+
+        .orders-table tbody tr {
+            transition: background 0.2s ease;
+            vertical-align: middle;
+        }
+
+        .orders-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status-select {
+            font-size: 0.85rem;
+            border-radius: 8px;
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+        }
+
+        /* Mobile View Transformation (Pin to Pin) */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            
+            .orders-section { padding: 1.25rem; }
+
+            .orders-table, .orders-table thead, .orders-table tbody, .orders-table th, .orders-table td, .orders-table tr {
+                display: block;
+            }
+
+            .orders-table thead { display: none; }
+
+            .orders-table tr {
+                margin-bottom: 1.5rem;
+                border: 1px solid #e2e8f0;
+                border-radius: 16px;
+                padding: 1.25rem;
+                background: white;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            }
+
+            .orders-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: none;
+                padding: 10px 0;
+                border-bottom: 1px dashed #f1f5f9;
+            }
+
+            .orders-table td:last-child { border-bottom: none; }
+
+            .orders-table td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--text-muted);
+                text-transform: uppercase;
+                font-size: 0.7rem;
+            }
+
+            .address-box {
+                text-align: right;
+                max-width: 65%;
+                font-size: 0.85rem;
+            }
+            
+            .status-select { width: 140px; }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header d-flex justify-content-between align-items-center">
+        <div>
+            <h1>FastCopies</h1>
+            <p class="text-muted small mb-0 fw-medium">Delivery Personnel: <span class="text-dark">{{ delivery_name }}</span></p>
+        </div>
+        <a href="{% url 'delivery_logout' %}" class="logout-btn d-flex align-items-center gap-2">
+            Logout <span>🚪</span>
+        </a>
+    </header>
+
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible border-0 shadow-sm fade show" role="alert">
+            <span class="fw-medium">{{ message }}</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="container my-5">
+        <div class="orders-section">
+            <div class="d-md-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">Assigned Tasks</h2>
+                    <p class="text-muted small mb-0">You have <strong>{{ total_orders }}</strong> active shipments</p>
+                </div>
+                
+                <div class="d-flex gap-3 mt-3 mt-md-0">
+                    <form method="GET" class="d-flex shadow-sm rounded-3 overflow-hidden">
+                        <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()" style="font-size: 0.9rem;">
+                            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Show All</option>
+                            <option value="Ready" {% if status_filter == 'Ready' %}selected{% endif %}>📦 Ready</option>
+                            <option value="Out for Delivery" {% if status_filter == 'Out for Delivery' %}selected{% endif %}>🚚 In Transit</option>
+                            <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>✅ Completed</option>
+                        </select>
+                    </form>
+                    <button onclick="window.location.reload()" class="btn btn-white border shadow-sm rounded-3">
+                        🔄 <span class="d-none d-md-inline ms-1">Refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            {% if orders %}
+            <div class="table-responsive-md">
+                <table class="table orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Contact</th>
+                            <th>Delivery Address</th>
+                            <th>Status Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td data-label="Order ID">
+                                <span class="badge bg-light text-dark border p-2">#{{ order.order_id }}</span>
+                            </td>
+                            <td data-label="Customer">
+                                <div class="fw-bold text-dark">{{ order.user.get_full_name|default:order.user.username }}</div>
+                            </td>
+                            <td data-label="Contact">
+                                <a href="tel:{{ order.user.profile.mobile }}" class="btn btn-sm btn-outline-primary fw-bold py-1 px-3 rounded-pill">
+                                    {{ order.user.profile.mobile }}
+                                </a>
+                            </td>
+                            <td data-label="Address">
+                                <div class="address-box text-muted">
+                                    {{ order.location|default:order.user.profile.address|default:"Location info missing" }}
+                                </div>
+                            </td>
+                            <td data-label="Status Action">
+                                <form method="POST" action="{% url 'update_delivery_status' order.id %}">
+                                    {% csrf_token %}
+                                    <select name="status" class="form-select status-select shadow-sm fw-bold" onchange="this.form.submit()"
+                                        style="{% if order.status == 'Delivered' %}border-color: #22c55e; color: #15803d; background: #f0fdf4;{% elif order.status == 'Out for Delivery' %}border-color: #3b82f6; color: #1d4ed8; background: #eff6ff;{% endif %}">
+                                        <option value="Ready" {% if order.status == 'Ready' %}selected{% endif %}>Ready</option>
+                                        <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                        <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    </select>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <div class="mb-3" style="font-size: 3rem;">📭</div>
+                <h3 class="h6 text-muted fw-normal">No shipments assigned to your profile.</h3>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -57,6 +57,13 @@ urlpatterns = [
     path('dealer/logout/', views.dealer_logout_view, name='dealer_logout'),
     path('dealer/update-order/<int:order_id>/', views.update_order_status, name='update_order_status'),
     path('dealer/download/<int:order_id>/', views.dealer_download_file, name='dealer_download_file'),
+
+    # --- 🚚 Delivery Boy Dashboard ---
+    path('delivery/login/', views.delivery_login_view, name='delivery_login'),
+    path('delivery/dashboard/', views.delivery_dashboard_view, name='delivery_dashboard'),
+    path('delivery/logout/', views.delivery_logout_view, name='delivery_logout'),
+    path('delivery/update-status/<int:order_id>/', views.update_delivery_status, name='update_delivery_status'),
+
     # --- 🛠️ 10. MAINTENANCE ---
     path('maintenance/', views.maintenance_view, name='maintenance'),
 ]

@@ -31,6 +31,7 @@ class UserProfile(models.Model):
     
     # Dealer-specific fields (Consolidated and Cleaned)
     is_dealer = models.BooleanField(default=False)
+    is_delivery_boy = models.BooleanField(default=False, verbose_name="Is Delivery Partner")
     price_per_page = models.DecimalField(max_digits=5, decimal_places=2, default=1.50)
     dealer_locations = models.ManyToManyField(Location, blank=True, help_text="Select assigned locations for this dealer.")
 
