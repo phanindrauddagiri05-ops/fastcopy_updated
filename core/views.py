@@ -475,14 +475,10 @@ def add_to_cart(request):
 
         service_name = request.POST.get('service_name')
         
-        # [FIX] Capture Mobile Number if provided (for Google users)
+        # [FIX] Capture Mobile Number & Name (Store in CartItem, NOT Profile)
         mobile_number = request.POST.get('mobile_number')
-        if mobile_number and hasattr(request.user, 'profile'):
-            if not request.user.profile.mobile:
-                request.user.profile.mobile = mobile_number
-                request.user.profile.save()
+        full_name = request.POST.get('full_name')
         
-        print_mode = request.POST.get('print_mode', 'B&W')
         print_mode = request.POST.get('print_mode', 'B&W')
         item = {
             'service_name': service_name, 'total_price': request.POST.get('total_price_hidden'),
@@ -492,6 +488,8 @@ def add_to_cart(request):
             'copies': int(request.POST.get('copies', 1)), 'pages': int(request.POST.get('page_count', 1)), 
             'location': request.POST.get('location'), 'print_mode': print_mode, 
             'side_type': request.POST.get('side_type', 'single'), 'custom_color_pages': request.POST.get('custom_color_pages', ''),
+            'mobile': mobile_number, # Persist to CartItem
+            'customer_name': full_name, # Persist to CartItem
         }
         CartItem.objects.create(user=request.user, **item)
         return JsonResponse({'success': True})
@@ -507,6 +505,7 @@ def cart_page(request):
             'service_name': i.service_name, 'total_price': str(i.total_price), 'document_name': i.document_name,
             'temp_path': i.temp_path, 'temp_image_path': i.temp_image_path, 'copies': i.copies, 'pages': i.pages,
             'location': i.location, 'print_mode': i.print_mode, 'side_type': i.side_type, 'custom_color_pages': i.custom_color_pages,
+            'mobile': i.mobile, 'customer_name': i.customer_name, # Pass to session
         })
     request.session['cart'] = cart_list
     request.session.modified = True
@@ -560,14 +559,9 @@ def order_now(request):
             file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}_{doc_name}', ContentFile(uploaded_file.read()))
             is_pdf = doc_name.lower().endswith('.pdf')
 
-        # [FIX] Capture Mobile Number if provided (for Google users)
+        # [FIX] Capture Mobile Number & Name (Store in Session, NOT Profile)
         mobile_number = request.POST.get('mobile_number')
-        if mobile_number and hasattr(request.user, 'profile'):
-             # Update profile if empty or force update? 
-             # Let's update if empty OR if valid number provided to ensure latest contact info
-            request.user.profile.mobile = mobile_number
-            request.user.profile.address = request.POST.get('location') # Also good to sync location if needed?
-            request.user.profile.save()
+        full_name = request.POST.get('full_name')
 
         request.session['direct_item'] = {
             'service_name': request.POST.get('service_name'), 'total_price': request.POST.get('total_price_hidden'),
@@ -577,6 +571,8 @@ def order_now(request):
             'copies': int(request.POST.get('copies', 1)), 'pages': int(request.POST.get('page_count', 1)), 
             'location': request.POST.get('location'), 'print_mode': request.POST.get('print_mode', 'B&W'), 
             'side_type': request.POST.get('side_type', 'single'), 'custom_color_pages': request.POST.get('custom_color_pages', ''),
+             'mobile': mobile_number, # Persist to Session
+            'customer_name': full_name, # Persist to Session
         }
         request.session['pending_batch_id'] = f"DIR_{uuid.uuid4().hex[:10].upper()}"
         request.session.modified = True
@@ -606,11 +602,10 @@ def process_direct_order(request):
             file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}', ContentFile(uploaded_file.read()))
             is_pdf = doc_name.lower().endswith('.pdf')
 
-        # [FIX] Capture Mobile Number if provided (for Google users)
+        # [FIX] Capture Mobile Number & Name if provided (for temporary order usage)
+        #(Do not update profile.mobile/name here, only use for this specific order)
         mobile_number = request.POST.get('mobile_number')
-        if mobile_number and hasattr(request.user, 'profile'):
-            request.user.profile.mobile = mobile_number
-            request.user.profile.save()
+        full_name = request.POST.get('full_name') # New field from form
 
         direct_item = {
             'service_name': request.POST.get('service_name'), 'total_price': request.POST.get('total_price_hidden'),
@@ -619,6 +614,8 @@ def process_direct_order(request):
             'copies': int(request.POST.get('copies', 1)), 'pages': int(request.POST.get('page_count', 1)), 
             'location': request.POST.get('location'), 'print_mode': request.POST.get('print_mode', 'B&W'), 
             'side_type': request.POST.get('side_type', 'single'), 'custom_color_pages': request.POST.get('custom_color_pages', ''),
+            'mobile': mobile_number, # Store mobile in session item
+            'customer_name': full_name, # Store name in session item
         }
         request.session['direct_item'] = direct_item
         request.session['pending_batch_id'] = f"DIR_{uuid.uuid4().hex[:10].upper()}"
@@ -865,6 +862,9 @@ def initiate_payment(request):
                     pages=int(item.get('pages', 1)), 
                     custom_color_pages=item.get('custom_color_pages', ''), 
                     estimated_delivery_date=est_date,
+
+                    mobile=item.get('mobile', ''), # Save mobile number to Order
+                    customer_name=item.get('customer_name', ''), # Save customer name to Order
                     payment_status="Pending", 
                     status="Pending"
                 )
@@ -907,8 +907,20 @@ def initiate_payment(request):
             return_url_for_api = f"https://{current_host}/payment/callback/?order_id={unique_order_id}"
             actual_return_url = f"https://{current_host}/payment/callback/"
         
-        user_mobile = request.user.profile.mobile if hasattr(request.user, 'profile') else "9999999999"
-        if not user_mobile.startswith('91'): user_mobile = f"91{user_mobile}"
+        # [FIX] Use Order-specific contact details if available, else fallback to profile
+        order_mobile = "9999999999"
+        order_name = request.user.username
+        
+        # Try to get details from the first item (since batch orders typically share contact info for now)
+        if items_to_process:
+             first_item = items_to_process[0]
+             if first_item.get('mobile'): order_mobile = first_item.get('mobile')
+             elif hasattr(request.user, 'profile') and request.user.profile.mobile: order_mobile = request.user.profile.mobile
+             
+             if first_item.get('customer_name'): order_name = first_item.get('customer_name')
+             elif hasattr(request.user, 'profile') and request.user.get_full_name(): order_name = request.user.get_full_name()
+
+        if not order_mobile.startswith('91'): order_mobile = f"91{order_mobile}"
 
         payload = {
             "order_id": unique_order_id,
@@ -916,9 +928,9 @@ def initiate_payment(request):
             "order_currency": "INR",
             "customer_details": {
                 "customer_id": f"CUST_{request.user.id}",
-                "customer_name": request.user.username,
+                "customer_name": order_name,
                 "customer_email": request.user.email or "test@fastcopy.in",
-                "customer_phone": user_mobile
+                "customer_phone": order_mobile
             },
             "order_meta": {
                 "return_url": return_url_for_api

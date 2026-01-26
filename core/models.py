@@ -105,6 +105,8 @@ class Order(models.Model):
     pages = models.IntegerField(default=1)
     custom_color_pages = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=100, null=True, blank=True)
+    mobile = models.CharField(max_length=15, null=True, blank=True, help_text="Contact number for this specific order")
+    customer_name = models.CharField(max_length=150, null=True, blank=True, help_text="Name for this specific order")
 
     document = models.FileField(upload_to='orders/pdfs/', max_length=500, null=True, blank=True)
     image_upload = models.ImageField(upload_to='orders/images/', null=True, blank=True)
@@ -188,6 +190,8 @@ class CartItem(models.Model):
     print_mode = models.CharField(max_length=50, null=True, blank=True)
     side_type = models.CharField(max_length=50, default='single')
     custom_color_pages = models.TextField(null=True, blank=True, default="")
+    mobile = models.CharField(max_length=15, null=True, blank=True)
+    customer_name = models.CharField(max_length=150, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -99,15 +99,26 @@
 
         /* Mobile View Transformation (Pin to Pin) */
         @media (max-width: 768px) {
-            .header { padding: 1rem; }
-            
-            .orders-section { padding: 1.25rem; }
+            .header {
+                padding: 1rem;
+            }
 
-            .orders-table, .orders-table thead, .orders-table tbody, .orders-table th, .orders-table td, .orders-table tr {
+            .orders-section {
+                padding: 1.25rem;
+            }
+
+            .orders-table,
+            .orders-table thead,
+            .orders-table tbody,
+            .orders-table th,
+            .orders-table td,
+            .orders-table tr {
                 display: block;
             }
 
-            .orders-table thead { display: none; }
+            .orders-table thead {
+                display: none;
+            }
 
             .orders-table tr {
                 margin-bottom: 1.5rem;
@@ -127,7 +138,9 @@
                 border-bottom: 1px dashed #f1f5f9;
             }
 
-            .orders-table td:last-child { border-bottom: none; }
+            .orders-table td:last-child {
+                border-bottom: none;
+            }
 
             .orders-table td::before {
                 content: attr(data-label);
@@ -142,8 +155,10 @@
                 max-width: 65%;
                 font-size: 0.85rem;
             }
-            
-            .status-select { width: 140px; }
+
+            .status-select {
+                width: 140px;
+            }
         }
     </style>
 </head>
@@ -152,7 +167,8 @@
     <header class="header d-flex justify-content-between align-items-center">
         <div>
             <h1>FastCopies</h1>
-            <p class="text-muted small mb-0 fw-medium">Delivery Personnel: <span class="text-dark">{{ delivery_name }}</span></p>
+            <p class="text-muted small mb-0 fw-medium">Delivery Personnel: <span class="text-dark">{{ delivery_name
+                    }}</span></p>
         </div>
         <a href="{% url 'delivery_logout' %}" class="logout-btn d-flex align-items-center gap-2">
             Logout <span>🚪</span>
@@ -162,7 +178,8 @@
     {% if messages %}
     <div class="container mt-4">
         {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible border-0 shadow-sm fade show" role="alert">
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible border-0 shadow-sm fade show"
+            role="alert">
             <span class="fw-medium">{{ message }}</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -177,14 +194,17 @@
                     <h2 class="h4 fw-bold mb-1">Assigned Tasks</h2>
                     <p class="text-muted small mb-0">You have <strong>{{ total_orders }}</strong> active shipments</p>
                 </div>
-                
+
                 <div class="d-flex gap-3 mt-3 mt-md-0">
                     <form method="GET" class="d-flex shadow-sm rounded-3 overflow-hidden">
-                        <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()" style="font-size: 0.9rem;">
-                            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Show All</option>
-                            <option value="Ready" {% if status_filter == 'Ready' %}selected{% endif %}>📦 Ready</option>
-                            <option value="Out for Delivery" {% if status_filter == 'Out for Delivery' %}selected{% endif %}>🚚 In Transit</option>
-                            <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>✅ Completed</option>
+                        <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()"
+                            style="font-size: 0.9rem;">
+                            <option value="all" {% if status_filter=='all' %}selected{% endif %}>Show All</option>
+                            <option value="Ready" {% if status_filter=='Ready' %}selected{% endif %}>📦 Ready</option>
+                            <option value="Out for Delivery" {% if status_filter=='Out for Delivery' %}selected{% endif
+                                %}>🚚 In Transit</option>
+                            <option value="Delivered" {% if status_filter=='Delivered' %}selected{% endif %}>✅ Completed
+                            </option>
                         </select>
                     </form>
                     <button onclick="window.location.reload()" class="btn btn-white border shadow-sm rounded-3">
@@ -212,27 +232,36 @@
                                 <span class="badge bg-light text-dark border p-2">#{{ order.order_id }}</span>
                             </td>
                             <td data-label="Customer">
-                                <div class="fw-bold text-dark">{{ order.user.get_full_name|default:order.user.username }}</div>
+                                <div class="fw-bold text-dark">{{
+                                    order.customer_name|default:order.user.get_full_name|default:order.user.username }}
+                                </div>
                             </td>
                             <td data-label="Contact">
-                                <a href="tel:{{ order.user.profile.mobile }}" class="btn btn-sm btn-outline-primary fw-bold py-1 px-3 rounded-pill">
-                                    {{ order.user.profile.mobile }}
+                                <a href="tel:{{ order.mobile|default:order.user.profile.mobile }}"
+                                    class="btn btn-sm btn-outline-primary fw-bold py-1 px-3 rounded-pill">
+                                    {{ order.mobile|default:order.user.profile.mobile }}
                                 </a>
                             </td>
                             <td data-label="Address">
                                 <div class="address-box text-muted">
-                                    {{ order.location|default:order.user.profile.address|default:"Location info missing" }}
+                                    {{ order.location|default:order.user.profile.address|default:"Location info missing"
+                                    }}
                                 </div>
                             </td>
                             <td data-label="Status Action">
                                 <form method="POST" action="{% url 'update_delivery_status' order.id %}">
                                     {% csrf_token %}
-                                    <select name="status" class="form-select status-select shadow-sm fw-bold" onchange="this.form.submit()"
+                                    <select name="status" class="form-select status-select shadow-sm fw-bold"
+                                        onchange="this.form.submit()"
                                         style="{% if order.status == 'Delivered' %}border-color: #22c55e; color: #15803d; background: #f0fdf4;{% elif order.status == 'Out for Delivery' %}border-color: #3b82f6; color: #1d4ed8; background: #eff6ff;{% endif %}">
-                                        <option value="Ready" {% if order.status == 'Ready' %}selected{% endif %}>Ready</option>
-                                        <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
-                                        <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
-                                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="Ready" {% if order.status=='Ready' %}selected{% endif %}>Ready
+                                        </option>
+                                        <option value="Out for Delivery" {% if order.status=='Out for Delivery'
+                                            %}selected{% endif %}>Out for Delivery</option>
+                                        <option value="Delivered" {% if order.status=='Delivered' %}selected{% endif %}>
+                                            Delivered</option>
+                                        <option value="Pending" {% if order.status=='Pending' %}selected{% endif %}>
+                                            Pending</option>
                                     </select>
                                 </form>
                             </td>
@@ -252,4 +281,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

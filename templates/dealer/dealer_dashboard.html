@@ -396,15 +396,15 @@
                 <div class="filter-group">
                     <label for="status">Order Status</label>
                     <select name="status" id="status" onchange="this.form.submit()">
-                        <option value="all" {% if status_filter == "all" %}selected{% endif %}>All Statuses</option>
-                        <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
-                        <option value="Confirmed" {% if status_filter == "Confirmed" %}selected{% endif %}>Confirmed
+                        <option value="all" {% if status_filter=="all" %}selected{% endif %}>All Statuses</option>
+                        <option value="Pending" {% if status_filter=="Pending" %}selected{% endif %}>Pending</option>
+                        <option value="Confirmed" {% if status_filter=="Confirmed" %}selected{% endif %}>Confirmed
                         </option>
-                        <option value="Ready" {% if status_filter == "Ready" %}selected{% endif %}>Ready</option>
-                        <option value="Delivered" {% if status_filter == "Delivered" %}selected{% endif %}>Delivered
+                        <option value="Ready" {% if status_filter=="Ready" %}selected{% endif %}>Ready</option>
+                        <option value="Delivered" {% if status_filter=="Delivered" %}selected{% endif %}>Delivered
                         </option>
-                        <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
-                        <option value="Cancelled" {% if status_filter == "Cancelled" %}selected{% endif %}>Cancelled
+                        <option value="Rejected" {% if status_filter=="Rejected" %}selected{% endif %}>Rejected</option>
+                        <option value="Cancelled" {% if status_filter=="Cancelled" %}selected{% endif %}>Cancelled
                         </option>
                     </select>
                 </div>
@@ -412,13 +412,13 @@
                 <div class="filter-group">
                     <label for="service">Service Type</label>
                     <select name="service" id="service" onchange="this.form.submit()">
-                        <option value="all" {% if service_filter == "all" %}selected{% endif %}>All Services</option>
-                        <option value="printing" {% if service_filter == "printing" %}selected{% endif %}>Printing
+                        <option value="all" {% if service_filter=="all" %}selected{% endif %}>All Services</option>
+                        <option value="printing" {% if service_filter=="printing" %}selected{% endif %}>Printing
                         </option>
-                        <option value="spiral" {% if service_filter == "spiral" %}selected{% endif %}>Spiral Binding
+                        <option value="spiral" {% if service_filter=="spiral" %}selected{% endif %}>Spiral Binding
                         </option>
-                        <option value="soft" {% if service_filter == "soft" %}selected{% endif %}>Soft Binding</option>
-                        <option value="custom" {% if service_filter == "custom" %}selected{% endif %}>Custom Print
+                        <option value="soft" {% if service_filter=="soft" %}selected{% endif %}>Soft Binding</option>
+                        <option value="custom" {% if service_filter=="custom" %}selected{% endif %}>Custom Print
                         </option>
                     </select>
                 </div>
@@ -438,6 +438,7 @@
                         <th>Order ID</th>
                         <th>Date & Time</th>
                         <th>Service</th>
+                        <th>Contact</th>
                         <th>Copies</th>
                         <th>Mode</th>
                         <th>Amount</th>
@@ -455,7 +456,14 @@
                             <div style="font-size: 12px; color: #94a3b8;">{{ order.created_at|time:"h:i A" }}</div>
                         </td>
                         <td>{{ order.service_name|default:"General" }}</td>
-                        <td><span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">{{ order.copies }}</span></td>
+                        <td>
+                            <a href="tel:{{ order.mobile|default:order.user.profile.mobile }}"
+                                style="text-decoration: none; font-weight: 600; color: #4f46e5; background: #eef2ff; padding: 4px 10px; border-radius: 20px; font-size: 13px;">
+                                {{ order.mobile|default:order.user.profile.mobile }}
+                            </a>
+                        </td>
+                        <td><span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px;">{{ order.copies
+                                }}</span></td>
                         <td>{{ order.print_mode|upper }} ({{ order.side_type|title }})</td>
                         <td><strong style="color: #0f172a;">₹{{ order.dealer_amount|floatformat:2 }}</strong></td>
                         <td>
@@ -477,9 +485,9 @@
                             <form method="POST" action="{% url 'update_order_status' order.id %}">
                                 {% csrf_token %}
                                 <select name="status" class="status-select" onchange="this.form.submit()">
-                                    <option value="Pending" {% if order.status == "Pending" %}selected{% endif %}>Pending
+                                    <option value="Pending" {% if order.status=="Pending" %}selected{% endif %}>Pending
                                     </option>
-                                    <option value="Ready" {% if order.status == "Ready" %}selected{% endif %}>Ready
+                                    <option value="Ready" {% if order.status=="Ready" %}selected{% endif %}>Ready
                                     </option>
                                 </select>
                             </form>

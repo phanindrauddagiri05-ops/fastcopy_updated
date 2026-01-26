@@ -2,52 +2,60 @@
 {% block content %}
 <section class="py-24 min-h-screen flex items-center justify-center bg-slate-50">
     <div class="container mx-auto px-4">
-        <div class="max-w-md mx-auto bg-white border border-slate-200 p-8 md:p-10 rounded-[2.5rem] shadow-2xl shadow-slate-200/50" data-aos="fade-up">
-            
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-black italic text-slate-900">SYNC <span class="text-blue-600">PROFILE</span></h2>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">Update your campus credentials</p>
-                
-                <div class="mt-4 inline-block px-4 py-1 bg-blue-50 border border-blue-100 rounded-full">
-                    <span class="text-blue-600 font-black text-[10px] uppercase tracking-tighter">
+        <div class="max-w-lg mx-auto bg-white border border-slate-200 p-8 md:p-12 rounded-[2.5rem] shadow-2xl shadow-slate-200/50"
+            data-aos="fade-up">
+
+            <div class="text-center mb-10">
+                <h2 class="text-3xl md:text-4xl font-black italic text-slate-900">SYNC <span
+                        class="text-blue-600">PROFILE</span></h2>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">Update your campus
+                    credentials</p>
+
+                <div class="mt-4 inline-block px-5 py-1.5 bg-blue-50 border border-blue-100 rounded-full">
+                    <span class="text-blue-600 font-black text-[11px] uppercase tracking-tighter">
                         ID: {{ profile.fc_user_id }}
                     </span>
                 </div>
             </div>
 
-            <form action="{% url 'edit_profile' %}" method="POST" class="space-y-4">
+            <form action="{% url 'edit_profile' %}" method="POST" class="space-y-6">
                 {% csrf_token %}
-                
+
                 <div>
-                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Full Name</label>
-                    <input type="text" name="name" value="{{ request.user.first_name }}" 
-                           pattern="[A-Za-z\s]+" title="Only letters are allowed"
-                           class="custom-input bg-slate-50 border-slate-200" required>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Full
+                        Name</label>
+                    <input type="text" name="name" value="{{ request.user.first_name }}" pattern="[A-Za-z\s]+"
+                        title="Only letters are allowed" class="custom-input bg-slate-50 border-slate-200" required>
                 </div>
 
                 <div>
-                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Email Address</label>
-                    <input type="email" name="email" value="{{ request.user.email }}" 
-                           class="custom-input bg-slate-50 border-slate-200" required>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Email
+                        Address</label>
+                    <input type="email" name="email" value="{{ request.user.email }}"
+                        class="custom-input bg-slate-50 border-slate-200" required>
                 </div>
 
                 <div>
-                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Mobile Access</label>
-                    <input type="tel" name="mobile" value="{{ profile.mobile }}" 
-                           pattern="\d{10}" title="10 Digit Number Required"
-                           class="custom-input bg-slate-50 border-slate-200" required>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Mobile
+                        Access</label>
+                    <input type="tel" name="mobile" value="{{ profile.mobile }}" pattern="\d{10}"
+                        title="10 Digit Number Required" class="custom-input bg-slate-50 border-slate-200" required>
                 </div>
 
                 <div>
-                    <label class="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Campus / Home Address</label>
-                    <textarea name="address" rows="3" class="custom-input pt-4 bg-slate-50 border-slate-200" required>{{ profile.address }}</textarea>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ms-2">Campus /
+                        Home Address</label>
+                    <textarea name="address" rows="3" class="custom-input pt-4 bg-slate-50 border-slate-200"
+                        required>{{ profile.address }}</textarea>
                 </div>
 
                 <div class="pt-4 space-y-3">
-                    <button type="submit" class="btn-3d w-full bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-95">
+                    <button type="submit"
+                        class="btn-3d w-full bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-95">
                         Update All Records
                     </button>
-                    <a href="{% url 'profile' %}" class="block text-center text-slate-400 text-[9px] font-black uppercase tracking-widest py-2 no-underline hover:text-slate-600 transition-colors">
+                    <a href="{% url 'profile' %}"
+                        class="block text-center text-slate-400 text-[9px] font-black uppercase tracking-widest py-2 no-underline hover:text-slate-600 transition-colors">
                         Cancel & Return
                     </a>
                 </div>
@@ -69,11 +77,13 @@
         transition: all 0.3s ease;
         outline: none;
     }
+
     .custom-input:focus {
         border-color: #2563eb;
         background-color: white;
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
+
     .btn-3d {
         cursor: pointer;
         display: block;
