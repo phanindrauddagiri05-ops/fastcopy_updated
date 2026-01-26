@@ -21,6 +21,11 @@ CSRF_TRUSTED_ORIGINS = [
     'http://194.163.173.57'
 ]
 
+# Production Security Settings (Critical for Reverse Proxy/SSL)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
+
 # --- 💳 CASHFREE PAYMENT GATEWAY CONFIG (Production Environment) ---
 CASHFREE_APP_ID = os.getenv('CASHFREE_APP_ID')
 CASHFREE_SECRET_KEY = os.getenv('CASHFREE_SECRET_KEY')
