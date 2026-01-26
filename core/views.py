@@ -165,6 +165,10 @@ def register_view(request):
         if User.objects.filter(username=mobile).exists():
             messages.error(request, "Mobile number already registered.")
             return redirect('register')
+            
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email address already registered.")
+            return redirect('register')
 
         confirm_password = request.POST.get('confirm_password', '')
 
