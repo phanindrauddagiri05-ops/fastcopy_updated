@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /checkout/
+Disallow: /payment/
+Disallow: /dealer/
+Disallow: /profile/
+Disallow: /login/
+Disallow: /register/
+Disallow: /logout/
+Disallow: /media/uploads/
+
+# Sitemap location
+Sitemap: https://fastcopies.in/sitemap.xml
