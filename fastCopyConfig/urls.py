@@ -29,6 +29,7 @@ urlpatterns = [
     path('robots.txt', robots_txt, name='robots'),
     
     # 🏠 Core App URLs
+    path('accounts/', include('allauth.urls')),
     path('', include('core.urls')),
 ]
 

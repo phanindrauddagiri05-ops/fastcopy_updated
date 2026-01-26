@@ -96,8 +96,10 @@
                                         <div class="col-md-6 col-6">
                                             <label
                                                 class="form-label mb-1 small fw-bold text-muted text-uppercase">Mobile</label>
-                                            <input type="text" name="mobile_number" id="user_mobile"
-                                                value="{{ user.username }}"
+                                            <input type="tel" name="mobile_number" id="user_mobile"
+                                                value="{{ user.profile.mobile|default:'' }}" pattern="\d{10}"
+                                                maxlength="10" placeholder="10-digit Number"
+                                                title="Please enter exactly 10 digits"
                                                 class="form-control form-control-sm bg-light border-0 rounded-3 fw-bold"
                                                 required>
                                         </div>
@@ -379,6 +381,11 @@
         this.value = this.value.replace(/[^0-9,-]/g, '');
     });
 
+    // Restrict Mobile Field to Numbers Only
+    $('#user_mobile').on('input', function () {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
+
     function checkLoginBeforeUpload(event) {
         const isAuth = $('#is-user-authenticated').val() === 'true';
         if (!isAuth) {
@@ -453,6 +460,14 @@
         if (!locationSelected) {
             alert("Please select your Campus Location.");
             $('#location').focus();
+            return;
+        }
+
+        // Validate Mobile Number (10 Digits)
+        const mobileNum = $('#user_mobile').val().trim();
+        if (!/^\d{10}$/.test(mobileNum)) {
+            alert("Please enter a valid 10-digit mobile number.");
+            $('#user_mobile').focus();
             return;
         }
 
@@ -616,6 +631,10 @@
                 $('#btn-add-to-cart, #btn-order-now').prop('disabled', false).removeClass('opacity-50');
             };
             reader.readAsDataURL(file);
+        } else {
+            // Unsupported file type
+            alert("Unsupported file format. Please upload PDF or Image files only.");
+            resetUpload();
         }
     });
 

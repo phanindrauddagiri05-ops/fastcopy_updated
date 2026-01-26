@@ -231,3 +231,40 @@ def send_order_notification_emails(order):
         import traceback
         traceback.print_exc()
         return False
+
+def send_welcome_email(user):
+    """
+    Sends a warm welcome email to new users.
+    """
+    try:
+        if not user.email: return
+        
+        subject = "Welcome to FastCopy! 🖨️"
+        message = f"""
+        Hi {user.first_name or user.username},
+
+        Welcome to the FastCopy family! We're thrilled to have you on board.
+
+        At FastCopy, we make printing simple, fast, and hassle-free. 
+        Whether you need lecture notes, project reports, or thesis binding, we've got you covered.
+
+        🚀 Get Started:
+        1. Upload your documents.
+        2. Customize your print settings.
+        3. Get it delivered to your doorstep!
+
+        Head over to your dashboard and place your first order today:
+        {settings.COMPANY_WEBSITE}
+
+        If you have any questions, feel free to reply to this email.
+
+        Happy Printing!
+        
+        Cheers,
+        The FastCopy Team
+        """
+        
+        send_mail_async(subject, message, [user.email])
+        print(f"✅ Welcome email sent to {user.email}")
+    except Exception as e:
+        print(f"❌ Error sending welcome email: {e}")

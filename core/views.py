@@ -178,6 +178,11 @@ def register_view(request):
 
         user = User.objects.create_user(username=mobile, password=password, first_name=full_name, email=email)
         UserProfile.objects.create(user=user, mobile=mobile, address=address)
+        
+        # Send Welcome Email
+        from .utils import send_welcome_email
+        send_welcome_email(user)
+        
         messages.success(request, "Account created successfully! Please login.")
         return redirect('login')
     return render(request, 'core/register.html')
@@ -470,6 +475,15 @@ def add_to_cart(request):
             is_pdf = doc_name.lower().endswith('.pdf')
 
         service_name = request.POST.get('service_name')
+        
+        # [FIX] Capture Mobile Number if provided (for Google users)
+        mobile_number = request.POST.get('mobile_number')
+        if mobile_number and hasattr(request.user, 'profile'):
+            if not request.user.profile.mobile:
+                request.user.profile.mobile = mobile_number
+                request.user.profile.save()
+        
+        print_mode = request.POST.get('print_mode', 'B&W')
         print_mode = request.POST.get('print_mode', 'B&W')
         item = {
             'service_name': service_name, 'total_price': request.POST.get('total_price_hidden'),
@@ -514,6 +528,8 @@ def remove_from_cart(request, item_id):
 
 @login_required(login_url='login')
 def order_all(request):
+
+
     cart = CartItem.objects.filter(user=request.user)
     if not cart.exists():
         messages.error(request, "Your cart is empty.")
@@ -544,6 +560,15 @@ def order_now(request):
             doc_name = uploaded_file.name
             file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}_{doc_name}', ContentFile(uploaded_file.read()))
             is_pdf = doc_name.lower().endswith('.pdf')
+
+        # [FIX] Capture Mobile Number if provided (for Google users)
+        mobile_number = request.POST.get('mobile_number')
+        if mobile_number and hasattr(request.user, 'profile'):
+             # Update profile if empty or force update? 
+             # Let's update if empty OR if valid number provided to ensure latest contact info
+            request.user.profile.mobile = mobile_number
+            request.user.profile.address = request.POST.get('location') # Also good to sync location if needed?
+            request.user.profile.save()
 
         request.session['direct_item'] = {
             'service_name': request.POST.get('service_name'), 'total_price': request.POST.get('total_price_hidden'),
@@ -582,6 +607,12 @@ def process_direct_order(request):
             file_path = default_storage.save(f'temp/direct_{uuid.uuid4()}', ContentFile(uploaded_file.read()))
             is_pdf = doc_name.lower().endswith('.pdf')
 
+        # [FIX] Capture Mobile Number if provided (for Google users)
+        mobile_number = request.POST.get('mobile_number')
+        if mobile_number and hasattr(request.user, 'profile'):
+            request.user.profile.mobile = mobile_number
+            request.user.profile.save()
+
         direct_item = {
             'service_name': request.POST.get('service_name'), 'total_price': request.POST.get('total_price_hidden'),
             'document_name': doc_name, 'temp_path': file_path if is_pdf else None,
@@ -598,6 +629,7 @@ def process_direct_order(request):
 
 @login_required(login_url='login')
 def cart_checkout_summary(request):
+
     batch_txn_id = request.session.get('pending_batch_id', '')
     if batch_txn_id.startswith("DIR"):
         items = [request.session.get('direct_item')] if request.session.get('direct_item') else []

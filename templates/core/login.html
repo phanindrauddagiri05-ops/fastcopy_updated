@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load socialaccount %}
 {% block content %}
 <section class="min-vh-100 flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-50">
     <div class="absolute top-0 left-0 w-64 h-64 bg-blue-600/5 blur-[100px] rounded-full floating-3d"></div>
@@ -62,6 +63,23 @@
                             Sign In <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
                         </button>
                     </form>
+
+                    <div class="text-center my-4 relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-slate-100"></div>
+                        </div>
+                        <div class="relative flex justify-center text-xs">
+                            <span class="px-2 bg-white text-slate-400 font-bold uppercase tracking-widest text-[9px]">Or
+                                continue with</span>
+                        </div>
+                    </div>
+
+                    <a href="{% provider_login_url 'google' %}"
+                        class="btn-3d w-100 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2 no-underline group">
+                        <img src="https://cdnjs.cloudflare.com/ajax/libs/simple-icons/11.12.0/google.svg"
+                            class="w-4 h-4 group-hover:scale-110 transition-transform" alt="Google">
+                        Google
+                    </a>
 
                     <div class="mt-8 text-center pt-6 border-top border-slate-50">
                         <p class="text-slate-400 font-bold text-[9px] uppercase tracking-widest mb-2">New to FastCopies?
