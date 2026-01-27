@@ -119,15 +119,10 @@ delivery!{%endblock %}
                         class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0">
                         <i class="fas fa-book me-1"></i> Soft
                     </button>
-                    <div class="position-relative">
-                        <button
-                            class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0 opacity-50"
-                            style="cursor: help;" title="Launching Soon!">
-                            <i class="fas fa-sliders-h me-1"></i> Custom
-                        </button>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                            style="font-size: 0.5rem; z-index: 10;">Soon</span>
-                    </div>
+                    <button id="tab-Custom" onclick="selectService(this, 'Custom Printing', '#fd7e14', 'fa-sliders-h')"
+                        class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0">
+                        <i class="fas fa-sliders-h me-1"></i> Custom
+                    </button>
                     <div class="position-relative">
                         <button
                             class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0 opacity-50"
@@ -213,8 +208,8 @@ delivery!{%endblock %}
                                             <select name="layout_type" id="layout_type"
                                                 class="form-select form-select-sm bg-light border-0 rounded-3 fw-bold">
                                                 <option value="1/4">1/4 Layout</option>
-                                                <option value="1/8">1/8 Layout</option>
-                                                <option value="1/9">1/9 Layout</option>
+                                                <!-- <option value="1/8">1/8 Layout</option>
+                                                <option value="1/9">1/9 Layout</option> -->
                                             </select>
                                         </div>
 
@@ -324,7 +319,7 @@ delivery!{%endblock %}
                             <div class="row mt-3 g-0 rounded-4 overflow-hidden border">
                                 <div class="col-lg-6 p-3 p-md-4" style="background-color: #f5f7fa;">
                                     <h6 class="fw-black text-secondary text-uppercase mb-1" style="font-size: 0.7rem;">
-                                        Rates Summary</h6>
+                                        Cost Summary</h6>
                                     <div class="row g-1 fw-bold text-uppercase" id="service-price-menu"
                                         style="font-size: 0.75rem;"></div>
                                     <div id="binding-summary-row"
@@ -466,10 +461,10 @@ delivery!{%endblock %}
     {% endif %}
 
     const priceCards = {
-        "Printing": `<div class="col-6 text-muted">B&W: ₹${PRICE_PER_PAGE_BW}/p (Single Side)</div><div class="col-6 text-muted">B&W (Double Side): ₹${PRICE_PER_PAGE_BW_DOUBLE}/p</div><div class="col-6 text-primary">Color: ₹${PRICE_PER_PAGE_COLOR}/p (Single Side)</div><div class="col-6 text-primary">Color (Double Side): ₹${PRICE_PER_PAGE_COLOR_DOUBLE}/p</div>`,
+        "Printing": `<div class="col-6 text-muted">B&W (Single Side): ₹${PRICE_PER_PAGE_BW}/p</div><div class="col-6 text-muted">B&W (Double Side): ₹${PRICE_PER_PAGE_BW_DOUBLE}/p</div><div class="col-6 text-primary">Color (Single Side): ₹${PRICE_PER_PAGE_COLOR}/p</div><div class="col-6 text-primary">Color (Double Side): ₹${PRICE_PER_PAGE_COLOR_DOUBLE}/p</div>`,
         "Spiral Binding": `<div class="col-6 text-muted">1-40p: ₹${SPIRAL_BINDING}</div><div class="col-6 text-muted">41-60p: ₹${SPIRAL_TIER2}</div><div class="col-6 text-muted">61-90p: ₹${SPIRAL_TIER3}</div><div class="col-6 text-info">90+: +₹${SPIRAL_EXTRA}/20p</div>`,
         "Soft Binding": `<div class="col-12 text-info text-center">Flat Binding: ₹${SOFT_BINDING}</div>`,
-        "Custom Printing": `<div class="col-6 text-muted">1/4: ₹${CUSTOM_1_4} (Single Side)</div><div class="col-6 text-muted">1/8: ₹${CUSTOM_1_8} (Single Side)</div><div class="col-6 text-muted">1/8 (Double Side): ₹${CUSTOM_1_8_DOUBLE}</div><div class="col-6 text-muted">1/9: ₹${CUSTOM_1_9} (Single Side)</div><div class="col-6 text-muted">1/9 (Double Side): ₹${CUSTOM_1_9_DOUBLE}</div>`,
+        "Custom Printing": `<div class="col-6 text-muted">1/4 (Single Side): ₹${CUSTOM_1_4}</div>`,
     };
 
     // New restriction: Allow only numbers, commas, and hyphens in custom split input
