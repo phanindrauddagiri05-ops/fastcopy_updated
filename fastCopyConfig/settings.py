@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware", # [OPTIMIZATION] Static File Compression
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -174,6 +175,14 @@ USE_TZ = True # Keeps internal storage robust while displaying IST
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# [OPTIMIZATION] WhiteNoise Storage (Compression + Caching)
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# [OPTIMIZATION] Database Pooling (Persistent Connections)
+# This keeps the connection open for 60 seconds, preventing overhead of re-connecting for every user.
+if 'default' in DATABASES:
+    DATABASES['default']['CONN_MAX_AGE'] = 60
 
 # 9. MEDIA FILES (For uploaded PDF/Image files)
 MEDIA_URL = '/media/'

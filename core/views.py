@@ -516,7 +516,16 @@ def cart_page(request):
     request.session.modified = True
     total_bill = sum(float(i.total_price) for i in db_items)
     total_eff_pages = sum(int(i.pages) * int(i.copies) for i in db_items)
-    context = {'cart_items': cart_list, 'total_bill': round(total_bill, 2), 'total_pages': total_eff_pages, 'min_required': 5}
+    min_required = 5
+    remaining_pages = max(0, min_required - total_eff_pages)
+    
+    context = {
+        'cart_items': cart_list, 
+        'total_bill': round(total_bill, 2), 
+        'total_pages': total_eff_pages, 
+        'min_required': min_required,
+        'remaining_pages': remaining_pages
+    }
     return render(request, 'core/cart.html', context)
 
 @login_required(login_url='login')
