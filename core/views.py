@@ -92,26 +92,27 @@ def handle_failed_order(user, txn_id, reason="Payment Failed"):
             order.save()
             last_order = order
             
-            # [ENHANCED] Restore to DB Cart for ALL cancelled/failed orders
-            # This allows the user to try again easily
-            # We use the order details to reconstruct the cart item
-            CartItem.objects.get_or_create(
-                user=user,
-                service_name=order.service_name,
-                document_name=order.document.name.split('/')[-1] if order.document else (order.image_upload.name.split('/')[-1] if order.image_upload else "Restored Document"),
-                defaults={
-                    'total_price': order.total_price,
-                    # Note: We can't easily recover the original temp_path if it was deleted, 
-                    # but if the file is in Order.document, we might strictly not need temp_path for valid cart items if logic handles it.
-                    # ideally we rely on the file being present.
-                    'copies': order.copies,
-                    'pages': order.pages,
-                    'location': order.location,
-                    'print_mode': order.print_mode,
-                    'side_type': order.side_type,
-                    'custom_color_pages': order.custom_color_pages
-                }
-            )
+            # [FIXED] Prevent Duplication: Only restore to Cart if it wasn't already there.
+            # 'TXN' prefix = Order came from Cart (Items still exist in cart, don't restore)
+            # 'DIR' prefix = Order came from Direct Buy (Items not in cart, must restore)
+            is_cart_order = str(txn_id).startswith("TXN")
+            
+            if not is_cart_order:
+                # Restore to DB Cart for Direct Orders
+                CartItem.objects.get_or_create(
+                    user=user,
+                    service_name=order.service_name,
+                    document_name=order.document.name.split('/')[-1] if order.document else (order.image_upload.name.split('/')[-1] if order.image_upload else "Restored Document"),
+                    defaults={
+                        'total_price': order.total_price,
+                        'copies': order.copies,
+                        'pages': order.pages,
+                        'location': order.location,
+                        'print_mode': order.print_mode,
+                        'side_type': order.side_type,
+                        'custom_color_pages': order.custom_color_pages
+                    }
+                )
         return last_order
 
 def cleanup_payment_session(request):
@@ -520,10 +521,18 @@ def cart_page(request):
 
 @login_required(login_url='login')
 def remove_from_cart(request, item_id):
-    item = get_object_or_404(CartItem, id=item_id, user=request.user)
-    name = item.service_name
-    item.delete()
-    messages.success(request, f"Removed '{name}' from your cart.")
+    # Use filter().first() instead of get_object_or_404 to gracefully handle 
+    # double-clicks or already removed items without showing a 404 error
+    item = CartItem.objects.filter(id=item_id, user=request.user).first()
+    
+    if item:
+        name = item.service_name
+        item.delete()
+        messages.success(request, f"Removed '{name}' from your cart.")
+    else:
+        # Silently redirect or show a minor warning if item is already gone
+        messages.warning(request, "Item already removed from cart.")
+        
     return redirect('cart')
 
 # --- 🚀 3. ORDER & CHECKOUT FLOW ---
@@ -842,6 +851,7 @@ def initiate_payment(request):
         final_total = original_total - discount_amount
         
         with transaction.atomic():
+            # Calculate item-specific discount (Proportional)
             for item in items_to_process:
                 # Validation: Ensure critical fields exist
                 service_name = item.get('service_name', 'Printing')
@@ -850,15 +860,21 @@ def initiate_payment(request):
                 except:
                     total_price = 0.0
 
+                # Calculate specific discount for this item
+                item_discount = 0
+                if applied_coupon_code and items_total > 0 and discount_amount > 0:
+                    ratio = total_price / items_total
+                    item_discount = round(discount_amount * ratio, 2)
+
                 # Create the order object
                 order_obj = Order.objects.create(
                     transaction_id=unique_order_id, 
                     user=request.user,
                     service_name=service_name,
                     total_price=total_price, 
-                    original_price=original_total if applied_coupon_code else None,
+                    original_price=total_price if applied_coupon_code else None, # Set to ITEM price, not total
                     coupon_code=applied_coupon_code if applied_coupon_code else None,
-                    discount_amount=discount_amount if discount_amount > 0 else 0,
+                    discount_amount=item_discount, # Set to PROPORTIONAL discount
                     location=item.get('location', ''), 
                     print_mode=item.get('print_mode', 'bw'), 
                     side_type=item.get('side_type', 'single'),
@@ -1084,6 +1100,20 @@ def payment_callback(request):
         
         # 1. Finalize the order in the database (Using RECOVERED USER)
         process_successful_order(user_to_use, txn_id)
+
+        # [MOVED UP] Cleanup Cart for this User immediately after success
+        # Logic: If this was a DIRECT order (DIR_), do NOT wipe the cart.
+        # If this was a CART order (TXN_), wipe the cart.
+        
+        is_direct = str(txn_id).startswith("DIR")
+        print(f"🛒 Cart Cleanup: txn_id={txn_id}, is_direct={is_direct}")
+        
+        if not is_direct:
+            # Cart Checkout -> Clear entire cart
+            deleted_count, _ = CartItem.objects.filter(user=user_to_use).delete()
+            print(f"🧹 Deleted {deleted_count} items from cart for user {user_to_use.username}")
+            if 'cart' in request.session: request.session['cart'] = []
+            request.session.modified = True
         
         # 2. Email notifications (Async)
         successful_orders = Order.objects.filter(transaction_id=txn_id, payment_status='Success')
@@ -1094,19 +1124,6 @@ def payment_callback(request):
                 send_all_order_notifications(order)
             except Exception as e:
                 print(f"⚠️ Email notification error for order {order.order_id}: {str(e)}")
-        
-        print(f"✅ Payment successful! Order processed and emails triggered.")
-        
-        # 3. Cleanup Cart for this User
-        # Logic: If this was a DIRECT order (DIR_), do NOT wipe the cart.
-        # If this was a CART order (TXN_), wipe the cart.
-        
-        is_direct = str(txn_id).startswith("DIR")
-        
-        if not is_direct:
-            # Cart Checkout -> Clear entire cart
-            CartItem.objects.filter(user=user_to_use).delete()
-            if 'cart' in request.session: request.session['cart'] = []
         
         # Always clear direct item from session if present
         if 'direct_item' in request.session: del request.session['direct_item']
@@ -1447,7 +1464,8 @@ def dealer_download_file(request, order_id):
         file_path = file_field.path
         if not os.path.exists(file_path): raise Http404("File missing")
         _, ext = os.path.splitext(file_field.name)
-        response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=f"{order.order_id}{ext}")
+        # [FIX] Set as_attachment=False to view inline instead of verify download
+        response = FileResponse(open(file_path, 'rb'), as_attachment=False, filename=f"{order.order_id}{ext}")
         return response
     except Exception as e: raise Http404(f"Error: {str(e)}")
 

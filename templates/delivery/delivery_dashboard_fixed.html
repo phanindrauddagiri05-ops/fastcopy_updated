@@ -1,283 +1,297 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Dashboard - FastCopies</title>
+    <title>Delivery Pro - FastCopies</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --accent-color: #ea580c;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-neon: #818cf8;
+            --text-dim: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.7);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            -webkit-font-smoothing: antialiased;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
         }
 
-        /* Enhanced Header */
-        .header {
-            background: var(--card-bg);
-            padding: 1.25rem 2rem;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        .glass-nav {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
+        .brand-logo {
+            font-size: 1.4rem;
             font-weight: 800;
-            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-        }
-
-        .logout-btn {
-            background: #fee2e2;
-            color: #ef4444;
-            border-radius: 10px;
-            font-weight: 600;
-            padding: 8px 18px;
+            color: #fff;
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
-            transform: translateY(-1px);
+        .hero-stat {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.25rem;
+            height: 100%;
         }
 
-        /* Dashboard Container */
-        .orders-section {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 16px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Table UI */
-        .orders-table thead th {
-            background: #f1f5f9;
-            font-size: 0.75rem;
+        .stat-label {
+            color: var(--text-dim);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            border: none;
-            padding: 15px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
         }
 
-        .orders-table tbody tr {
-            transition: background 0.2s ease;
-            vertical-align: middle;
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
         }
 
-        .orders-table tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .status-select {
-            font-size: 0.85rem;
-            border-radius: 8px;
-            padding: 0.5rem;
-            border: 1px solid #cbd5e1;
+        .filter-box {
+            flex: 1;
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
             cursor: pointer;
+            outline: none;
         }
 
-        /* Mobile View Transformation (Pin to Pin) */
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
+        .main-card {
+            background: var(--glass);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+        }
+
+        .delivery-row {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid transparent;
+            overflow: hidden;
+        }
+
+        .id-pill {
+            background: rgba(129, 140, 248, 0.15);
+            color: var(--accent-neon);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-block;
+        }
+
+        .btn-call {
+            background: #fff;
+            color: #000 !important;
+            border-radius: 12px;
+            font-weight: 800;
+            padding: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-call:hover {
+            background: var(--accent-neon);
+            color: #fff !important;
+        }
+
+        .status-ready { border-left-color: #f59e0b; }
+        .status-transit { border-left-color: #3b82f6; }
+        .status-done { border-left-color: #10b981; }
+
+        .custom-select-dark {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-radius: 12px;
+            padding: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            width: 100%;
+        }
+
+        @media (max-width: 991px) {
+            .mobile-stack-row {
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             }
 
-            .orders-section {
-                padding: 1.25rem;
-            }
-
-            .orders-table,
-            .orders-table thead,
-            .orders-table tbody,
-            .orders-table th,
-            .orders-table td,
-            .orders-table tr {
-                display: block;
-            }
-
-            .orders-table thead {
-                display: none;
-            }
-
-            .orders-table tr {
-                margin-bottom: 1.5rem;
-                border: 1px solid #e2e8f0;
-                border-radius: 16px;
-                padding: 1.25rem;
-                background: white;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            }
-
-            .orders-table td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border: none;
-                padding: 10px 0;
-                border-bottom: 1px dashed #f1f5f9;
-            }
-
-            .orders-table td:last-child {
+            .mobile-stack-row:last-child {
                 border-bottom: none;
             }
 
-            .orders-table td::before {
-                content: attr(data-label);
-                font-weight: 700;
-                color: var(--text-muted);
-                text-transform: uppercase;
-                font-size: 0.7rem;
+            .btn-call {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+                border-radius: 8px;
             }
 
-            .address-box {
-                text-align: right;
-                max-width: 65%;
-                font-size: 0.85rem;
+            #logout {
+                font-size: 15px;
             }
 
-            .status-select {
-                width: 140px;
+            #fastcopy_head {
+                font-size: 16px;
             }
         }
     </style>
 </head>
 
 <body>
-    <header class="header d-flex justify-content-between align-items-center">
-        <div>
-            <h1>FastCopies</h1>
-            <p class="text-muted small mb-0 fw-medium">Delivery Personnel: <span class="text-dark">{{ delivery_name
-                    }}</span></p>
-        </div>
-        <a href="{% url 'delivery_logout' %}" class="logout-btn d-flex align-items-center gap-2">
-            Logout <span>🚪</span>
-        </a>
-    </header>
-
-    {% if messages %}
-    <div class="container mt-4">
-        {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible border-0 shadow-sm fade show"
-            role="alert">
-            <span class="fw-medium">{{ message }}</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <main class="container my-5">
-        <div class="orders-section">
-            <div class="d-md-flex justify-content-between align-items-center mb-5">
-                <div>
-                    <h2 class="h4 fw-bold mb-1">Assigned Tasks</h2>
-                    <p class="text-muted small mb-0">You have <strong>{{ total_orders }}</strong> active shipments</p>
+    <nav class="glass-nav">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="#" class="brand-logo">
+                <img src="{% static 'images/fastcopies_logo.png' %}" alt="FastCopies"
+                    style="height: 45px; width: auto; border-radius: 8px;">
+                <div id="fastcopy_head">
+                    <span style="color: var(--accent-neon); font-weight: 800; font-style: italic;">FAST</span><span
+                        style="color: #fff; font-weight: 800; font-style: italic;">COPIES</span><br>
+                    <span style="font-weight: 300; opacity: 0.5;">DELIVERY</span>
                 </div>
+            </a>
+            <a href="{% url 'delivery_logout' %}" class="btn btn-outline-light btn-sm rounded-pill px-3"
+                id="logout">LOGOUT 🚪</a>
+        </div>
+    </nav>
 
-                <div class="d-flex gap-3 mt-3 mt-md-0">
-                    <form method="GET" class="d-flex shadow-sm rounded-3 overflow-hidden">
-                        <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()"
-                            style="font-size: 0.9rem;">
-                            <option value="all" {% if status_filter=='all' %}selected{% endif %}>Show All</option>
-                            <option value="Ready" {% if status_filter=='Ready' %}selected{% endif %}>📦 Ready</option>
-                            <option value="Out for Delivery" {% if status_filter=='Out for Delivery' %}selected{% endif
-                                %}>🚚 In Transit</option>
-                            <option value="Delivered" {% if status_filter=='Delivered' %}selected{% endif %}>✅ Completed
-                            </option>
-                        </select>
-                    </form>
-                    <button onclick="window.location.reload()" class="btn btn-white border shadow-sm rounded-3">
-                        🔄 <span class="d-none d-md-inline ms-1">Refresh</span>
-                    </button>
+    <div class="container py-4">
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="hero-stat text-center">
+                    <div class="stat-label">Tasks</div>
+                    <div class="h2 fw-bold mb-0 text-primary">{{ total_orders }}</div>
                 </div>
             </div>
+            <div class="col-6 col-md-3">
+                <div class="hero-stat text-center">
+                    <div class="stat-label">Date</div>
+                    <div class="h2 fw-bold mb-0">{% now "d M" %}</div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="hero-stat d-flex align-items-center justify-content-between px-4">
+                    <div>
+                        <div class="stat-label">System Status</div>
+                        <span class="h5 fw-bold text-success mb-0">🟢 CONNECTED</span>
+                    </div>
+                    <button onclick="window.location.reload()" class="btn btn-dark rounded-circle p-2">🔄</button>
+                </div>
+            </div>
+        </div>
+
+        <form method="GET" class="filter-container">
+            <select name="date_filter" class="filter-box" onchange="this.form.submit()">
+                <option value="all" {% if date_filter == 'all' %}selected{% endif %}>📅 All Time</option>
+                <option value="today" {% if date_filter == 'today' %}selected{% endif %}>📅 Today</option>
+                <option value="last_7_days" {% if date_filter == 'last_7_days' %}selected{% endif %}>📅 Last 7D</option>
+                <option value="last_30_days" {% if date_filter == 'last_30_days' %}selected{% endif %}>📅 Last 30D</option>
+            </select>
+
+            <select name="status" class="filter-box" onchange="this.form.submit()">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>📦 All Status</option>
+                <option value="Ready" {% if status_filter == 'Ready' %}selected{% endif %}>📦 Ready</option>
+                <option value="Out for Delivery" {% if status_filter == 'Out for Delivery' %}selected{% endif %}>🚚 Transit</option>
+                <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>✅ Done</option>
+            </select>
+        </form>
+
+        <div class="main-card">
+            <h5 class="fw-bold mb-4">Delivery Monitor <span class="small text-dim ms-2">({{ total_orders }} results)</span></h5>
 
             {% if orders %}
-            <div class="table-responsive-md">
-                <table class="table orders-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer Name</th>
-                            <th>Contact</th>
-                            <th>Delivery Address</th>
-                            <th>Status Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr>
-                            <td data-label="Order ID">
-                                <span class="badge bg-light text-dark border p-2">#{{ order.order_id }}</span>
-                            </td>
-                            <td data-label="Customer">
-                                <div class="fw-bold text-dark">{{
-                                    order.customer_name|default:order.user.get_full_name|default:order.user.username }}
-                                </div>
-                            </td>
-                            <td data-label="Contact">
-                                <a href="tel:{{ order.mobile|default:order.user.profile.mobile }}"
-                                    class="btn btn-sm btn-outline-primary fw-bold py-1 px-3 rounded-pill">
-                                    {{ order.mobile|default:order.user.profile.mobile }}
-                                </a>
-                            </td>
-                            <td data-label="Address">
-                                <div class="address-box text-muted">
-                                    {{ order.location|default:order.user.profile.address|default:"Location info missing"
-                                    }}
-                                </div>
-                            </td>
-                            <td data-label="Status Action">
-                                <form method="POST" action="{% url 'update_delivery_status' order.id %}">
-                                    {% csrf_token %}
-                                    <select name="status" class="form-select status-select shadow-sm fw-bold"
-                                        onchange="this.form.submit()"
-                                        style="{% if order.status == 'Delivered' %}border-color: #22c55e; color: #15803d; background: #f0fdf4;{% elif order.status == 'Out for Delivery' %}border-color: #3b82f6; color: #1d4ed8; background: #eff6ff;{% endif %}">
-                                        <option value="Ready" {% if order.status=='Ready' %}selected{% endif %}>Ready
-                                        </option>
-                                        <option value="Out for Delivery" {% if order.status=='Out for Delivery'
-                                            %}selected{% endif %}>Out for Delivery</option>
-                                        <option value="Delivered" {% if order.status=='Delivered' %}selected{% endif %}>
-                                            Delivered</option>
-                                        <option value="Pending" {% if order.status=='Pending' %}selected{% endif %}>
-                                            Pending</option>
-                                    </select>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            {% for order in orders %}
+            <div class="delivery-row p-4 
+                    {% if order.status == 'Ready' %}status-ready
+                    {% elif order.status == 'Out for Delivery' %}status-transit
+                    {% elif order.status == 'Delivered' %}status-done{% endif %}">
+
+                <div class="row align-items-center g-3">
+                    <div class="col-12 col-lg-2 mobile-stack-row">
+                        <div class="stat-label">Order ID</div>
+                        <span class="id-pill">#{{ order.order_id }}</span>
+                    </div>
+
+                    <div class="col-6 col-lg-3 mobile-stack-row">
+                        <div class="stat-label">Customer</div>
+                        <div class="fw-bold text-white small text-truncate">
+                            {{ order.customer_name|default:order.user.get_full_name|default:order.user.username }}
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-2 mobile-stack-row">
+                        <div class="stat-label">Destination</div>
+                        <div class="small text-white opacity-75 text-truncate" style="font-size: 0.8rem;">
+                            {{ order.location|default:order.user.profile.address }}
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-2 mobile-stack-row">
+                        <div class="stat-label">Mobile</div>
+                        <div class="fw-bold small" style="color: var(--accent-neon);">
+                            {{ order.mobile|default:order.user.profile.mobile }}
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-2 mobile-stack-row" style="min-width: 140px;">
+                        <div class="stat-label">Update Status</div>
+                        <form method="POST" action="{% url 'update_delivery_status' order.id %}">
+                            {% csrf_token %}
+                            <select name="status" class="custom-select-dark" onchange="this.form.submit()">
+                                <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>🕒 Pending</option>
+                                <option value="Ready" {% if order.status == 'Ready' %}selected{% endif %}>📦 Ready</option>
+                                <option value="Out for Delivery" {% if order.status == 'Out for Delivery' %}selected{% endif %}>🚚 Transit</option>
+                                <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>✅ Done</option>
+                            </select>
+                        </form>
+                    </div>
+
+                    <div class="col-12 col-lg-1 flex-grow-1">
+                        <a href="tel:{{ order.mobile|default:order.user.profile.mobile }}" class="btn-call">
+                            📞 CALL
+                        </a>
+                    </div>
+                </div>
             </div>
+            {% endfor %}
             {% else %}
             <div class="text-center py-5">
-                <div class="mb-3" style="font-size: 3rem;">📭</div>
-                <h3 class="h6 text-muted fw-normal">No shipments assigned to your profile.</h3>
+                <div style="font-size: 3rem; opacity: 0.1;">📦</div>
+                <p class="small text-muted">No shipments found matching criteria.</p>
             </div>
             {% endif %}
         </div>
-    </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

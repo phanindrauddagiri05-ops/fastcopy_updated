@@ -18,7 +18,11 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.fastcopies.in',
     'http://www.fastcopies.in',
     'https://194.163.173.57',
-    'http://194.163.173.57'
+    'http://194.163.173.57',
+    'http://127.0.0.1',
+    'http://localhost',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000'
 ]
 
 # Production Security Settings (Critical for Reverse Proxy/SSL)
@@ -195,4 +199,4 @@ ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'fastcopyteam@gmail.com')
 SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', 'fastcopy003@gmail.com')
 SUPPORT_PHONE = os.getenv('SUPPORT_PHONE', '+91 8500290959')
 COMPANY_NAME = 'FastCopy'
-COMPANY_WEBSITE = os.getenv('COMPANY_WEBSITE', 'http://localhost:8000')
+COMPANY_WEBSITE = os.getenv('COMPANY_WEBSITE', 'https://fastcopies.in')

@@ -8,11 +8,11 @@ Instant pricing, same-day delivery to your college. Professional quality guarant
 {% block og_description %}Complete printing solutions for students: Black & White, Color Printing, Spiral Binding, Soft
 Binding, and Custom Layouts. Upload your document and get instant pricing!{% endblock %}
 {% block twitter_title %}FastCopies Services - Printing & Binding{% endblock %}
-{% block twitter_description %}Professional printing services for students. Instant pricing, same-day delivery!{%
-endblock %}
+
+{% block twitter_description %}Professional printing services for students. Instant pricing, same-day
+delivery!{%endblock %}
 
 {% block extra_head %}
-<!-- Product/Service Schema for Services Page -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -119,11 +119,15 @@ endblock %}
                         class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0">
                         <i class="fas fa-book me-1"></i> Soft
                     </button>
-                    <button id="tab-Custom" onclick="selectService(this, 'Custom Printing', '#fd7e14', 'fa-sliders-h')"
-                        class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0">
-                        <i class="fas fa-sliders-h me-1"></i> Custom
-                    </button>
-
+                    <div class="position-relative">
+                        <button
+                            class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0 opacity-50"
+                            style="cursor: help;" title="Launching Soon!">
+                            <i class="fas fa-sliders-h me-1"></i> Custom
+                        </button>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.5rem; z-index: 10;">Soon</span>
+                    </div>
                     <div class="position-relative">
                         <button
                             class="btn service-tab text-muted text-uppercase fw-bold py-1 px-2 px-md-3 rounded-3 border-0 opacity-50"
@@ -288,12 +292,15 @@ endblock %}
 
                                         <div id="upload-loader"
                                             class="d-none w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center">
-                                            <div class="spinner-border text-primary mb-2" role="status"
-                                                style="width: 2rem; height: 2rem;">
-                                                <span class="visually-hidden">Loading...</span>
+                                            <div class="progress w-75 mb-2" style="height: 20px;">
+                                                <div id="upload-progress-bar"
+                                                    class="progress-bar progress-bar-striped progress-bar-animated"
+                                                    role="progressbar" style="width: 0%">0%</div>
                                             </div>
-                                            <p class="small fw-bold text-primary text-uppercase mb-0 animate-bounce"
-                                                style="font-size: 0.65rem;">Uploading document...<br>Reading pages...
+                                            <p id="upload-status-text"
+                                                class="small fw-bold text-primary text-uppercase mb-0"
+                                                style="font-size: 0.65rem;">
+                                                Starting upload...
                                             </p>
                                         </div>
 
@@ -421,6 +428,8 @@ endblock %}
     let T = 0;
     let currentService = "Printing";
     let isProcessing = false; // Flag to track upload status
+    let uploadXhr = null; // [FIX] Store XHR to abort concurrent uploads
+    let fileReader = null; // [FIX] Store FileReader to abort concurrent reads
     const pdfjsLib = window['pdfjs-dist/build/pdf'];
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
@@ -457,10 +466,10 @@ endblock %}
     {% endif %}
 
     const priceCards = {
-        "Printing": `<div class="col-6 text-muted">B&W: ₹${PRICE_PER_PAGE_BW}/p</div><div class="col-6 text-muted">BW(D): ₹${PRICE_PER_PAGE_BW_DOUBLE}/p</div><div class="col-6 text-primary">Color: ₹${PRICE_PER_PAGE_COLOR}/p</div><div class="col-6 text-primary">Color(D): ₹${PRICE_PER_PAGE_COLOR_DOUBLE}/p</div>`,
+        "Printing": `<div class="col-6 text-muted">B&W: ₹${PRICE_PER_PAGE_BW}/p (Single Side)</div><div class="col-6 text-muted">B&W (Double Side): ₹${PRICE_PER_PAGE_BW_DOUBLE}/p</div><div class="col-6 text-primary">Color: ₹${PRICE_PER_PAGE_COLOR}/p (Single Side)</div><div class="col-6 text-primary">Color (Double Side): ₹${PRICE_PER_PAGE_COLOR_DOUBLE}/p</div>`,
         "Spiral Binding": `<div class="col-6 text-muted">1-40p: ₹${SPIRAL_BINDING}</div><div class="col-6 text-muted">41-60p: ₹${SPIRAL_TIER2}</div><div class="col-6 text-muted">61-90p: ₹${SPIRAL_TIER3}</div><div class="col-6 text-info">90+: +₹${SPIRAL_EXTRA}/20p</div>`,
         "Soft Binding": `<div class="col-12 text-info text-center">Flat Binding: ₹${SOFT_BINDING}</div>`,
-        "Custom Printing": `<div class="col-6 text-muted">1/4: ₹${CUSTOM_1_4}/s</div><div class="col-6 text-muted">1/8: ₹${CUSTOM_1_8}/s</div><div class="col-6 text-muted">1/8(D): ₹${CUSTOM_1_8_DOUBLE}/s</div><div class="col-6 text-muted">1/9: ₹${CUSTOM_1_9}/s</div><div class="col-6 text-muted">1/9(D): ₹${CUSTOM_1_9_DOUBLE}/s</div>`,
+        "Custom Printing": `<div class="col-6 text-muted">1/4: ₹${CUSTOM_1_4} (Single Side)</div><div class="col-6 text-muted">1/8: ₹${CUSTOM_1_8} (Single Side)</div><div class="col-6 text-muted">1/8 (Double Side): ₹${CUSTOM_1_8_DOUBLE}</div><div class="col-6 text-muted">1/9: ₹${CUSTOM_1_9} (Single Side)</div><div class="col-6 text-muted">1/9 (Double Side): ₹${CUSTOM_1_9_DOUBLE}</div>`,
     };
 
     // New restriction: Allow only numbers, commas, and hyphens in custom split input
@@ -627,6 +636,10 @@ endblock %}
     $('#print_type').change(toggleSplitField);
 
     $('#document').change(function (e) {
+        // [FIX] Abort any pending operations
+        if (uploadXhr) { uploadXhr.abort(); uploadXhr = null; }
+        if (fileReader) { fileReader.abort(); fileReader = null; }
+
         let file = e.target.files[0];
         if (!file) return;
 
@@ -651,7 +664,21 @@ endblock %}
             formData.append('document', file);
             formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
-            $.ajax({
+            uploadXhr = $.ajax({
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                            $('#upload-progress-bar').css('width', percentComplete + '%').text(percentComplete + '%');
+                            $('#upload-status-text').text(`Uploading: ${percentComplete}%`);
+                            if (percentComplete === 100) {
+                                $('#upload-status-text').text("Processing file...");
+                            }
+                        }
+                    }, false);
+                    return xhr;
+                },
                 url: "{% url 'calculate_pages' %}",
                 type: "POST", data: formData, processData: false, contentType: false,
                 success: function (res) {
@@ -681,8 +708,8 @@ endblock %}
                 }
             });
 
-            let reader = new FileReader();
-            reader.onload = function () {
+            fileReader = new FileReader();
+            fileReader.onload = function () {
                 let typedarray = new Uint8Array(this.result);
                 pdfjsLib.getDocument(typedarray).promise.then(function (pdf) {
                     pdf.getPage(1).then(function (page) {
@@ -694,7 +721,7 @@ endblock %}
                     });
                 });
             };
-            reader.readAsArrayBuffer(file);
+            fileReader.readAsArrayBuffer(file);
         } else if (file.type.startsWith("image/")) {
             $('#image-preview-tag').removeClass('d-none');
             $('#pdf-preview-canvas').addClass('d-none');
@@ -704,8 +731,8 @@ endblock %}
             // Badge is shown immediately for images
             $('#page-count-badge').removeClass('invisible');
 
-            let reader = new FileReader();
-            reader.onload = function (e) {
+            fileReader = new FileReader();
+            fileReader.onload = function (e) {
                 $('#image-preview-tag').attr('src', e.target.result);
                 calculateFinalPrice();
 
@@ -717,7 +744,7 @@ endblock %}
                 isProcessing = false;
                 $('#btn-add-to-cart, #btn-order-now').prop('disabled', false).removeClass('opacity-50');
             };
-            reader.readAsDataURL(file);
+            fileReader.readAsDataURL(file);
         } else {
             // Unsupported file type
             alert("Unsupported file format. Please upload PDF or Image files only.");
@@ -726,6 +753,10 @@ endblock %}
     });
 
     function resetUpload() {
+        // [FIX] Abort pending requests on reset
+        if (uploadXhr) { uploadXhr.abort(); uploadXhr = null; }
+        if (fileReader) { fileReader.abort(); fileReader = null; }
+
         $('#document').val('');
         $('#temp_doc_path').val(''); // Clear temp path
         T = 0;
@@ -821,10 +852,14 @@ endblock %}
         let bindingCost = 0;
         if (T > 0) {
             if (currentService === "Spiral Binding") {
-                if (T <= 40) bindingCost = SPIRAL_BINDING;
-                else if (T <= 60) bindingCost = SPIRAL_BINDING + 5;
-                else if (T <= 90) bindingCost = SPIRAL_BINDING + 10;
-                else bindingCost = (SPIRAL_BINDING + 10) + (Math.ceil((T - 90) / 20) * 5);
+                // [FIX] Calculate binding based on SHEETS, not PAGES
+                // If double sided, sheets = T/2. If single sided, sheets = T.
+                let sheets = (S === 'double') ? Math.ceil(T / 2) : T;
+
+                if (sheets <= 40) bindingCost = SPIRAL_BINDING;
+                else if (sheets <= 60) bindingCost = SPIRAL_BINDING + 5;
+                else if (sheets <= 90) bindingCost = SPIRAL_BINDING + 10;
+                else bindingCost = (SPIRAL_BINDING + 10) + (Math.ceil((sheets - 90) / 20) * 5);
             }
             else if (currentService === "Soft Binding") bindingCost = SOFT_BINDING;
         }
