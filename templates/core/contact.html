@@ -1,6 +1,45 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Contact FastCopies - Get in Touch | Support{% endblock %}
+{% block meta_description %}Have questions? Contact FastCopies via phone, email, or WhatsApp. Fast response guaranteed.
+Available 9 AM - 8 PM daily. We're here to help!{% endblock %}
+{% block og_title %}Contact FastCopies - We're Here to Help{% endblock %}
+{% block og_description %}Get in touch with FastCopies for all your printing needs. Call us at +91-9441055486 or message
+on WhatsApp for instant support.{% endblock %}
+{% block twitter_title %}Contact FastCopies{% endblock %}
+{% block twitter_description %}Need help? Contact us via phone, email, or WhatsApp. Fast response!{% endblock %}
+
+{% block extra_head %}
+<!-- ContactPage Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact FastCopies",
+  "description": "Get in touch with FastCopies for printing and binding services",
+  "url": "https://fastcopies.in/contact/",
+  "mainEntity": {
+    "@type": "Organization",
+    "name": "FastCopies",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+91-9441055486",
+      "contactType": "Customer Service",
+      "email": "fastcopyteam@gmail.com",
+      "availableLanguage": ["English", "Telugu"],
+      "hoursAvailable": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "09:00",
+        "closes": "20:00"
+      }
+    }
+  }
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <!-- Messages Display -->
 {% if messages %}

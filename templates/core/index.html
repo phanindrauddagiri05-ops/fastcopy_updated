@@ -1,6 +1,74 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}FastCopies - Online Printing & Binding Service | Raghu, Lendi, NSRIT{% endblock %}
+{% block meta_description %}Get professional xerox, spiral binding, and thesis printing delivered to your college
+campus. Fast, affordable, premium quality. Order now!{% endblock %}
+{% block og_title %}FastCopies - Premium Printing & Binding for College Students{% endblock %}
+{% block og_description %}Professional printing, binding & xerox services for Raghu, Lendi, and NSRIT colleges. Same-day
+delivery, affordable prices. Upload your documents and get instant quotes!{% endblock %}
+{% block twitter_title %}FastCopies - Online Printing & Binding Service{% endblock %}
+{% block twitter_description %}Get your documents printed and bound fast! Same-day delivery to your college campus in
+Vizianagaram.{% endblock %}
+
+{% block extra_head %}
+<!-- Service Schema for Homepage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "serviceType": "Printing and Binding Services",
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "FastCopies",
+    "url": "https://fastcopies.in"
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "Vizianagaram"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Printing Services",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Black & White Printing",
+          "description": "High-quality black and white printing on premium paper"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Color Printing",
+          "description": "Vibrant color printing for presentations and reports"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Spiral Binding",
+          "description": "Professional spiral binding for reports and projects"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "Soft Binding",
+          "description": "Premium soft binding with custom covers"
+        }
+      }
+    ]
+  }
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="home-master-wrapper">
     <section

@@ -2,31 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://fastcopies.in/</loc>
+        <lastmod>2026-01-27</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
         <loc>https://fastcopies.in/services/</loc>
+        <lastmod>2026-01-27</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
         <loc>https://fastcopies.in/about/</loc>
+        <lastmod>2026-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
         <loc>https://fastcopies.in/contact/</loc>
+        <lastmod>2026-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://fastcopies.in/privacy/</loc>
+        <loc>https://fastcopies.in/privacy_policy/</loc>
+        <lastmod>2025-01-15</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
     <url>
-        <loc>https://fastcopies.in/terms/</loc>
+        <loc>https://fastcopies.in/terms_conditions/</loc>
+        <lastmod>2025-01-15</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>

@@ -1,6 +1,93 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Our Services - Printing, Binding & More | FastCopies{% endblock %}
+{% block meta_description %}Explore our printing services: B&W, Color, Spiral Binding, Soft Binding, Custom Layouts.
+Instant pricing, same-day delivery to your college. Professional quality guaranteed.{% endblock %}
+{% block og_title %}Professional Printing & Binding Services | FastCopies{% endblock %}
+{% block og_description %}Complete printing solutions for students: Black & White, Color Printing, Spiral Binding, Soft
+Binding, and Custom Layouts. Upload your document and get instant pricing!{% endblock %}
+{% block twitter_title %}FastCopies Services - Printing & Binding{% endblock %}
+{% block twitter_description %}Professional printing services for students. Instant pricing, same-day delivery!{%
+endblock %}
+
+{% block extra_head %}
+<!-- Product/Service Schema for Services Page -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "Service",
+        "name": "Black & White Printing",
+        "description": "High-definition B&W laser prints on premium paper. Perfect for assignments, notes, and reports.",
+        "provider": {
+          "@type": "Organization",
+          "name": "FastCopies"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "Service",
+        "name": "Color Printing",
+        "description": "Vibrant color printing for presentations, posters, and project reports.",
+        "provider": {
+          "@type": "Organization",
+          "name": "FastCopies"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "item": {
+        "@type": "Service",
+        "name": "Spiral Binding",
+        "description": "Flexible and durable spiral binding perfect for project reports and notes.",
+        "provider": {
+          "@type": "Organization",
+          "name": "FastCopies"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "item": {
+        "@type": "Service",
+        "name": "Soft Binding",
+        "description": "Premium glued binding with customized front-back covers for a professional look.",
+        "provider": {
+          "@type": "Organization",
+          "name": "FastCopies"
+        }
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "item": {
+        "@type": "Service",
+        "name": "Custom Printing",
+        "description": "Save cost with 4-in-1, 8-in-1, and 9-in-1 custom layouts for condensed printing.",
+        "provider": {
+          "@type": "Organization",
+          "name": "FastCopies"
+        }
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
