@@ -345,9 +345,10 @@ def send_all_order_notifications(order):
     print(f"Customer email result: {results['customer_email']}")
     
     # Send admin alert
-    print("\n--- Sending Admin Alert Email ---")
-    results['admin_email'] = send_admin_order_alert(order)
-    print(f"Admin email result: {results['admin_email']}")
+    # print("\n--- Sending Admin Alert Email ---")
+    # results['admin_email'] = send_admin_order_alert(order)
+    # print(f"Admin email result: {results['admin_email']}")
+    results['admin_email'] = False # Disabled as per requirements
     
     # Send dealer alerts
     print("\n--- Sending Dealer Alert Emails ---")

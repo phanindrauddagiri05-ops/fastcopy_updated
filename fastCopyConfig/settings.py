@@ -205,7 +205,7 @@ DEFAULT_FROM_EMAIL = f'FastCopy Team <{EMAIL_HOST_USER}>'
 
 # 12. ADMIN & SUPPORT CONFIGURATION
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'fastcopyteam@gmail.com')
-SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', 'fastcopy003@gmail.com')
+SUPPORT_EMAIL = os.getenv('SUPPORT_EMAIL', 'fastcopyteam@gmail.com')
 SUPPORT_PHONE = os.getenv('SUPPORT_PHONE', '+91 8500290959')
 COMPANY_NAME = 'FastCopy'
 COMPANY_WEBSITE = os.getenv('COMPANY_WEBSITE', 'https://fastcopies.in')

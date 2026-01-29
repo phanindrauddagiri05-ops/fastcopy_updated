@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load socialaccount %}
 {% block content %}
-<section class="min-vh-100 flex items-center justify-center px-4 py-12 relative overflow-hidden bg-slate-50">
+<section class="min-h-[85vh] flex items-center justify-center px-4 py-6 relative overflow-hidden bg-slate-50">
     <div class="absolute top-0 left-0 w-64 h-64 bg-blue-600/5 blur-[100px] rounded-full floating-3d"></div>
     <div class="absolute bottom-0 right-0 w-80 h-80 bg-purple-600/5 blur-[120px] rounded-full floating-3d"
         style="animation-delay: 2s;"></div>
@@ -10,8 +10,8 @@
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 col-lg-4" data-aos="zoom-in">
                 <div
-                    class="bg-white p-6 p-md-8 rounded-[2.5rem] shadow-2xl border border-slate-100 hover-lift transition-all">
-                    <div class="text-center mb-8">
+                    class="bg-white p-5 p-md-6 rounded-[2.5rem] shadow-2xl border border-slate-100 hover-lift transition-all">
+                    <div class="text-center mb-5">
                         <div
                             class="inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-2xl text-xl shadow-lg shadow-blue-100 mb-4 rotate-3">
                             <i class="fa-solid fa-fingerprint"></i>
@@ -22,7 +22,7 @@
                             premium profile</p>
                     </div>
 
-                    <form method="POST" class="space-y-4">
+                    <form method="POST" class="space-y-3">
                         {% csrf_token %}
                         <div class="form-group">
                             <label
@@ -32,7 +32,7 @@
                                 <span class="input-group-text bg-slate-50 border-0"><i
                                         class="fa-solid fa-phone text-blue-600 text-xs"></i></span>
                                 <input type="text" name="mobile" required
-                                    class="form-control bg-slate-50 border-0 py-3 fw-bold text-sm">
+                                    class="form-control bg-slate-50 border-0 py-2.5 fw-bold text-sm">
                             </div>
                         </div>
 
@@ -43,7 +43,7 @@
                                 <span class="input-group-text bg-slate-50 border-0"><i
                                         class="fa-solid fa-lock text-blue-600 text-xs"></i></span>
                                 <input type="password" id="login-pass" name="password" required
-                                    class="form-control bg-slate-50 border-0 py-3 fw-bold text-sm">
+                                    class="form-control bg-slate-50 border-0 py-2.5 fw-bold text-sm">
                                 <button type="button" onclick="togglePass('login-pass', this)"
                                     class="bg-slate-50 border-0 px-3">
                                     <i class="fa-solid fa-eye text-slate-400 text-xs"></i>
@@ -59,7 +59,7 @@
                         </div>
 
                         <button type="submit"
-                            class="btn-3d w-100 py-3 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-blue-700 transition-all mt-4">
+                            class="btn-3d w-100 py-2.5 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-blue-700 transition-all mt-4">
                             Sign In <i class="fa-solid fa-arrow-right-to-bracket ml-2"></i>
                         </button>
                     </form>
@@ -97,12 +97,12 @@
                     </a>
                     -->
 
-                    <div class="mt-8 text-center pt-6 border-top border-slate-50">
-                        <p class="text-slate-400 font-bold text-[9px] uppercase tracking-widest mb-2">New to FastCopies?
+                    <div class="mt-4 text-center pt-4 border-t border-slate-50">
+                        <p class="text-slate-400 font-bold text-[9px] uppercase tracking-widest mb-3">New to FastCopies?
                         </p>
                         <a href="{% url 'register' %}"
-                            class="text-blue-600 font-black uppercase italic tracking-tighter text-xs no-underline hover:text-blue-800">
-                            Create ID <i class="fa-solid fa-user-plus ml-1"></i>
+                            class="inline-block px-6 py-2.5 border-2 border-blue-600 text-blue-600 font-black uppercase tracking-widest text-[10px] rounded-xl hover:bg-blue-600 hover:text-white transition-all no-underline shadow-sm hover:shadow-md">
+                            Create Account <i class="fa-solid fa-user-plus ml-1"></i>
                         </a>
                     </div>
                 </div>

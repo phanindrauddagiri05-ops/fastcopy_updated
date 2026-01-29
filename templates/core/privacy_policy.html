@@ -2,159 +2,188 @@
 {% load static %}
 
 {% block content %}
-<section class="terms-section py-10 md:py-24 bg-slate-50">
-    <div class="container mx-auto px-4">
-        <div class="max-w-4xl mx-auto bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl overflow-hidden"
-            data-aos="fade-up">
+<section class="relative overflow-hidden py-24 min-h-screen bg-slate-50">
+    <!-- Decorative Theme Elements -->
+    <div class="absolute top-0 left-0 w-64 h-64 bg-blue-600/5 blur-[100px] rounded-full floating-3d"></div>
+    <div class="absolute bottom-0 right-0 w-80 h-80 bg-purple-600/5 blur-[120px] rounded-full floating-3d"
+        style="animation-delay: 2s;"></div>
 
-            <div class="bg-slate-900 p-8 md:p-12 text-center relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600/20 blur-3xl rounded-full"></div>
-                <h1 class="text-3xl md:text-5xl font-black italic tracking-tighter text-white mb-2 uppercase">Terms &
-                    <span class="text-blue-500">Conditions</span>
-                </h1>
-                <p class="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Official Agreement for
-                    FastCopies Services</p>
-            </div>
-
-            <div class="p-6 md:p-12 text-slate-600 space-y-10 leading-relaxed">
-
-                <div class="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 text-sm text-blue-900">
-                    <p class="mb-0 font-bold">This document is an electronic record in terms of Information Technology
-                        Act, 2000 and rules there under as applicable and the amended provisions pertaining to
-                        electronic records in various statutes as amended by the Information Technology Act, 2000.</p>
-                </div>
-
-                <section>
-                    <h3 class="text-slate-900 font-black italic uppercase tracking-tight flex items-center gap-3 mb-4">
-                        <span
-                            class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-[10px] text-white">01</span>
-                        Agreement to Terms
-                    </h3>
-                    <p class="text-sm">
-                        By accessing <strong>FastCopies</strong> (the "Website/App"), you agree to be bound by these
-                        Terms
-                        and Conditions. These terms govern your use of our printing, binding, and delivery services. If
-                        you do not agree, please refrain from using the platform.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 class="text-slate-900 font-black italic uppercase tracking-tight flex items-center gap-3 mb-4">
-                        <span
-                            class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-[10px] text-white">02</span>
-                        Payments & Financial Obligations
-                    </h3>
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <ul class="list-disc pl-5 space-y-2 text-sm">
-                            <li><strong>Authorized Gateways:</strong> All payments are processed via PhonePe Private
-                                Limited or other authorized payment aggregators.</li>
-                            <li><strong>Transaction Security:</strong> We do not store your credit/debit card or UPI PIN
-                                details. All data is encrypted at the gateway level.</li>
-                            <li><strong>Pricing:</strong> The final price displayed at checkout includes service fees
-                                and applicable taxes. Dealers may have custom pricing assigned by the admin.</li>
-                        </ul>
-                    </div>
-                </section>
-
-                <section>
-                    <h3 class="text-slate-900 font-black italic uppercase tracking-tight flex items-center gap-3 mb-4">
-                        <span
-                            class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center text-[10px] text-white">03</span>
-                        Cancellation & Refunds
-                    </h3>
-                    <p class="text-sm mb-3">Since our products are custom-printed documents based on your specific
-                        uploads:</p>
-                    <ul class="list-disc pl-5 space-y-2 text-sm">
-                        <li><strong>No Cancellations:</strong> Orders cannot be cancelled once the payment is successful
-                            as the printing process is automated.</li>
-                        <li><strong>Refund Eligibility:</strong> Refunds are only initiated if a double payment occurs
-                            for the same Transaction ID or if the service is rejected by the merchant.</li>
-                        <li><strong>Refund Timeline:</strong> Eligible refunds will be processed within 5-7 working days
-                            to the original payment source.</li>
-                    </ul>
-                </section>
-
-                <section>
-                    <h3 class="text-slate-900 font-black italic uppercase tracking-tight flex items-center gap-3 mb-4">
-                        <span
-                            class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-[10px] text-white">04</span>
-                        Shipping & Delivery
-                    </h3>
-                    <p class="text-sm">
-                        FastCopies operates on a local campus-delivery model.
-                        Orders placed before <strong>8:00 PM IST</strong> are typically delivered on the <strong>Next
-                            Working Day</strong>.
-                        Deliveries are not processed on Sundays or Gazetted Holidays. We are not liable for delays
-                        caused by restricted access to campus locations.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 class="text-slate-900 font-black italic uppercase tracking-tight flex items-center gap-3 mb-4">
-                        <span
-                            class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-[10px] text-white">05</span>
-                        User Content & Copyright
-                    </h3>
-                    <p class="text-sm">
-                        The user retains ownership of uploaded files. However, by uploading, you grant FastCopies the
-                        right to process and print the content. You must ensure you hold the legal copyright for all
-                        materials. Printing of prohibited/illegal documents is strictly forbidden.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 class="text-slate-900 font-black italic uppercase tracking-tight flex items-center gap-3 mb-4">
-                        <span
-                            class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-[10px] text-white">06</span>
-                        Limitation of Liability
-                    </h3>
-                    <p class="text-sm">
-                        FastCopies shall not be liable for any indirect, incidental, or consequential damages resulting
-                        from the use of our services or any technical glitches during the payment process.
-                    </p>
-                </section>
-
-                <hr class="border-slate-100">
-
-                <div class="bg-slate-900 text-white p-6 md:p-10 rounded-[2rem] text-center">
-                    <h4 class="text-blue-500 font-black text-xs uppercase tracking-widest mb-4">Contact Information</h4>
-                    <p class="text-sm font-bold mb-1">FastCopies Premium Printing Hub</p>
-                    <p class="text-[11px] opacity-70 mb-4">Visakhapatnam, Andhra Pradesh, India</p>
-                    <div class="flex flex-col md:flex-row justify-center gap-4">
-                        <div class="flex items-center justify-center gap-2">
-                            <i class="fas fa-envelope text-blue-500"></i>
-                            <span class="text-xs">fastcopy003@gmail.com</span>
-                        </div>
-                        <div class="flex items-center justify-center gap-2">
-                            <i class="fas fa-phone text-blue-500"></i>
-                            <span class="text-xs">+91 94410 55486</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center max-w-3xl mx-auto mb-12" data-aos="zoom-in">
+            <h1 class="text-4xl md:text-6xl font-black italic tracking-tighter text-slate-900 mb-4">
+                PRIVACY<span class="text-blue-600"> POLICY</span>
+            </h1>
+            <div class="h-1 w-24 bg-blue-600 mx-auto rounded-full"></div>
         </div>
 
-        <div class="text-center mt-10">
-            <a href="{% url 'home' %}"
-                class="text-slate-400 font-bold uppercase tracking-widest text-[10px] no-underline hover:text-blue-600 transition-colors">
-                <i class="fas fa-arrow-left me-2"></i> Return to Main Hub
-            </a>
+        <div class="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-[2rem] shadow-xl border border-slate-100">
+            <div class="prose prose-lg prose-slate max-w-none">
+                <p class="lead font-medium text-slate-600 mb-8">
+                    This Privacy Policy explains how FastCopies (“we”, “our”, “us”) collects, uses, stores, and
+                    protects your personal information when you access or use https://fastcopies.in/.
+                    By using our website or services, you agree to the terms of this Privacy Policy.
+                </p>
+
+                <div class="space-y-8">
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">1. Business Information</h3>
+                        <p class="text-slate-600">
+                            <strong>Business Name:</strong> FastCopies<br>
+                            <strong>Address:</strong> Vizianagaram, Andhra Pradesh – 535005<br>
+                            <strong>Phone:</strong> +91 8500290959<br>
+                            <strong>Email:</strong> fastcopyteam@gmail.com
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">2. Information We Collect</h3>
+                        <h4 class="font-semibold text-slate-800">a. Personal Information</h4>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1 mb-2">
+                            <li>Name</li>
+                            <li>Phone number</li>
+                            <li>Email address</li>
+                            <li>Delivery address</li>
+                        </ul>
+                        <h4 class="font-semibold text-slate-800">b. Document Information</h4>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1 mb-2">
+                            <li>Uploaded PDF or document files for printing</li>
+                        </ul>
+                        <p class="text-sm font-semibold text-amber-600">⚠️ Uploaded documents are used only for printing
+                            purposes.</p>
+
+                        <h4 class="font-semibold text-slate-800 mt-2">c. Technical Information</h4>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>IP address</li>
+                            <li>Browser type</li>
+                            <li>Device information</li>
+                            <li>Website usage data</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">3. Use of Information</h3>
+                        <p class="text-slate-600 mb-2">We use your information to:</p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>Process and fulfill print orders</li>
+                            <li>Deliver printed documents</li>
+                            <li>Communicate order updates and digital invoices</li>
+                            <li><strong>Send personalized offers, discount details, and promotional updates</strong>
+                            </li>
+                            <li>Provide customer support</li>
+                            <li>Improve website functionality</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">4. Document Confidentiality & User Liability
+                        </h3>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>All uploaded documents are treated as confidential.</li>
+                            <li>Documents are not shared with third parties except for delivery purposes or when
+                                required by law.</li>
+                            <li><strong>Content Responsibility:</strong> FastCopies does not verify the legal status or
+                                ownership of uploaded files. If any illegal, fraudulent, or unauthorized copyrighted
+                                documents are uploaded, we assume no responsibility for the same.</li>
+                            <li><strong>Legal Accountability:</strong> The user shall be solely responsible and legally
+                                accountable for the content of their uploaded documents and any legal issues arising
+                                thereafter.</li>
+                            <li>Documents are deleted after order fulfillment unless legally required to retain them.
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">5. Payment Information</h3>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>Payments are processed through secure third-party payment gateways.</li>
+                            <li>We do not store card, UPI, or banking details on our servers.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">6. Sharing of Information</h3>
+                        <p class="text-slate-600 mb-2">We do not sell or rent personal information. Information may be
+                            shared with:</p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>Courier or delivery partners (only necessary details)</li>
+                            <li>Payment gateway providers</li>
+                            <li>Government or legal authorities if required by law</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">7. Data Security</h3>
+                        <p class="text-slate-600">
+                            We take reasonable technical and organizational measures to protect your data. However, no
+                            online transmission is completely secure, and absolute security cannot be guaranteed.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">8. Cookies</h3>
+                        <p class="text-slate-600">
+                            Our website may use cookies to enhance user experience. You may disable cookies through your
+                            browser settings.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">9. User Rights</h3>
+                        <p class="text-slate-600 mb-2">You have the right to:</p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>Access your personal data</li>
+                            <li>Request correction or deletion of your data</li>
+                            <li>Withdraw consent (may affect service availability)</li>
+                        </ul>
+                        <p class="text-slate-600 mt-2">To exercise these rights, contact us using the details below.</p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">10. Marketing and Promotional Communications
+                        </h3>
+                        <p class="text-slate-600">
+                            By creating an account or placing an order, you agree to receive transactional and
+                            promotional communications. We use your registered <strong>Mobile Number</strong> and
+                            <strong>Email Address</strong> to send:
+                        </p>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1 mt-2">
+                            <li>Order confirmations and real-time status updates via SMS, WhatsApp, and Email.</li>
+                            <li>Exclusive promotional offers, discount codes, and personalized business updates.</li>
+                        </ul>
+                        <p class="text-slate-600 mt-2">
+                            These communications are intended to enhance your experience and provide additional value.
+                            You may opt-out of promotional messages at any time by contacting our support team.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">11. Children’s Privacy</h3>
+                        <p class="text-slate-600">
+                            Our services are not intended for individuals under the age of 18 years.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">12. Changes to This Policy</h3>
+                        <ul class="list-disc pl-5 text-slate-600 space-y-1">
+                            <li>We reserve the right to update this Privacy Policy at any time.</li>
+                            <li>Changes will be effective once posted on the website.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h3 class="text-xl font-bold text-slate-900 mb-2">13. Contact Us</h3>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mt-2">
+                            <p class="text-slate-600">
+                                For privacy-related queries, contact:<br>
+                                📧 <strong>Email:</strong> fastcopyteam@gmail.com<br>
+                                📞 <strong>Phone:</strong> +91 8500290959
+                            </p>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
     </div>
 </section>
-
-<style>
-    .font-black {
-        font-weight: 900;
-    }
-
-    .italic {
-        font-style: italic;
-    }
-
-    .tracking-widest {
-        letter-spacing: 0.2em;
-    }
-</style>
 {% endblock %}

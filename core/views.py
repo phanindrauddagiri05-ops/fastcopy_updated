@@ -500,8 +500,10 @@ def add_to_cart(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False}, status=401)
 
-@login_required(login_url='login')
 def cart_page(request):
+    if not request.user.is_authenticated:
+        return render(request, 'core/cart.html')
+
     db_items = CartItem.objects.filter(user=request.user).order_by('-created_at')
     cart_list = []
     for i in db_items:
